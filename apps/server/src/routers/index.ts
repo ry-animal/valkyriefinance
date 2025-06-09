@@ -7,6 +7,7 @@ import { vaultRouter } from "./vault";
 import { analyticsRouter } from "./analytics";
 import { healthRouter } from "./health";
 import { authRouter } from "./auth";
+import { aiRouter } from "./ai";
 
 export const appRouter = router({
   healthCheck: publicProcedure.query(() => {
@@ -23,5 +24,6 @@ export const appRouter = router({
   portfolio: portfolioRouter,
   vault: vaultRouter,
   analytics: analyticsRouter,
+  ai: aiRouter,
 });
 export type AppRouter = typeof appRouter;

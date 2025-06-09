@@ -1,9 +1,9 @@
 import { http, createConfig } from 'wagmi'
-import { mainnet, arbitrum, optimism, polygon } from 'wagmi/chains'
+import { mainnet, arbitrum, optimism, polygon, base } from 'wagmi/chains'
 import { coinbaseWallet, injected } from 'wagmi/connectors'
 
 export const wagmiConfig = createConfig({
-  chains: [mainnet, arbitrum, optimism, polygon],
+  chains: [mainnet, arbitrum, optimism, polygon, base],
   connectors: [
     injected(),
     coinbaseWallet({ 
@@ -15,10 +15,11 @@ export const wagmiConfig = createConfig({
     [arbitrum.id]: http('https://arb1.arbitrum.io/rpc'),
     [optimism.id]: http('https://mainnet.optimism.io'),
     [polygon.id]: http('https://polygon-rpc.com'),
+    [base.id]: http('https://mainnet.base.org'),
   },
 })
 
-export const supportedChains = [mainnet, arbitrum, optimism, polygon]
+export const supportedChains = [mainnet, arbitrum, optimism, polygon, base]
 export const supportedChainIds = supportedChains.map(chain => chain.id)
 
 export function getChainById(chainId: number) {

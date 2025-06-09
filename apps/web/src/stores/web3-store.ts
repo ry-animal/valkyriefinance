@@ -12,10 +12,10 @@ export interface TokenBalance {
 
 export interface Transaction {
   hash: string;
-  type: 'swap' | 'deposit' | 'withdrawal' | 'bridge' | 'approve';
+  type: 'swap' | 'deposit' | 'withdrawal' | 'bridge' | 'approve' | 'vault_deposit' | 'vault_withdraw' | 'token_stake' | 'token_unstake' | 'token_claim' | 'governance_vote';
   status: 'pending' | 'confirmed' | 'failed';
   timestamp: Date;
-  amount?: string;
+  amount?: string | bigint;
   token?: string;
   chainId: number;
   gasUsed?: string;
@@ -88,7 +88,7 @@ const initialState: Web3State = {
   isBalanceLoading: false,
   isTransactionLoading: false,
   isWrongNetwork: false,
-  supportedChains: [1, 42161, 10, 137], // Ethereum, Arbitrum, Optimism, Polygon
+  supportedChains: [1, 42161, 10, 137, 8453], // Ethereum, Arbitrum, Optimism, Polygon, Base
 };
 
 export const useWeb3Store = create<Web3Store>()(
@@ -203,6 +203,17 @@ export const useWeb3Store = create<Web3Store>()(
               }
             }
             
+            // Also check recent transactions
+            const recentIndex = state.recentTransactions.findIndex(
+              (tx) => tx.hash === hash
+            );
+            
+            if (recentIndex !== -1) {
+              const newRecent = [...state.recentTransactions];
+              newRecent[recentIndex] = { ...newRecent[recentIndex], ...updates };
+              return { recentTransactions: newRecent };
+            }
+            
             return state;
           },
           false,
@@ -213,6 +224,9 @@ export const useWeb3Store = create<Web3Store>()(
         set(
           (state) => ({
             pendingTransactions: state.pendingTransactions.filter(
+              (tx) => tx.hash !== hash
+            ),
+            recentTransactions: state.recentTransactions.filter(
               (tx) => tx.hash !== hash
             ),
           }),
@@ -244,10 +258,7 @@ export const useWeb3Store = create<Web3Store>()(
 
       setSupportedChains: (chains) =>
         set(
-          (state) => ({
-            supportedChains: chains,
-            isWrongNetwork: state.chainId ? !chains.includes(state.chainId) : false,
-          }),
+          { supportedChains: chains },
           false,
           'web3/setSupportedChains'
         ),
@@ -255,24 +266,40 @@ export const useWeb3Store = create<Web3Store>()(
       // Reset actions
       resetWalletState: () =>
         set(
-          {
-            nativeBalance: null,
-            tokenBalances: [],
-            pendingTransactions: [],
-            isBalanceLoading: false,
-            isTransactionLoading: false,
-          },
+          initialState,
           false,
           'web3/resetWalletState'
         ),
 
       disconnect: () =>
         set(
-          initialState,
+          {
+            isConnected: false,
+            address: null,
+            chainId: null,
+            nativeBalance: null,
+            tokenBalances: [],
+            pendingTransactions: [],
+            isConnecting: false,
+            isBalanceLoading: false,
+            isTransactionLoading: false,
+            isWrongNetwork: false,
+          },
           false,
           'web3/disconnect'
         ),
     }),
-    { name: 'web3-store' }
+    {
+      name: 'web3-store',
+    }
   )
-); 
+);
+
+// Selectors for easier consumption
+export const useWalletAddress = () => useWeb3Store((state) => state.address);
+export const useIsWalletConnected = () => useWeb3Store((state) => state.isConnected);
+export const useChainId = () => useWeb3Store((state) => state.chainId);
+export const useNativeBalance = () => useWeb3Store((state) => state.nativeBalance);
+export const useTokenBalances = () => useWeb3Store((state) => state.tokenBalances);
+export const usePendingTransactions = () => useWeb3Store((state) => state.pendingTransactions);
+export const useIsWrongNetwork = () => useWeb3Store((state) => state.isWrongNetwork); 

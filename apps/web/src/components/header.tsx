@@ -9,7 +9,8 @@ export default function Header() {
     { to: "/", label: "Home" },
     { to: "/dashboard", label: "Dashboard" },
     { to: "/wallet", label: "Wallet" },
-    { to: "/wallet", label: "Wallet" },
+    { to: "/vault", label: "Vault Demo" },
+    { to: "/ai", label: "AI Demo" },
     { to: "/stores", label: "Stores Demo" },
   ];
 
