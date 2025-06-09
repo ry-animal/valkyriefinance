@@ -35,6 +35,14 @@ export const CONTRACT_ADDRESSES = {
     uniswapV4PoolManager: '0xDBc23f44D87826276BF6Fd6b1C372aD244752ba5' as `0x${string}`,
     governance: '0x4E4D6C8A3C2DdB8F8f8a3B3c5d8e7f108BAF0C3a' as `0x${string}`,
   },
+  // Local Anvil Network (31337)
+  31337: {
+    valkryieToken: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512' as `0x${string}`,
+    valkryieVault: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0' as `0x${string}`,
+    uniswapV4PoolManager: '0x0000000000000000000000000000000000000000' as `0x${string}`,
+    governance: '0x0000000000000000000000000000000000000000' as `0x${string}`,
+    mockUSDC: '0x5FbDB2315678afecb367f032d93F642f64180aa3' as `0x${string}`,
+  },
 } as const
 
 export type ContractName = 'valkryieToken' | 'valkryieVault' | 'uniswapV4PoolManager' | 'governance'

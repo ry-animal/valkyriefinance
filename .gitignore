@@ -70,3 +70,38 @@ temp/
 
 # Cursor Rules
 .cursor/
+
+# Foundry & Smart Contract Development
+packages/contracts/foundry/out/
+packages/contracts/foundry/cache/
+packages/contracts/foundry/broadcast/*/31337/
+packages/contracts/foundry/broadcast/*/dry-run/
+
+# Anvil/Local Blockchain
+anvil_state.json
+.anvil/
+
+# Smart Contract Environment
+packages/contracts/foundry/.env
+packages/contracts/foundry/.env.local
+
+# Foundry Dependencies Cache
+packages/contracts/foundry/lib/
+!packages/contracts/foundry/lib/forge-std/
+!packages/contracts/foundry/lib/openzeppelin-contracts/
+
+# Gas Reports
+packages/contracts/foundry/gas-report.txt
+packages/contracts/foundry/.gas-snapshot
+
+# Coverage Reports
+packages/contracts/foundry/coverage/
+packages/contracts/foundry/lcov.info
+
+# Solidity Build Artifacts
+*.abi
+*.bin
+*.json.bak
+
+# Development Tools
+.wake/
