@@ -311,21 +311,21 @@ contract GasOptimizationTest is Test {
     
     function test_GasMultiUserScenario() public {
         // Setup multiple users
-        address[] memory users = new address[](3);
-        users[0] = user1;
-        users[1] = user2;
-        users[2] = address(0x7);
+        address[] memory testUsers = new address[](3);
+        testUsers[0] = user1;
+        testUsers[1] = user2;
+        testUsers[2] = address(0x7);
         
         vm.prank(owner);
-        token.transfer(users[2], INITIAL_SUPPLY);
+        token.transfer(testUsers[2], INITIAL_SUPPLY);
         
         uint256 gasStart = gasleft();
         
         // Each user deposits
-        for (uint i = 0; i < users.length; i++) {
-            vm.startPrank(users[i]);
+        for (uint i = 0; i < testUsers.length; i++) {
+            vm.startPrank(testUsers[i]);
             token.approve(address(vault), TEST_AMOUNT);
-            vault.deposit(TEST_AMOUNT, users[i]);
+            vault.deposit(TEST_AMOUNT, testUsers[i]);
             vm.stopPrank();
         }
         
