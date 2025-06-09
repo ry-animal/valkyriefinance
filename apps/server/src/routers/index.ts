@@ -6,6 +6,8 @@ import { todoRouter } from "./todo";
 import { portfolioRouter } from "./portfolio";
 import { vaultRouter } from "./vault";
 import { analyticsRouter } from "./analytics";
+import { healthRouter } from "./health";
+import { authRouter } from "./auth";
 
 export const appRouter = router({
   healthCheck: publicProcedure.query(() => {
@@ -17,6 +19,8 @@ export const appRouter = router({
       user: ctx.session.user,
     };
   }),
+  auth: authRouter,
+  health: healthRouter,
   todo: todoRouter,
   portfolio: portfolioRouter,
   vault: vaultRouter,
