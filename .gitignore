@@ -60,6 +60,10 @@ Thumbs.db
 coverage/
 *.lcov
 
+# Test results
+test-results/
+playwright-report/
+
 # Temporary folders
 tmp/
 temp/
