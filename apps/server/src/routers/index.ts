@@ -2,7 +2,6 @@ import {
   protectedProcedure, publicProcedure,
   router,
 } from "../lib/trpc";
-import { todoRouter } from "./todo";
 import { portfolioRouter } from "./portfolio";
 import { vaultRouter } from "./vault";
 import { analyticsRouter } from "./analytics";
@@ -21,7 +20,6 @@ export const appRouter = router({
   }),
   auth: authRouter,
   health: healthRouter,
-  todo: todoRouter,
   portfolio: portfolioRouter,
   vault: vaultRouter,
   analytics: analyticsRouter,

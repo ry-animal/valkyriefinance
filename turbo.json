@@ -17,6 +17,10 @@
 			"dependsOn": ["^test"],
 			"inputs": ["src/**/*.{ts,tsx}", "src/**/*.test.{ts,tsx}", "vitest.config.ts"]
 		},
+		"test:e2e": {
+			"dependsOn": ["^test"],
+			"inputs": ["e2e/**/*.{ts,tsx}", "playwright.config.ts", "src/**/*.{ts,tsx}"]
+		},
 		"test:watch": {
 			"cache": false,
 			"persistent": true
