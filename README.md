@@ -180,7 +180,7 @@ valkryiefinance/
 │       │   └── utils/       # Shared utility functions
 │       └── package.json
 ├── .cursor/                 # Cursor IDE rules and documentation (ignored)
-├── DEVELOPMENT_SUMMARY.mdc  # Complete development progress summary
+│   └── DEVELOPMENT_SUMMARY.md  # Complete development progress summary
 ├── turbo.json              # Turborepo configuration with test tasks
 └── package.json            # Root package configuration
 ```
