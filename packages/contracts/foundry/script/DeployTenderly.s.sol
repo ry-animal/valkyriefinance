@@ -58,11 +58,8 @@ contract DeployTenderly is Script {
         
         vm.stopBroadcast();
         
-        // Save deployment info for Tenderly Dashboard
-        saveTenderlyDeploymentInfo();
-        
-        console.log("=== Tenderly Deployment Complete ===");
-        logDeploymentSummary();
+        // Deployment complete - all monitoring events emitted for Tenderly
+        console.log("All deployment data available in transaction logs for Tenderly monitoring");
     }
     
     function deployContracts(TenderlyConfig memory config) internal {
@@ -169,30 +166,7 @@ contract DeployTenderly is Script {
         });
     }
     
-    function saveTenderlyDeploymentInfo() internal {
-        string memory json = "tenderly_deployment";
-        
-        vm.serializeAddress(json, "token", deployedToken);
-        vm.serializeAddress(json, "vault", deployedVault);
-        vm.serializeAddress(json, "priceOracle", deployedPriceOracle);
-        vm.serializeUint(json, "chainId", block.chainid);
-        vm.serializeUint(json, "blockNumber", block.number);
-        vm.serializeUint(json, "timestamp", block.timestamp);
-        vm.serializeString(json, "environment", "tenderly_virtual_testnet");
-        
-        string memory finalJson = vm.serializeUint(json, "strategiesCount", 3);
-        
-        vm.writeJson(finalJson, "tenderly_deployment.json");
-        console.log("Tenderly deployment info saved to: tenderly_deployment.json");
-    }
-    
-    function logDeploymentSummary() internal view {
-        console.log("Token Address:", deployedToken);
-        console.log("Vault Address:", deployedVault);
-        console.log("Price Oracle:", deployedPriceOracle);
-        console.log("Strategies Configured: 3");
-        console.log("Ready for AI simulation and testing");
-    }
+
     
     // Events for Tenderly monitoring
     event TenderlyMonitoringSetup(address indexed vault, address indexed token, address indexed priceOracle);

@@ -1,228 +1,183 @@
-account_id: ""
-project_slug: "valkryie-finance"
-provider: https://virtual.mainnet.rpc.tenderly.co
-
-# DevNet Configuration for AI Vault Testing
+account_id: "ryanimal"
+access_key: "SBmRBvND8OEx5ot3-VbIiVuXHbAKVchA"
+alerts:
+- description: Monitor significant changes in vault total assets
+  name: Vault Total Assets Changed
+  network: valkryie-ai-vault
+  rule:
+    contracts:
+    - name: ValkryieVault
+    event: Transfer
+    filters:
+    - property: value
+      type: gt
+      value: "1000000000000000000000"
+    type: event
+- description: Monitor AI-driven rebalancing operations
+  name: AI Rebalancing Activity
+  network: valkryie-ai-vault
+  rule:
+    contracts:
+    - name: ValkryieVault
+    function: rebalanceStrategy
+    type: function
+- description: Monitor strategy additions and modifications
+  name: Strategy Changes
+  network: valkryie-ai-vault
+  rule:
+    contracts:
+    - name: ValkryieVault
+    function: addStrategy
+    type: function
+- description: Monitor pause and emergency functions
+  name: Emergency Events
+  network: valkryie-ai-vault
+  rule:
+    contracts:
+    - name: ValkryieVault
+    functions:
+    - pauseDeposits
+    - unpauseDeposits
+    type: function
+- description: Alert on transactions using excessive gas
+  name: High Gas Consumption
+  network: valkryie-ai-vault
+  rule:
+    gas_used:
+      type: gt
+      value: 1000000
+    type: transaction
+- description: Monitor failed AI-driven operations
+  name: Failed AI Operations
+  network: valkryie-ai-vault
+  rule:
+    contracts:
+    - name: ValkryieVault
+    status: failed
+    type: transaction
+analytics:
+  ai_performance:
+  - rebalancing_frequency
+  - strategy_success_rate
+  - gas_efficiency
+  - anomaly_detection_rate
+  user_activity:
+  - deposit_volume
+  - withdrawal_volume
+  - user_retention
+  - whale_activity
+  vault_performance:
+  - total_assets
+  - total_supply
+  - strategy_allocations
+  - fee_generation
+contracts:
+- address: ""
+  name: ValkryieToken
+  network: valkryie-ai-vault
+- address: ""
+  name: ValkryieVault
+  network: valkryie-ai-vault
+- address: ""
+  name: ValkryiePriceOracle
+  network: valkryie-ai-vault
 devnets:
   valkryie-ai-vault:
-    # Virtual TestNet configuration
+    accounts:
+    - balance: 1e+24
+      name: deployer
+    - balance: 1e+24
+      name: ai_controller
+    - balance: 1e+24
+      name: vault_owner
+    - balance: 1e+24
+      name: fee_recipient
+    - balance: 1e+24
+      name: user1
+    - balance: 1e+24
+      name: user2
+    - balance: 1e+24
+      name: whale_user
+    - balance: 1e+24
+      name: liquidator
     chain_config:
-      chain_id: 1337
+      berlin_block: 0
       block_time: 2
-      network_id: 1337
-      homestead_block: 0
+      byzantium_block: 0
+      chain_id: 1337
+      constantinople_block: 0
       eip150_block: 0
       eip155_block: 0
       eip158_block: 0
-      byzantium_block: 0
-      constantinople_block: 0
-      petersburg_block: 0
+      homestead_block: 0
       istanbul_block: 0
-      berlin_block: 0
       london_block: 0
-
-    # Initial balances for testing (unlimited faucet simulation)
-    initial_balance: 1000000000000000000000000  # 1M ETH per account
-    
-    # Accounts for AI and DeFi testing
-    accounts:
-      - balance: 1000000000000000000000000
-        name: "deployer"
-      - balance: 1000000000000000000000000
-        name: "ai_controller"
-      - balance: 1000000000000000000000000
-        name: "vault_owner"
-      - balance: 1000000000000000000000000
-        name: "fee_recipient"
-      - balance: 1000000000000000000000000
-        name: "user1"
-      - balance: 1000000000000000000000000
-        name: "user2"
-      - balance: 1000000000000000000000000
-        name: "whale_user"
-      - balance: 1000000000000000000000000
-        name: "liquidator"
-
-# Contract monitoring configuration
-contracts:
-  - name: "ValkryieToken"
-    address: ""  # Will be filled after deployment
-    network: "valkryie-ai-vault"
-    
-  - name: "ValkryieVault" 
-    address: ""  # Will be filled after deployment
-    network: "valkryie-ai-vault"
-    
-  - name: "ValkryiePriceOracle"
-    address: ""  # Will be filled after deployment
-    network: "valkryie-ai-vault"
-
-# Alert configurations for AI monitoring
-alerts:
-  # Vault health monitoring
-  - name: "Vault Total Assets Changed"
-    description: "Monitor significant changes in vault total assets"
-    network: "valkryie-ai-vault"
-    rule:
-      type: "event"
-      contracts:
-        - name: "ValkryieVault"
-      event: "Transfer"
-      filters:
-        - property: "value"
-          type: "gt"
-          value: "1000000000000000000000"  # > 1000 tokens
-
-  - name: "AI Rebalancing Activity"
-    description: "Monitor AI-driven rebalancing operations"
-    network: "valkryie-ai-vault"
-    rule:
-      type: "function"
-      contracts:
-        - name: "ValkryieVault"
-      function: "rebalanceStrategy"
-
-  - name: "Strategy Changes"
-    description: "Monitor strategy additions and modifications"
-    network: "valkryie-ai-vault"
-    rule:
-      type: "function"
-      contracts:
-        - name: "ValkryieVault"
-      function: "addStrategy"
-
-  - name: "Emergency Events"
-    description: "Monitor pause and emergency functions"
-    network: "valkryie-ai-vault"
-    rule:
-      type: "function"
-      contracts:
-        - name: "ValkryieVault"
-      functions:
-        - "pauseDeposits"
-        - "unpauseDeposits"
-
-  # Gas usage monitoring
-  - name: "High Gas Consumption"
-    description: "Alert on transactions using excessive gas"
-    network: "valkryie-ai-vault"
-    rule:
-      type: "transaction"
-      gas_used:
-        type: "gt"
-        value: 1000000  # > 1M gas
-
-  # AI anomaly detection
-  - name: "Failed AI Operations"
-    description: "Monitor failed AI-driven operations"
-    network: "valkryie-ai-vault"
-    rule:
-      type: "transaction"
-      status: "failed"
-      contracts:
-        - name: "ValkryieVault"
-
-# Simulation configurations
-simulations:
-  # Pre-deployment validation scenarios
-  ai_rebalancing:
-    description: "Simulate AI-driven rebalancing strategies"
-    network: "valkryie-ai-vault"
-    contracts:
-      - "ValkryieVault"
-    
-  stress_testing:
-    description: "Simulate high-volume operations and whale activities"
-    network: "valkryie-ai-vault"
-    contracts:
-      - "ValkryieVault"
-      - "ValkryieToken"
-    
-  emergency_scenarios:
-    description: "Simulate emergency pause and recovery scenarios"
-    network: "valkryie-ai-vault"
-    contracts:
-      - "ValkryieVault"
-
-# Analytics and monitoring
-analytics:
-  # Performance metrics
-  vault_performance:
-    - total_assets
-    - total_supply
-    - strategy_allocations
-    - fee_generation
-    
-  # AI metrics
-  ai_performance:
-    - rebalancing_frequency
-    - strategy_success_rate
-    - gas_efficiency
-    - anomaly_detection_rate
-    
-  # User metrics
-  user_activity:
-    - deposit_volume
-    - withdrawal_volume
-    - user_retention
-    - whale_activity
-
-# Web3 Actions for automated responses
-web3_actions:
-  - name: "ai_anomaly_responder"
-    description: "Automated response to AI anomalies"
-    trigger:
-      type: "alert"
-      alert: "Failed AI Operations"
-    runtime: "nodejs18.x"
-    
-  - name: "gas_optimizer"
-    description: "Monitor and optimize gas usage for AI operations"
-    trigger:
-      type: "alert" 
-      alert: "High Gas Consumption"
-    runtime: "nodejs18.x"
-    
-  - name: "vault_health_monitor"
-    description: "Continuous monitoring of vault health metrics"
-    trigger:
-      type: "periodic"
-      interval: "5m"
-    runtime: "nodejs18.x"
-
-# Integration settings
+      network_id: 1337
+      petersburg_block: 0
+    initial_balance: 1e+24
+environments:
+  development:
+    auto_verify: true
+    gas_reporting: true
+    network: valkryie-ai-vault
+  production:
+    auto_verify: false
+    gas_reporting: false
+    network: mainnet
+  staging:
+    auto_verify: true
+    gas_reporting: true
+    network: sepolia
 integrations:
   discord:
     enabled: false
     webhook_url: ""
-    
-  slack:
-    enabled: false
-    webhook_url: ""
-    
-  telegram:
-    enabled: false
-    bot_token: ""
-    chat_id: ""
-    
   email:
     enabled: true
     recipients:
-      - "alerts@valkryie.finance"
-
-# Environment-specific configurations
-environments:
-  development:
-    network: "valkryie-ai-vault"
-    auto_verify: true
-    gas_reporting: true
-    
-  staging:
-    network: "sepolia"
-    auto_verify: true
-    gas_reporting: true
-    
-  production:
-    network: "mainnet"
-    auto_verify: false
-    gas_reporting: false 
+    - alerts@valkryie.finance
+  slack:
+    enabled: false
+    webhook_url: ""
+  telegram:
+    bot_token: ""
+    chat_id: ""
+    enabled: false
+project_slug: valkyrie-finance
+provider: https://virtual.mainnet.rpc.tenderly.co
+simulations:
+  ai_rebalancing:
+    contracts:
+    - ValkryieVault
+    description: Simulate AI-driven rebalancing strategies
+    network: valkryie-ai-vault
+  emergency_scenarios:
+    contracts:
+    - ValkryieVault
+    description: Simulate emergency pause and recovery scenarios
+    network: valkryie-ai-vault
+  stress_testing:
+    contracts:
+    - ValkryieVault
+    - ValkryieToken
+    description: Simulate high-volume operations and whale activities
+    network: valkryie-ai-vault
+web3_actions:
+- description: Automated response to AI anomalies
+  name: ai_anomaly_responder
+  runtime: nodejs18.x
+  trigger:
+    alert: Failed AI Operations
+    type: alert
+- description: Monitor and optimize gas usage for AI operations
+  name: gas_optimizer
+  runtime: nodejs18.x
+  trigger:
+    alert: High Gas Consumption
+    type: alert
+- description: Continuous monitoring of vault health metrics
+  name: vault_health_monitor
+  runtime: nodejs18.x
+  trigger:
+    interval: 5m
+    type: periodic
