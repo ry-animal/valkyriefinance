@@ -4,7 +4,8 @@ import { useAccount, useBalance, useChainId } from 'wagmi'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { WalletConnect } from "@/components/wallet/wallet-connect"
+import { ConnectButton } from "@/components/wallet/connect-button"
+import { WalletStatus } from "@/components/wallet/wallet-status"
 import { NetworkSwitcher } from "@/components/wallet/network-switcher"
 import { useTokenBalance, TOKENS_BY_CHAIN } from "@/hooks/use-token-balance"
 import { getChainById } from "@/lib/wagmi-config"
@@ -54,7 +55,7 @@ export default function WalletPage() {
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="text-center">
-                                    <WalletConnect />
+                                    <ConnectButton />
                                     <p className="text-sm text-muted-foreground mt-4">
                                         Supports MetaMask, Coinbase Wallet, and WalletConnect compatible wallets
                                     </p>
@@ -76,7 +77,7 @@ export default function WalletPage() {
                             Wallet Portfolio
                         </h1>
                         <div className="flex items-center justify-center gap-4">
-                            <WalletConnect />
+                            <ConnectButton />
                             <NetworkSwitcher />
                         </div>
                     </div>

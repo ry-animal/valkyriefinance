@@ -1,25 +1,45 @@
 import { http, createConfig } from 'wagmi'
-import { mainnet, arbitrum, optimism, polygon, base } from 'wagmi/chains'
-import { coinbaseWallet, injected } from 'wagmi/connectors'
+import { mainnet, sepolia, arbitrum, optimism, polygon } from 'wagmi/chains'
+import { coinbaseWallet, injected, walletConnect } from 'wagmi/connectors'
+import { env } from './env'
 
 export const wagmiConfig = createConfig({
-  chains: [mainnet, arbitrum, optimism, polygon, base],
+  chains: env.NEXT_PUBLIC_ENABLE_TESTNETS 
+    ? [mainnet, sepolia, arbitrum, optimism, polygon] 
+    : [mainnet, arbitrum, optimism, polygon],
   connectors: [
     injected(),
     coinbaseWallet({ 
-      appName: 'Valkryie Finance'
+      appName: 'Valkryie Finance',
+      appLogoUrl: 'https://valkryie.finance/logo.png'
+    }),
+    walletConnect({ 
+      projectId: env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'default-project-id',
+      metadata: {
+        name: 'Valkryie Finance',
+        description: 'AI-Powered DeFi Vault Platform',
+        url: 'https://valkryie.finance',
+        icons: ['https://valkryie.finance/logo.png'],
+      },
     }),
   ],
   transports: {
-    [mainnet.id]: http('https://eth.public-rpc.com'),
-    [arbitrum.id]: http('https://arb1.arbitrum.io/rpc'),
-    [optimism.id]: http('https://mainnet.optimism.io'),
-    [polygon.id]: http('https://polygon-rpc.com'),
-    [base.id]: http('https://mainnet.base.org'),
+    [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY || 'demo'}`),
+    [sepolia.id]: http(`https://eth-sepolia.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY || 'demo'}`),
+    [arbitrum.id]: http(`https://arb-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY || 'demo'}`),
+    [optimism.id]: http(`https://opt-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY || 'demo'}`),
+    [polygon.id]: http(`https://polygon-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY || 'demo'}`),
   },
+  ssr: true,
 })
 
-export const supportedChains = [mainnet, arbitrum, optimism, polygon, base]
+declare module 'wagmi' {
+  interface Register {
+    config: typeof wagmiConfig
+  }
+}
+
+export const supportedChains = [mainnet, arbitrum, optimism, polygon]
 export const supportedChainIds = supportedChains.map(chain => chain.id)
 
 export function getChainById(chainId: number) {

@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.28;
 
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 import "../src/ValkryieToken.sol";
 import "../src/ValkryieVault.sol";
+import "../src/ValkryiePriceOracle.sol";
 
 /**
  * @title Deploy
@@ -36,6 +37,11 @@ contract Deploy is Script {
         
         vm.startBroadcast(deployerPrivateKey);
         
+        // Deploy Price Oracle first
+        console.log("Deploying ValkryiePriceOracle...");
+        ValkryiePriceOracle priceOracle = new ValkryiePriceOracle();
+        console.log("ValkryiePriceOracle deployed at:", address(priceOracle));
+        
         // Deploy Valkryie Token
         console.log("Deploying ValkryieToken...");
         ValkryieToken token = new ValkryieToken(
@@ -46,36 +52,42 @@ contract Deploy is Script {
         );
         console.log("ValkryieToken deployed at:", address(token));
         
-        // Deploy Valkryie Vault
+        // Deploy Valkryie Vault with all required parameters
         console.log("Deploying ValkryieVault...");
         ValkryieVault vault = new ValkryieVault(
             IERC20(address(token)), // Use ValkryieToken as the underlying asset
             config.vaultName,
             config.vaultSymbol,
             config.owner,
-            config.feeRecipient
+            config.feeRecipient,
+            address(priceOracle),
+            address(0), // VRF Coordinator (disabled for testing)
+            address(0)  // CCIP Router (disabled for testing)
         );
         console.log("ValkryieVault deployed at:", address(vault));
         
         // Set up initial vault configuration
         console.log("Configuring vault...");
         
-        // Add a basic strategy (simplified for demo)
+        // Add a basic strategy with all required parameters
         vault.addStrategy(
-            address(0), // No actual strategy contract for demo
+            address(0x1234567890123456789012345678901234567890), // Demo strategy address
             5000,       // 50% allocation
             "Demo Strategy",
-            500         // 5% expected APY
+            500,        // 5% expected APY
+            5000,       // 50% risk score
+            0           // Chain selector (local)
         );
         
         vm.stopBroadcast();
         
         // Save deployment addresses
-        saveDeploymentInfo(address(token), address(vault));
+        saveDeploymentInfo(address(token), address(vault), address(priceOracle));
         
         console.log("Deployment completed successfully!");
         console.log("Token address:", address(token));
         console.log("Vault address:", address(vault));
+        console.log("Price Oracle address:", address(priceOracle));
     }
     
     function getDeployConfig() internal view returns (DeployConfig memory) {
@@ -88,8 +100,8 @@ contract Deploy is Script {
                 initialSupply: 1000000 * 1e18, // 1M tokens
                 vaultName: "Valkryie Vault Shares",
                 vaultSymbol: "vVLK",
-                feeRecipient: 0x742D35cc674C4532A93a5c18D6f8C0c2A16055a8, // Example address
-                owner: 0x742D35cc674C4532A93a5c18D6f8C0c2A16055a8 // Example address
+                feeRecipient: vm.addr(vm.envUint("PRIVATE_KEY")), // Use deployer address
+                owner: vm.addr(vm.envUint("PRIVATE_KEY")) // Use deployer address
             });
         } else if (chainId == 1) { // Mainnet
             return DeployConfig({
@@ -98,8 +110,8 @@ contract Deploy is Script {
                 initialSupply: 100000000 * 1e18, // 100M tokens
                 vaultName: "Valkryie Vault Shares",
                 vaultSymbol: "vVLK",
-                feeRecipient: 0x742D35cc674C4532A93a5c18D6f8C0c2A16055a8, // Update with real address
-                owner: 0x742D35cc674C4532A93a5c18D6f8C0c2A16055a8 // Update with real address
+                feeRecipient: vm.addr(vm.envUint("PRIVATE_KEY")), // Use deployer address
+                owner: vm.addr(vm.envUint("PRIVATE_KEY")) // Use deployer address
             });
         } else {
             // Default configuration for local/other networks
@@ -109,17 +121,18 @@ contract Deploy is Script {
                 initialSupply: 1000000 * 1e18, // 1M tokens
                 vaultName: "Valkryie Vault Shares",
                 vaultSymbol: "vVLK",
-                feeRecipient: 0x742D35cc674C4532A93a5c18D6f8C0c2A16055a8,
-                owner: 0x742D35cc674C4532A93a5c18D6f8C0c2A16055a8
+                feeRecipient: vm.addr(vm.envUint("PRIVATE_KEY")), // Use deployer address
+                owner: vm.addr(vm.envUint("PRIVATE_KEY")) // Use deployer address
             });
         }
     }
     
-    function saveDeploymentInfo(address tokenAddress, address vaultAddress) internal {
+    function saveDeploymentInfo(address tokenAddress, address vaultAddress, address priceOracleAddress) internal {
         string memory json = "deployment_info";
         
         vm.serializeAddress(json, "token", tokenAddress);
         vm.serializeAddress(json, "vault", vaultAddress);
+        vm.serializeAddress(json, "priceOracle", priceOracleAddress);
         vm.serializeUint(json, "chainId", block.chainid);
         vm.serializeUint(json, "blockNumber", block.number);
         
@@ -174,6 +187,10 @@ contract DeployWithMockAsset is Script {
         );
         console.log("Mock USDC deployed at:", address(mockUSDC));
         
+        // Deploy Price Oracle
+        ValkryiePriceOracle priceOracle = new ValkryiePriceOracle();
+        console.log("ValkryiePriceOracle deployed at:", address(priceOracle));
+        
         // Deploy Valkryie Token
         ValkryieToken token = new ValkryieToken(
             "Valkryie Token",
@@ -189,7 +206,10 @@ contract DeployWithMockAsset is Script {
             "Valkryie USDC Vault",
             "vUSDC",
             deployer,
-            deployer
+            deployer,
+            address(priceOracle),
+            address(0), // VRF Coordinator (disabled for testing)
+            address(0)  // CCIP Router (disabled for testing)
         );
         console.log("ValkryieVault deployed at:", address(vault));
         
@@ -199,5 +219,6 @@ contract DeployWithMockAsset is Script {
         console.log("Mock USDC:", address(mockUSDC));
         console.log("ValkryieToken:", address(token));
         console.log("ValkryieVault:", address(vault));
+        console.log("Price Oracle:", address(priceOracle));
     }
 } 

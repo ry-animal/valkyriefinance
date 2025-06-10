@@ -5,6 +5,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./interfaces/IChainlinkPriceFeed.sol";
 
+/**
+ * @title ValkryiePriceOracle
+ * @author Valkryie Finance Team
+ * @notice Chainlink-powered price oracle for reliable, tamper-resistant asset pricing
+ * @dev Aggregates Chainlink price feeds with staleness protection and fallback mechanisms
+ * @custom:security-contact security@valkryie.finance
+ */
 contract ValkryiePriceOracle is Ownable, ReentrancyGuard {
     struct PriceFeedInfo {
         IChainlinkPriceFeed feed;
@@ -31,6 +38,14 @@ contract ValkryiePriceOracle is Ownable, ReentrancyGuard {
 
     constructor() Ownable(msg.sender) {}
 
+    /**
+     * @notice Adds a new Chainlink price feed for a token
+     * @dev Registers a new price feed with staleness protection
+     * @param token Address of the token to add price feed for
+     * @param feed Address of the Chainlink price feed contract
+     * @param symbol Human-readable symbol for the token (e.g., "ETH", "BTC")
+     * @param stalePeriod Maximum age in seconds before price is considered stale (0 = use default)
+     */
     function addPriceFeed(
         address token,
         address feed,
@@ -74,6 +89,13 @@ contract ValkryiePriceOracle is Ownable, ReentrancyGuard {
         priceFeeds[token].isActive = active;
     }
 
+    /**
+     * @notice Gets the latest price for a token with staleness validation
+     * @dev Retrieves current price from Chainlink feed and validates freshness
+     * @param token Address of the token to get price for
+     * @return price Current price scaled to 18 decimals
+     * @return timestamp Last update timestamp from Chainlink
+     */
     function getPrice(address token) external view returns (uint256 price, uint256 timestamp) {
         PriceFeedInfo memory feedInfo = priceFeeds[token];
         
@@ -88,7 +110,10 @@ contract ValkryiePriceOracle is Ownable, ReentrancyGuard {
             uint80 answeredInRound
         ) {
             if (answer <= 0) revert InvalidPrice();
-            if (block.timestamp - updatedAt > feedInfo.stalePeriod) revert StalePrice();
+            // Prevent underflow: only check staleness for past timestamps
+            if (updatedAt <= block.timestamp && block.timestamp - updatedAt > feedInfo.stalePeriod) {
+                revert StalePrice();
+            }
             
             uint8 feedDecimals = feedInfo.feed.decimals();
             price = uint256(answer) * PRICE_PRECISION / (10 ** feedDecimals);
@@ -118,7 +143,8 @@ contract ValkryiePriceOracle is Ownable, ReentrancyGuard {
             uint8 feedDecimals = feedInfo.feed.decimals();
             price = uint256(answer) * PRICE_PRECISION / (10 ** feedDecimals);
             timestamp = updatedAt;
-            isStale = block.timestamp - updatedAt > feedInfo.stalePeriod;
+            // Prevent underflow: future timestamps are not stale
+            isStale = updatedAt <= block.timestamp && block.timestamp - updatedAt > feedInfo.stalePeriod;
             
             return (price, timestamp, isStale);
         } catch {

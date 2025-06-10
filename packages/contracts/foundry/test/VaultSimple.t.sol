@@ -4,6 +4,7 @@ pragma solidity ^0.8.20;
 import {Test, console} from "forge-std/Test.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ValkryieVault} from "../src/ValkryieVault.sol";
+import {ValkryiePriceOracle} from "../src/ValkryiePriceOracle.sol";
 
 // Simple mock ERC20 for testing
 contract MockERC20 is IERC20 {
@@ -57,26 +58,39 @@ contract MockERC20 is IERC20 {
 
 contract VaultSimpleTest is Test {
     ValkryieVault public vault;
+    ValkryiePriceOracle public priceOracle;
     MockERC20 public asset;
     
     address public owner = address(0x1);
     address public user1 = address(0x2);
     address public user2 = address(0x3);
     address public feeRecipient = address(0x5);
+    address public mockVRFCoordinator = address(0x7);
+    address public mockCCIPRouter = address(0x8);
     
     uint256 public constant INITIAL_DEPOSIT = 1000 * 1e18;
     
     function setUp() public {
         asset = new MockERC20("Mock USDC", "USDC");
         
-        vm.prank(owner);
+        vm.startPrank(owner);
+        
+        // Deploy price oracle
+        priceOracle = new ValkryiePriceOracle();
+        
+        // Deploy vault with all 8 required parameters
         vault = new ValkryieVault(
             asset,
             "Valkryie Vault",
             "vVLK",
             owner,
-            feeRecipient
+            feeRecipient,
+            address(priceOracle),
+            mockVRFCoordinator,
+            mockCCIPRouter
         );
+        
+        vm.stopPrank();
         
         // Mint assets to users
         asset.mint(user1, 100_000 * 1e18);
@@ -143,20 +157,27 @@ contract VaultSimpleTest is Test {
         address strategy = address(0x6);
         
         vm.prank(owner);
-        vault.addStrategy(strategy, 5000, "Test Strategy", 1000); // 50% allocation, 10% APY
+        vault.addStrategy(
+            strategy, 
+            5000, // allocation
+            "Test Strategy", // name
+            1000, // expectedApy 
+            5000, // riskScore
+            0     // chainSelector
+        );
         
-        (address strategyAddr, uint256 allocation,, bool isActive,,,) = vault.strategies(0);
+        ValkryieVault.Strategy memory strategyData = vault.getStrategy(0);
         
-        assertEq(strategyAddr, strategy);
-        assertEq(allocation, 5000);
-        assertTrue(isActive);
+        assertEq(strategyData.strategyAddress, strategy);
+        assertEq(strategyData.allocation, 5000);
+        assertTrue(strategyData.isActive);
         assertEq(vault.strategyCount(), 1);
     }
     
     function test_FailAddStrategyNotOwner() public {
         vm.prank(user1);
         vm.expectRevert();
-        vault.addStrategy(address(0x6), 5000, "Test Strategy", 1000);
+        vault.addStrategy(address(0x6), 5000, "Test Strategy", 1000, 5000, 0);
     }
     
     function test_SetAIController() public {
@@ -170,13 +191,13 @@ contract VaultSimpleTest is Test {
     
     function test_EmergencyPause() public {
         vm.prank(owner);
-        vault.emergencyPause(true);
+        vault.pauseDeposits();
         
         assertTrue(vault.paused());
         
         // Deposits should fail when paused
         vm.prank(user1);
-        vm.expectRevert("Vault is paused");
+        vm.expectRevert(ValkryieVault.VaultPaused.selector);
         vault.deposit(INITIAL_DEPOSIT, user1);
     }
     

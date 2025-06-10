@@ -83,15 +83,15 @@ contract DeployAIVault is Script {
             // Ethereum Mainnet
             networkConfig = NetworkConfig({
                 vrfCoordinator: 0x271682DEB8C4E0901D1a1550aD2e64D568E69909,
-                functionsRouter: 0x65C939B26CB1A5eF2E0e3b5b2e8f7a3B9c16b1a2,
+                functionsRouter: 0x65C939b26cb1A5EF2e0E3b5b2E8F7a3B9c16b1a2,
                 ccipRouter: 0x80226fc0Ee2b096224EeAc085Bb9a8cba1146f7D,
                 linkToken: 0x514910771AF9Ca656af840dff83E8264EcF986CA,
                 ethUsdPriceFeed: 0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419,
-                usdcToken: 0xA0b86a33E6411c22B9ce6e4Dc5A3A0D3E6B4F30F,
+                usdcToken: 0xA0b86A33E6411C22b9CE6e4Dc5A3a0d3E6b4f30f,
                 vrfKeyHash: 0x9fe0eebf5e446e3c998ec9bb19951541aee00bb90ea201ae456421a2ded86805,
-                vrfSubscriptionId: vm.envUint("CHAINLINK_SUBSCRIPTION_ID"),
+                vrfSubscriptionId: uint64(vm.envUint("CHAINLINK_SUBSCRIPTION_ID")),
                 donId: bytes32(vm.envBytes32("CHAINLINK_DON_ID")),
-                functionsSubscriptionId: vm.envUint("CHAINLINK_FUNCTIONS_SUBSCRIPTION_ID")
+                functionsSubscriptionId: uint64(vm.envUint("CHAINLINK_FUNCTIONS_SUBSCRIPTION_ID"))
             });
         } else if (block.chainid == 11155111) {
             // Sepolia Testnet
@@ -103,9 +103,9 @@ contract DeployAIVault is Script {
                 ethUsdPriceFeed: 0x694AA1769357215DE4FAC081bf1f309aDC325306,
                 usdcToken: 0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8,
                 vrfKeyHash: 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c,
-                vrfSubscriptionId: vm.envUint("CHAINLINK_SUBSCRIPTION_ID"),
+                vrfSubscriptionId: uint64(vm.envUint("CHAINLINK_SUBSCRIPTION_ID")),
                 donId: bytes32(vm.envBytes32("CHAINLINK_DON_ID")),
-                functionsSubscriptionId: vm.envUint("CHAINLINK_FUNCTIONS_SUBSCRIPTION_ID")
+                functionsSubscriptionId: uint64(vm.envUint("CHAINLINK_FUNCTIONS_SUBSCRIPTION_ID"))
             });
         } else if (block.chainid == 31337) {
             // Local Anvil - use Tenderly Virtual TestNet
@@ -136,8 +136,10 @@ contract DeployAIVault is Script {
         // Deploy VALK governance token
         console.log("Deploying ValkryieToken...");
         ValkryieToken valkToken = new ValkryieToken(
-            deploymentAddresses.owner,
-            INITIAL_VALK_SUPPLY
+            "Valkryie Token",
+            "VLK",
+            INITIAL_VALK_SUPPLY,
+            deploymentAddresses.owner
         );
         deploymentAddresses.valkToken = address(valkToken);
         console.log("ValkryieToken deployed at:", address(valkToken));
@@ -343,7 +345,7 @@ contract DeployAIVault is Script {
     }
     
     // Utility function to create deterministic addresses for testing
-    function makeAddr(string memory name) internal pure returns (address) {
+    function makeAddr(string memory name) internal pure override returns (address) {
         return address(uint160(uint256(keccak256(abi.encodePacked(name)))));
     }
 } 

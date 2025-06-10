@@ -6,7 +6,7 @@ import "forge-std/console.sol";
 import "../src/ValkryieVault.sol";
 import "../src/ValkryiePriceOracle.sol";
 import "../src/ValkryieToken.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./MockUSDC.sol";
 
 /**
  * @title SimpleAIVaultTest
@@ -16,7 +16,7 @@ contract SimpleAIVaultTest is Test {
     ValkryieVault public vault;
     ValkryiePriceOracle public priceOracle;
     ValkryieToken public valkToken;
-    ERC20 public mockUSDC;
+    MockUSDC public mockUSDC;
     
     // Test accounts
     address public owner;
@@ -42,12 +42,12 @@ contract SimpleAIVaultTest is Test {
         vm.startPrank(owner);
         
         // Deploy mock USDC
-        mockUSDC = new ERC20("Mock USDC", "USDC");
-        deal(address(mockUSDC), alice, 10000e6);
-        deal(address(mockUSDC), bob, 10000e6);
+        mockUSDC = new MockUSDC();
+        mockUSDC.mint(alice, 10000e6);
+        mockUSDC.mint(bob, 10000e6);
         
         // Deploy VALK token
-        valkToken = new ValkryieToken(owner, INITIAL_SUPPLY);
+        valkToken = new ValkryieToken("Valkryie Token", "VLK", INITIAL_SUPPLY, owner);
         
         // Deploy price oracle
         priceOracle = new ValkryiePriceOracle();
@@ -247,8 +247,11 @@ contract SimpleAIVaultTest is Test {
         assertGe(sharePrice, PRICE_PRECISION / 2); // Share price shouldn't be too low
         assertLe(sharePrice, PRICE_PRECISION * 2); // Share price shouldn't be too high
         
-        // Risk score should be weighted average: (2000 * 3000 + 5000 * 4000) / 7000 = 3714
-        uint256 expectedRiskScore = (2000 * 3000 + 5000 * 4000) / 7000;
+        // Risk score calculation: (riskScore * allocation) / MAX_ALLOCATION
+        // Strategy 1: (2000 * 3000) / 10000 = 600
+        // Strategy 2: (5000 * 4000) / 10000 = 2000
+        // Total: 600 + 2000 = 2600
+        uint256 expectedRiskScore = (2000 * 3000) / 10000 + (5000 * 4000) / 10000;
         assertEq(totalRiskScore, expectedRiskScore);
         
         assertGt(lastRebalanceTime, 0);

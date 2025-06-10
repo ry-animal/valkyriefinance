@@ -1,4 +1,4 @@
-# Valkryie AI Vault: Next Steps Summary
+git # Valkryie AI Vault: Next Steps Summary
 
 ## 🎯 Current Status
 

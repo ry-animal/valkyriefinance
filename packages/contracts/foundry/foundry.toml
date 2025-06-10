@@ -10,6 +10,10 @@ gas_reports = ["*"]
 auto_detect_solc = false
 solc_version = "0.8.28"
 
+# Optimizer configuration for gas efficiency
+optimizer = true
+optimizer_runs = 1000
+
 # Remappings for dependencies
 remappings = [
     "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",

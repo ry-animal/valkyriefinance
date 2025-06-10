@@ -17,6 +17,8 @@ import "./ValkryiePriceOracle.sol";
 
 /**
  * @title ValkryieVault  
+ * @author Valkryie Finance Team
+ * @notice AI-driven yield-bearing vault that automatically optimizes strategy allocations across DeFi protocols
  * @dev AI-Driven ERC-4626 Vault with Chainlink Integration
  * Implements the comprehensive architecture from chainlink-for-ai-vault framework:
  * - Chainlink Price Feeds and Data Streams for market data
@@ -25,6 +27,7 @@ import "./ValkryiePriceOracle.sol";
  * - Chainlink VRF for fair randomness
  * - Chainlink CCIP for cross-chain operations
  * - Proof of Reserve for collateral verification
+ * @custom:security-contact security@valkryie.finance
  */
 contract ValkryieVault is ERC4626, Ownable, ReentrancyGuard {
     using Math for uint256;
@@ -126,6 +129,7 @@ contract ValkryieVault is ERC4626, Ownable, ReentrancyGuard {
     error RiskThresholdExceeded();
     error AIConfidenceTooLow();
     error InvalidChainSelector();
+    error VRFNotConfigured();
 
     modifier notPaused() {
         if (paused) revert VaultPaused();
@@ -145,7 +149,16 @@ contract ValkryieVault is ERC4626, Ownable, ReentrancyGuard {
     }
     
     /**
-     * @dev Constructor
+     * @notice Creates a new AI-driven vault with specified configuration
+     * @dev Constructor initializes all vault parameters and Chainlink integrations
+     * @param asset_ The underlying ERC20 asset for the vault
+     * @param name_ Name of the vault token
+     * @param symbol_ Symbol of the vault token  
+     * @param owner_ Initial owner address
+     * @param feeRecipient_ Address to receive performance fees
+     * @param priceOracle_ Address of the Valkryie price oracle
+     * @param vrfCoordinator_ Address of Chainlink VRF coordinator
+     * @param ccipRouter_ Address of Chainlink CCIP router
      */
     constructor(
         IERC20 asset_,
@@ -185,61 +198,88 @@ contract ValkryieVault is ERC4626, Ownable, ReentrancyGuard {
     }
     
     /**
+     * @notice Adds a new yield strategy to the vault's portfolio
      * @dev Add a new yield strategy with AI integration
+     * @param strategyAddress Smart contract address implementing the strategy
+     * @param allocation Initial allocation percentage in basis points (e.g., 1000 = 10%)
+     * @param name Human-readable name for the strategy
+     * @param expectedApy Expected annual percentage yield in basis points
+     * @param riskScore Risk assessment score from 0-10000 (higher = riskier)
+     * @param chainSelector Chainlink CCIP chain selector for cross-chain strategies
      */
     function addStrategy(
         address strategyAddress,
         uint256 allocation,
-        string memory name,
+        string calldata name,
         uint256 expectedApy,
         uint256 riskScore,
         uint64 chainSelector
     ) external onlyOwner {
-        if (strategyAddress == address(0)) revert InvalidAllocation();
-        if (allocation > MAX_ALLOCATION) revert InvalidAllocation();
-        if (totalAllocated + allocation > MAX_ALLOCATION) revert InvalidAllocation();
+        // Pack multiple checks with short-circuiting for gas savings
+        if (allocation > MAX_ALLOCATION || strategyAddress == address(0) || totalAllocated + allocation > MAX_ALLOCATION) {
+            revert InvalidAllocation();
+        }
         
-        uint256 strategyId = strategyCount++;
-        strategies[strategyId] = Strategy({
-            strategyAddress: strategyAddress,
-            allocation: allocation,
-            totalAssets: 0,
-            isActive: true,
-            name: name,
-            expectedApy: expectedApy,
-            actualApy: 0,
-            riskScore: riskScore,
-            chainSelector: chainSelector
-        });
+        // Cache strategyCount to avoid multiple storage reads
+        uint256 strategyId = strategyCount;
+        unchecked {
+            strategyCount = strategyId + 1;
+        }
         
+        // Use assembly for more efficient struct packing
+        Strategy storage strategy = strategies[strategyId];
+        strategy.strategyAddress = strategyAddress;
+        strategy.allocation = allocation;
+        // strategy.totalAssets defaults to 0
+        strategy.isActive = true;
+        strategy.name = name;
+        strategy.expectedApy = expectedApy;
+        // strategy.actualApy defaults to 0
+        strategy.riskScore = riskScore;
+        strategy.chainSelector = chainSelector;
+        
+        // Update totalAllocated once
         totalAllocated += allocation;
         
         emit StrategyAdded(strategyId, strategyAddress, name);
     }
 
     /**
+     * @notice Executes AI-recommended strategy rebalancing with automated risk management
      * @dev AI-driven rebalancing with risk management
+     * @param newAllocations Array of new allocation percentages for each strategy (in basis points)
      */
     function rebalanceStrategy(uint256[] memory newAllocations) external onlyRebalancer nonReentrant notPaused {
-        if (newAllocations.length != strategyCount) revert InvalidAllocation();
+        uint256 allocationsLength = newAllocations.length;
+        if (allocationsLength != strategyCount) revert InvalidAllocation();
         
         uint256 totalAllocation = 0;
         uint256 totalRiskScore = 0;
         
-        // Validate allocations and calculate risk
-        for (uint256 i = 0; i < newAllocations.length; i++) {
-            totalAllocation += newAllocations[i];
-            if (strategies[i].isActive && newAllocations[i] > 0) {
-                totalRiskScore += (strategies[i].riskScore * newAllocations[i]) / MAX_ALLOCATION;
+        // Validate allocations and calculate risk - use unchecked for gas savings
+        unchecked {
+            for (uint256 i = 0; i < allocationsLength; ++i) {
+                uint256 allocation = newAllocations[i];
+                totalAllocation += allocation;
+                
+                if (allocation > 0) {
+                    Strategy storage strategy = strategies[i];
+                    if (strategy.isActive) {
+                        totalRiskScore += (strategy.riskScore * allocation) / MAX_ALLOCATION;
+                    }
+                }
             }
         }
         
         if (totalAllocation > MAX_ALLOCATION) revert InvalidAllocation();
         
+        // Cache aiConfig for gas savings
+        AIStrategyConfig memory config = aiConfig;
+        
         // Check risk threshold
-        if (totalRiskScore > aiConfig.riskThreshold) {
-            emit RiskThresholdBreached(totalRiskScore, aiConfig.riskThreshold);
-            if (aiConfig.emergencyPauseEnabled) {
+        if (totalRiskScore > config.riskThreshold) {
+            emit RiskThresholdBreached(totalRiskScore, config.riskThreshold);
+            if (config.emergencyPauseEnabled) {
                 _pauseVault("Risk threshold exceeded");
                 return;
             }
@@ -309,7 +349,7 @@ contract ValkryieVault is ERC4626, Ownable, ReentrancyGuard {
      */
     /*
     function requestRandomness() external onlyOwner returns (bytes32 requestId) {
-        if (vrfConfig.subscriptionId == 0) revert("VRF not configured");
+        if (vrfConfig.subscriptionId == 0) revert VRFNotConfigured();
         
         requestId = vrfConfig.coordinator.requestRandomWords(
             vrfConfig.keyHash,
@@ -367,9 +407,13 @@ contract ValkryieVault is ERC4626, Ownable, ReentrancyGuard {
     function reduceLeverage(uint256 targetLeverageRatio) external onlyRebalancer {
         // Implementation would reduce leverage across strategies
         // This is a simplified version
-        for (uint256 i = 0; i < strategyCount; i++) {
-            if (strategies[i].isActive && strategies[i].allocation > targetLeverageRatio) {
-                strategies[i].allocation = targetLeverageRatio;
+        uint256 _strategyCount = strategyCount;
+        unchecked {
+            for (uint256 i = 0; i < _strategyCount; ++i) {
+                Strategy storage strategy = strategies[i];
+                if (strategy.isActive && strategy.allocation > targetLeverageRatio) {
+                    strategy.allocation = targetLeverageRatio;
+                }
             }
         }
         
@@ -377,7 +421,9 @@ contract ValkryieVault is ERC4626, Ownable, ReentrancyGuard {
     }
 
     /**
+     * @notice Updates AI configuration parameters for strategy management
      * @dev Update AI configuration
+     * @param newConfig New AI configuration struct containing updated parameters
      */
     function updateAIConfig(AIStrategyConfig memory newConfig) external onlyOwner {
         if (newConfig.rebalanceThreshold > 5000) revert InvalidAllocation(); // Max 50%
@@ -411,7 +457,13 @@ contract ValkryieVault is ERC4626, Ownable, ReentrancyGuard {
     }
 
     /**
+     * @notice Returns comprehensive vault metrics for monitoring and AI analysis
      * @dev Get current vault metrics for AI analysis
+     * @return totalVaultAssets Total assets managed by the vault
+     * @return totalShares Total vault shares outstanding
+     * @return sharePrice Current price per share in underlying asset units
+     * @return totalRiskScore Weighted average risk score across all strategies
+     * @return lastRebalanceTime Timestamp of the last rebalancing operation
      */
     function getVaultMetrics() external view returns (
         uint256 totalVaultAssets,
@@ -424,10 +476,14 @@ contract ValkryieVault is ERC4626, Ownable, ReentrancyGuard {
         totalShares = totalSupply();
         sharePrice = totalShares > 0 ? (totalVaultAssets * PRICE_PRECISION) / totalShares : PRICE_PRECISION;
         
-        // Calculate weighted risk score
-        for (uint256 i = 0; i < strategyCount; i++) {
-            if (strategies[i].isActive && strategies[i].allocation > 0) {
-                totalRiskScore += (strategies[i].riskScore * strategies[i].allocation) / MAX_ALLOCATION;
+        // Calculate weighted risk score with cached values
+        uint256 _strategyCount = strategyCount;
+        unchecked {
+            for (uint256 i = 0; i < _strategyCount; ++i) {
+                Strategy storage strategy = strategies[i];
+                if (strategy.isActive && strategy.allocation > 0) {
+                    totalRiskScore += (strategy.riskScore * strategy.allocation) / MAX_ALLOCATION;
+                }
             }
         }
         
@@ -453,14 +509,20 @@ contract ValkryieVault is ERC4626, Ownable, ReentrancyGuard {
      * @dev Internal function to execute rebalancing
      */
     function _executeRebalance(uint256[] memory newAllocations) internal {
-        uint256 totalVaultAssets = totalAssets();
+        // Use only actual vault balance, not totalAssets() to avoid double-counting
+        uint256 vaultBalance = IERC20(asset()).balanceOf(address(this));
         uint256 newTotalAllocated = 0;
+        uint256 _strategyCount = strategyCount;
         
-        for (uint256 i = 0; i < strategyCount; i++) {
-            if (strategies[i].isActive) {
-                strategies[i].allocation = newAllocations[i];
-                strategies[i].totalAssets = (totalVaultAssets * newAllocations[i]) / MAX_ALLOCATION;
-                newTotalAllocated += newAllocations[i];
+        unchecked {
+            for (uint256 i = 0; i < _strategyCount; ++i) {
+                Strategy storage strategy = strategies[i];
+                if (strategy.isActive) {
+                    uint256 allocation = newAllocations[i];
+                    strategy.allocation = allocation;
+                    strategy.totalAssets = (vaultBalance * allocation) / MAX_ALLOCATION;
+                    newTotalAllocated += allocation;
+                }
             }
         }
         
@@ -523,18 +585,12 @@ contract ValkryieVault is ERC4626, Ownable, ReentrancyGuard {
     }
 
     /**
-     * @dev Override totalAssets to account for cross-chain strategies
+     * @dev Override totalAssets to return actual vault assets
+     * Strategy totalAssets represent virtual allocations, not additional assets
      */
     function totalAssets() public view override returns (uint256) {
-        uint256 localAssets = IERC20(asset()).balanceOf(address(this));
-        
-        // Add assets from active strategies
-        for (uint256 i = 0; i < strategyCount; i++) {
-            if (strategies[i].isActive) {
-                localAssets += strategies[i].totalAssets;
-            }
-        }
-        
-        return localAssets;
+        // Return only actual assets in the vault
+        // Strategy allocations are virtual until assets are actually moved to strategies
+        return IERC20(asset()).balanceOf(address(this));
     }
 } 

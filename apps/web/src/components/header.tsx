@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { WalletConnect } from "./wallet/wallet-connect";
+import { ConnectButton } from "./wallet/connect-button";
 import { ModeToggle } from "./mode-toggle";
 import UserMenu from "./user-menu";
 
@@ -36,7 +36,7 @@ export default function Header() {
           </div>
 
           <div className="flex items-center gap-3">
-            <WalletConnect />
+            <ConnectButton />
             <ModeToggle />
             <UserMenu />
           </div>
