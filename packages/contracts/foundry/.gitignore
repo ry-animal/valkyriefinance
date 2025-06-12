@@ -2,10 +2,12 @@
 cache/
 out/
 
-# Ignores development broadcast logs
-!/broadcast
-/broadcast/*/31337/
-/broadcast/**/dry-run/
+# Deployment artifacts and broadcast logs
+broadcast/
+!broadcast/.gitkeep
+
+# Keep example deployment configs but ignore actual runs
+!broadcast/example/
 
 # Docs
 docs/

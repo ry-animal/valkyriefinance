@@ -157,8 +157,6 @@ contract ValkryieVault is ERC4626, Ownable, ReentrancyGuard {
      * @param owner_ Initial owner address
      * @param feeRecipient_ Address to receive performance fees
      * @param priceOracle_ Address of the Valkryie price oracle
-     * @param vrfCoordinator_ Address of Chainlink VRF coordinator
-     * @param ccipRouter_ Address of Chainlink CCIP router
      */
     constructor(
         IERC20 asset_,
@@ -167,8 +165,8 @@ contract ValkryieVault is ERC4626, Ownable, ReentrancyGuard {
         address owner_,
         address feeRecipient_,
         address priceOracle_,
-        address vrfCoordinator_,
-        address ccipRouter_
+        address /* vrfCoordinator_ */,
+        address /* ccipRouter_ */
     ) 
         ERC4626(asset_)
         ERC20(name_, symbol_)

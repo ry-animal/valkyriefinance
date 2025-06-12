@@ -51,7 +51,7 @@ contract ValkryieAutomation is Ownable, ReentrancyGuard {
     error InvalidConfiguration();
 
     constructor(
-        address _functionsRouter,
+        address /* _functionsRouter */,
         address _vault,
         address _priceOracle,
         bytes32 _donId,

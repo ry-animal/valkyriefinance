@@ -1,6 +1,6 @@
 # Valkryie Finance: AI-Driven DeFi Platform
 
-🤖 **The World's First AI-Managed ERC-4626 Vault with Chainlink Integration**
+🤖 **AI-Managed ERC-4626 Vault with Chainlink Integration**
 
 [![Tests](https://img.shields.io/badge/Tests-144%2F144%20Passing-brightgreen)](packages/contracts/foundry/test)
 [![Foundry](https://img.shields.io/badge/Built%20with-Foundry-blue)](https://getfoundry.sh/)
@@ -211,7 +211,7 @@ valkryiefinance/
 - **Frontend**: Next.js 14 (App Router)
 - **Language**: TypeScript (strict mode)
 - **Styling**: Tailwind CSS + Shadcn UI
-- **State Management**: TanStack Query (React Query)
+- **State Management**: TanStack Query (React Query) & Zustand
 - **API Layer**: tRPC with end-to-end type safety
 - **Database**: PostgreSQL with Drizzle ORM
 
@@ -219,7 +219,7 @@ valkryiefinance/
 
 - **Wallet Connection**: Wagmi + ConnectKit
 - **Blockchain Interface**: Viem
-- **Multi-chain Support**: Ethereum, Arbitrum, Optimism
+- **Multi-chain Support**: Ethereum, Arbitrum, Optimism, Base
 - **Contract Interaction**: Type-safe hooks and utilities
 
 ### Development & Monitoring

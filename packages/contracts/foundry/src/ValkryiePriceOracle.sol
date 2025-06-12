@@ -103,11 +103,11 @@ contract ValkryiePriceOracle is Ownable, ReentrancyGuard {
         if (!feedInfo.isActive) revert FeedInactive();
 
         try feedInfo.feed.latestRoundData() returns (
-            uint80 roundId,
+            uint80 /* roundId */,
             int256 answer,
-            uint256 startedAt,
+            uint256 /* startedAt */,
             uint256 updatedAt,
-            uint80 answeredInRound
+            uint80 /* answeredInRound */
         ) {
             if (answer <= 0) revert InvalidPrice();
             // Prevent underflow: only check staleness for past timestamps
@@ -132,11 +132,11 @@ contract ValkryiePriceOracle is Ownable, ReentrancyGuard {
         if (!feedInfo.isActive) revert FeedInactive();
 
         try feedInfo.feed.latestRoundData() returns (
-            uint80 roundId,
+            uint80 /* roundId */,
             int256 answer,
-            uint256 startedAt,
+            uint256 /* startedAt */,
             uint256 updatedAt,
-            uint80 answeredInRound
+            uint80 /* answeredInRound */
         ) {
             if (answer <= 0) revert InvalidPrice();
             
