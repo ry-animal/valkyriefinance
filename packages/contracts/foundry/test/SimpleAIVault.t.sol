@@ -3,9 +3,9 @@ pragma solidity ^0.8.28;
 
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
-import "../src/ValkryieVault.sol";
-import "../src/ValkryiePriceOracle.sol";
-import "../src/ValkryieToken.sol";
+import "../src/ValkyrieVault.sol";
+import "../src/ValkyriePriceOracle.sol";
+import "../src/ValkyrieToken.sol";
 import "./MockUSDC.sol";
 
 /**
@@ -13,9 +13,9 @@ import "./MockUSDC.sol";
  * @dev Simplified test suite for AI vault core functionality
  */
 contract SimpleAIVaultTest is Test {
-    ValkryieVault public vault;
-    ValkryiePriceOracle public priceOracle;
-    ValkryieToken public valkToken;
+    ValkyrieVault public vault;
+    ValkyriePriceOracle public priceOracle;
+    ValkyrieToken public valkToken;
     MockUSDC public mockUSDC;
     
     // Test accounts
@@ -47,15 +47,15 @@ contract SimpleAIVaultTest is Test {
         mockUSDC.mint(bob, 10000e6);
         
         // Deploy VALK token
-        valkToken = new ValkryieToken("Valkryie Token", "VLK", INITIAL_SUPPLY, owner);
+        valkToken = new ValkyrieToken("Valkyrie Token", "VLK", INITIAL_SUPPLY, owner);
         
         // Deploy price oracle
-        priceOracle = new ValkryiePriceOracle();
+        priceOracle = new ValkyriePriceOracle();
         
         // Deploy simplified vault (without complex Chainlink integrations for testing)
-        vault = new ValkryieVault(
+        vault = new ValkyrieVault(
             IERC20(address(mockUSDC)),
-            "Valkryie AI Vault",
+            "Valkyrie AI Vault",
             "vAI-USDC",
             owner,
             feeRecipient,
@@ -74,7 +74,7 @@ contract SimpleAIVaultTest is Test {
         assertFalse(vault.emergencyMode());
         
         // Check AI configuration
-        ValkryieVault.AIStrategyConfig memory config = vault.getAIConfig();
+        ValkyrieVault.AIStrategyConfig memory config = vault.getAIConfig();
         assertEq(config.rebalanceThreshold, 500); // 5%
         assertEq(config.riskThreshold, 7500); // 75%
         assertTrue(config.aiControlEnabled);
@@ -88,13 +88,13 @@ contract SimpleAIVaultTest is Test {
         vault.addStrategy(
             mockStrategy,
             2000, // 20% allocation
-            "Test Strategy",
+            bytes32("Test Strategy"),
             500,  // 5% expected APY
             5000, // 50% risk score
             0     // same chain
         );
         
-        ValkryieVault.Strategy memory strategy = vault.getStrategy(0);
+        ValkyrieVault.Strategy memory strategy = vault.getStrategy(0);
         assertEq(strategy.strategyAddress, mockStrategy);
         assertEq(strategy.allocation, 2000);
         assertEq(strategy.riskScore, 5000);
@@ -128,7 +128,7 @@ contract SimpleAIVaultTest is Test {
         vault.addStrategy(
             makeAddr("strategy1"),
             3000, // 30%
-            "Conservative",
+            bytes32("Conservative"),
             400,
             2000, // Low risk
             0
@@ -137,7 +137,7 @@ contract SimpleAIVaultTest is Test {
         vault.addStrategy(
             makeAddr("strategy2"),
             4000, // 40%
-            "Moderate",
+            bytes32("Moderate"),
             600,
             5000, // Medium risk
             0
@@ -146,7 +146,7 @@ contract SimpleAIVaultTest is Test {
         vault.addStrategy(
             makeAddr("strategy3"),
             2000, // 20%
-            "Aggressive",
+            bytes32("Aggressive"),
             1000,
             8000, // High risk
             0
@@ -157,7 +157,7 @@ contract SimpleAIVaultTest is Test {
         // Verify total allocation
         uint256 totalAllocation = 0;
         for (uint256 i = 0; i < vault.strategyCount(); i++) {
-            ValkryieVault.Strategy memory strategy = vault.getStrategy(i);
+            ValkyrieVault.Strategy memory strategy = vault.getStrategy(i);
             totalAllocation += strategy.allocation;
         }
         assertEq(totalAllocation, 9000); // 90% total allocation
@@ -167,7 +167,7 @@ contract SimpleAIVaultTest is Test {
     function testAIConfigUpdate() public {
         vm.startPrank(owner);
         
-        ValkryieVault.AIStrategyConfig memory newConfig = ValkryieVault.AIStrategyConfig({
+        ValkyrieVault.AIStrategyConfig memory newConfig = ValkyrieVault.AIStrategyConfig({
             rebalanceThreshold: 1000,     // 10%
             riskThreshold: 8000,          // 80%
             maxLeverage: 30000,           // 3x
@@ -178,7 +178,7 @@ contract SimpleAIVaultTest is Test {
         
         vault.updateAIConfig(newConfig);
         
-        ValkryieVault.AIStrategyConfig memory updatedConfig = vault.getAIConfig();
+        ValkyrieVault.AIStrategyConfig memory updatedConfig = vault.getAIConfig();
         assertEq(updatedConfig.rebalanceThreshold, 1000);
         assertEq(updatedConfig.riskThreshold, 8000);
         assertEq(updatedConfig.maxLeverage, 30000);
@@ -202,7 +202,7 @@ contract SimpleAIVaultTest is Test {
         // Test that deposits are blocked when paused
         vm.startPrank(bob);
         mockUSDC.approve(address(vault), 500e6);
-        vm.expectRevert(ValkryieVault.VaultPaused.selector);
+        vm.expectRevert(ValkyrieVault.VaultPaused.selector);
         vault.deposit(500e6, bob);
         vm.stopPrank();
         
@@ -224,8 +224,8 @@ contract SimpleAIVaultTest is Test {
     function testVaultMetrics() public {
         // Setup vault with strategies and assets
         vm.startPrank(owner);
-        vault.addStrategy(makeAddr("strategy1"), 3000, "Conservative", 400, 2000, 0);
-        vault.addStrategy(makeAddr("strategy2"), 4000, "Moderate", 600, 5000, 0);
+        vault.addStrategy(makeAddr("strategy1"), 3000, bytes32("Conservative"), 400, 2000, 0);
+        vault.addStrategy(makeAddr("strategy2"), 4000, bytes32("Moderate"), 600, 5000, 0);
         vm.stopPrank();
         
         vm.startPrank(alice);

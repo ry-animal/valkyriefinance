@@ -8,18 +8,18 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
- * @title ValkryieToken
- * @author Valkryie Finance Team
- * @notice Governance and utility token for the Valkryie DeFi platform with staking rewards
- * @dev Valkryie platform token with governance, staking, and reward mechanisms
+ * @title ValkyrieToken
+ * @author Valkyrie Finance Team
+ * @notice Governance and utility token for the Valkyrie DeFi platform with staking rewards
+ * @dev Valkyrie platform token with governance, staking, and reward mechanisms
  * Features:
  * - Standard ERC-20 functionality
  * - Governance voting with delegation (ERC20Votes)
  * - Staking mechanism with rewards
  * - Platform utility functions
- * @custom:security-contact security@valkryie.finance
+ * @custom:security-contact security@valkyrie.finance
  */
-contract ValkryieToken is ERC20, ERC20Votes, ERC20Permit, Ownable, ReentrancyGuard {
+contract ValkyrieToken is ERC20, ERC20Votes, ERC20Permit, Ownable, ReentrancyGuard {
     // Custom errors for gas optimization
     error ZeroAmount();
     error InsufficientBalance();
@@ -138,19 +138,18 @@ contract ValkryieToken is ERC20, ERC20Votes, ERC20Permit, Ownable, ReentrancyGua
      */
     function claimRewards() external nonReentrant {
         StakeInfo storage userStake = stakes[msg.sender];
-        
-        // Early exit if no stake
-        if (userStake.amount == 0) revert NoRewardsToClaim();
-        
+        uint256 amount = userStake.amount;
+        if (amount == 0) revert NoRewardsToClaim();
         _updatePool();
-        
-        // Cache accRewardPerShare to avoid multiple reads
         uint256 _accRewardPerShare = accRewardPerShare;
-        uint256 pending = ((userStake.amount * _accRewardPerShare) / 1e12) - userStake.rewardDebt;
+        uint256 rewardDebt = userStake.rewardDebt;
+        uint256 pending;
+        unchecked {
+            pending = ((amount * _accRewardPerShare) / 1e12) - rewardDebt;
+        }
         if (pending == 0) revert NoRewardsToClaim();
-        
-        userStake.rewardDebt = (userStake.amount * _accRewardPerShare) / 1e12;
-        
+        uint256 newRewardDebt = (amount * _accRewardPerShare) / 1e12;
+        userStake.rewardDebt = newRewardDebt;
         _claimRewards(msg.sender, pending);
     }
     

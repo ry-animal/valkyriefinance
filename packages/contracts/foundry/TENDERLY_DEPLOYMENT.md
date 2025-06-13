@@ -1,10 +1,15 @@
-# Tenderly DevNet Deployment - SUCCESS ✅
+# Tenderly Virtual TestNet Deployment - SUCCESS ✅
 
 ## 🎯 **Deployment Details**
 
+**Dashboard**: https://dashboard.tenderly.co/ryanimal/valkyrie/testnet/8f558d9c-c617-4e05-bb6b-46f358e3d96d
+**Admin RPC URL**: https://virtual.mainnet.rpc.tenderly.co/a15210f9-4786-4a41-8689-acaaa52d2d0a
+**Public RPC URL**: https://virtual.mainnet.rpc.tenderly.co/9ff653b8-a6e0-4359-9cbe-12e56449c8ea
+**Public WebSocket**: wss://virtual.mainnet.rpc.tenderly.co/01883a9b-1543-4b62-a9f7-279658e205d6
+
+_Use admin endpoints for privileged operations, public for dApp/frontend and general access._
+
 **DevNet**: `valkyrie-ai-vault`  
-**RPC URL**: `https://virtual.mainnet.rpc.tenderly.co/fdfb2203-81a7-4687-8339-fa4ed07f1e47`  
-**WebSocket**: `wss://virtual.mainnet.rpc.tenderly.co/f61e071c-05a1-4e51-9076-c767afdb484b`  
 **Chain ID**: `1337`  
 **Fork Source**: Ethereum Mainnet (Block: 22673539)
 
@@ -12,9 +17,9 @@
 
 | Contract                | Address                                      | Gas Used  | Tx Hash                                                              |
 | ----------------------- | -------------------------------------------- | --------- | -------------------------------------------------------------------- |
-| **ValkryiePriceOracle** | `0xcc5586aaA2A22Cb4E98866DBE8ECD01Af6FaD6b3` | 1,090,838 | `0xfbdfd2b9813a662768278ca9292e7927c5c4f7bcc11aec1f6d155d15b4107d86` |
-| **ValkryieToken**       | `0xA56446745B69393E7b3D87F06C35f3e1450ef2dE` | 2,504,970 | `0x4f76b4642d2708798736e2f6c3a181e94bc279a75bbd8ae17ac7d51f3b26147c` |
-| **ValkryieVault**       | `0xfFb7c88a177c410722f4bFB0B58f6C7479a6DE26` | 2,566,185 | `0x14672270dc0cd07c011d8e394ede70af729d4748869f39a2d185bf45d8ef2e00` |
+| **ValkyriePriceOracle** | `0xcc5586aaA2A22Cb4E98866DBE8ECD01Af6FaD6b3` | 1,090,838 | `0xfbdfd2b9813a662768278ca9292e7927c5c4f7bcc11aec1f6d155d15b4107d86` |
+| **ValkyrieToken**       | `0xA56446745B69393E7b3D87F06C35f3e1450ef2dE` | 2,504,970 | `0x4f76b4642d2708798736e2f6c3a181e94bc279a75bbd8ae17ac7d51f3b26147c` |
+| **ValkyrieVault**       | `0xfFb7c88a177c410722f4bFB0B58f6C7479a6DE26` | 2,566,185 | `0x14672270dc0cd07c011d8e394ede70af729d4748869f39a2d185bf45d8ef2e00` |
 
 **Total Gas Used**: 6,568,999  
 **Total ETH Spent**: 0.000000000006568999 ETH
@@ -37,7 +42,7 @@
 
 ### Dashboard Links:
 
-- **Project**: [https://dashboard.tenderly.co/ryanimal/valkyrie-finance](https://dashboard.tenderly.co/ryanimal/valkyrie-finance)
+- **Project**: [https://dashboard.tenderly.co/ryanimal/valkyrie/testnet/8f558d9c-c617-4e05-bb6b-46f358e3d96d](https://dashboard.tenderly.co/ryanimal/valkyrie/testnet/8f558d9c-c617-4e05-bb6b-46f358e3d96d)
 - **DevNet**: valkyrie-ai-vault
 - **Transactions**: Available in Tenderly dashboard
 

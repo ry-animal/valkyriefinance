@@ -2,10 +2,10 @@
 pragma solidity ^0.8.20;
 
 import {Test, console} from "forge-std/Test.sol";
-import {ValkryieToken} from "../src/ValkryieToken.sol";
+import {ValkyrieToken} from "../src/ValkyrieToken.sol";
 
-contract ValkryieTokenTest is Test {
-    ValkryieToken public token;
+contract ValkyrieTokenTest is Test {
+    ValkyrieToken public token;
     
     address public owner = address(0x1);
     address public user1 = address(0x2);
@@ -22,7 +22,7 @@ contract ValkryieTokenTest is Test {
     
     function setUp() public {
         vm.prank(owner);
-        token = new ValkryieToken("Valkryie Token", "VLK", INITIAL_SUPPLY, owner);
+        token = new ValkyrieToken("Valkyrie Token", "VLK", INITIAL_SUPPLY, owner);
         
         // Distribute tokens to test users
         vm.startPrank(owner);
@@ -35,7 +35,7 @@ contract ValkryieTokenTest is Test {
     // ===== ERC-20 Basic Tests =====
     
     function test_InitialState() public view {
-        assertEq(token.name(), "Valkryie Token");
+        assertEq(token.name(), "Valkyrie Token");
         assertEq(token.symbol(), "VLK");
         assertEq(token.decimals(), 18);
         assertEq(token.totalSupply(), INITIAL_SUPPLY);
@@ -98,13 +98,13 @@ contract ValkryieTokenTest is Test {
     
     function test_FailStakeZeroAmount() public {
         vm.prank(user1);
-        vm.expectRevert(ValkryieToken.ZeroAmount.selector);
+        vm.expectRevert(ValkyrieToken.ZeroAmount.selector);
         token.stake(0);
     }
     
     function test_FailStakeInsufficientBalance() public {
         vm.prank(user1);
-        vm.expectRevert(ValkryieToken.InsufficientBalance.selector);
+        vm.expectRevert(ValkyrieToken.InsufficientBalance.selector);
         token.stake(200_000 * 1e18); // More than user1 has
     }
     
@@ -131,7 +131,7 @@ contract ValkryieTokenTest is Test {
         token.stake(STAKE_AMOUNT);
         
         vm.prank(user1);
-        vm.expectRevert(ValkryieToken.InsufficientStakedAmount.selector);
+        vm.expectRevert(ValkyrieToken.InsufficientStakedAmount.selector);
         token.unstake(STAKE_AMOUNT * 2); // More than staked
     }
     
@@ -174,7 +174,7 @@ contract ValkryieTokenTest is Test {
     
     function test_FailClaimNoRewards() public {
         vm.prank(user1);
-        vm.expectRevert(ValkryieToken.NoRewardsToClaim.selector);
+        vm.expectRevert(ValkyrieToken.NoRewardsToClaim.selector);
         token.claimRewards();
     }
     
@@ -197,7 +197,7 @@ contract ValkryieTokenTest is Test {
     
     function test_FailRewardRateUpdateTooHigh() public {
         vm.prank(owner);
-        vm.expectRevert(ValkryieToken.RewardRateTooHigh.selector);
+        vm.expectRevert(ValkyrieToken.RewardRateTooHigh.selector);
         token.setRewardRate(10001); // More than 100%
     }
     

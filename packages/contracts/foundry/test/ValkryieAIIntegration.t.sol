@@ -3,10 +3,10 @@ pragma solidity ^0.8.28;
 
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
-import "../src/ValkryieVault.sol";
-import "../src/ValkryieAutomation.sol";
-import "../src/ValkryiePriceOracle.sol";
-import "../src/ValkryieToken.sol";
+import "../src/ValkyrieVault.sol";
+import "../src/ValkyrieAutomation.sol";
+import "../src/ValkyriePriceOracle.sol";
+import "../src/ValkyrieToken.sol";
 import "lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 
 contract MockUSDC is ERC20 {
@@ -24,7 +24,7 @@ contract MockUSDC is ERC20 {
 }
 
 /**
- * @title ValkryieAIIntegrationTest
+ * @title ValkyrieAIIntegrationTest
  * @dev Comprehensive test suite for AI-driven vault with Chainlink integration
  * Following the chainlink-for-ai-vault framework testing methodology:
  * - Unit testing for individual components
@@ -32,11 +32,11 @@ contract MockUSDC is ERC20 {
  * - Invariant testing for fundamental properties
  * - Integration testing with mock Chainlink services
  */
-contract ValkryieAIIntegrationTest is Test {
-    ValkryieVault public vault;
-    ValkryieAutomation public automation;
-    ValkryiePriceOracle public priceOracle;
-    ValkryieToken public valkToken;
+contract ValkyrieAIIntegrationTest is Test {
+    ValkyrieVault public vault;
+    ValkyrieAutomation public automation;
+    ValkyriePriceOracle public priceOracle;
+    ValkyrieToken public valkToken;
     MockUSDC public mockUSDC;
     
     // Mock Chainlink components
@@ -80,8 +80,8 @@ contract ValkryieAIIntegrationTest is Test {
         mockUSDC.mint(bob, 10000e6);
         
         // Deploy VALK token with all 4 required parameters
-        valkToken = new ValkryieToken(
-            "Valkryie Token",
+        valkToken = new ValkyrieToken(
+            "Valkyrie Token",
             "VALK", 
             INITIAL_SUPPLY,
             owner
@@ -94,12 +94,12 @@ contract ValkryieAIIntegrationTest is Test {
         mockPriceFeed = makeAddr("priceFeed");
         
         // Deploy price oracle
-        priceOracle = new ValkryiePriceOracle();
+        priceOracle = new ValkyriePriceOracle();
         
         // Deploy vault with all integrations
-        vault = new ValkryieVault(
+        vault = new ValkyrieVault(
             IERC20(address(mockUSDC)),
-            "Valkryie AI Vault",
+            "Valkyrie AI Vault",
             "vAI-USDC",
             owner,
             feeRecipient,
@@ -109,7 +109,7 @@ contract ValkryieAIIntegrationTest is Test {
         );
         
         // Deploy automation system
-        automation = new ValkryieAutomation(
+        automation = new ValkyrieAutomation(
             mockFunctionsRouter,
             address(vault),
             address(priceOracle),
@@ -135,7 +135,7 @@ contract ValkryieAIIntegrationTest is Test {
         assertFalse(vault.emergencyMode());
         
         // Check AI configuration
-        ValkryieVault.AIStrategyConfig memory config = vault.getAIConfig();
+        ValkyrieVault.AIStrategyConfig memory config = vault.getAIConfig();
         assertEq(config.rebalanceThreshold, 500); // 5%
         assertEq(config.riskThreshold, 7500); // 75%
         assertEq(config.maxLeverage, 20000); // 2x
@@ -154,13 +154,13 @@ contract ValkryieAIIntegrationTest is Test {
         vault.addStrategy(
             mockStrategy,
             2000, // 20% allocation
-            "Test Strategy",
+            bytes32("Test Strategy"),
             500, // 5% expected APY
             5000, // 50% risk score
             0 // same chain
         );
         
-        ValkryieVault.Strategy memory strategy = vault.getStrategy(0);
+        ValkyrieVault.Strategy memory strategy = vault.getStrategy(0);
         assertEq(strategy.strategyAddress, mockStrategy);
         assertEq(strategy.allocation, 2000);
         assertEq(strategy.riskScore, 5000);
@@ -175,7 +175,7 @@ contract ValkryieAIIntegrationTest is Test {
         vault.addStrategy(
             makeAddr("strategy1"),
             5000, // 50%
-            "Strategy 1",
+            bytes32("Strategy 1"),
             500,
             4000, // Low risk
             0
@@ -183,7 +183,7 @@ contract ValkryieAIIntegrationTest is Test {
         vault.addStrategy(
             makeAddr("strategy2"),
             3000, // 30%
-            "Strategy 2", 
+            bytes32("Strategy 2"),
             800,
             6000, // Medium risk
             0
@@ -203,8 +203,8 @@ contract ValkryieAIIntegrationTest is Test {
         vault.rebalanceStrategy(newAllocations);
         
         // Verify rebalancing
-        ValkryieVault.Strategy memory strategy1 = vault.getStrategy(0);
-        ValkryieVault.Strategy memory strategy2 = vault.getStrategy(1);
+        ValkyrieVault.Strategy memory strategy1 = vault.getStrategy(0);
+        ValkyrieVault.Strategy memory strategy2 = vault.getStrategy(1);
         
         assertEq(strategy1.allocation, 4000);
         assertEq(strategy2.allocation, 4000);
@@ -218,7 +218,7 @@ contract ValkryieAIIntegrationTest is Test {
         vault.addStrategy(
             makeAddr("highRiskStrategy"),
             8000, // 80%
-            "High Risk Strategy",
+            bytes32("High Risk Strategy"),
             1500,
             9500, // 95% risk score
             0
@@ -293,9 +293,9 @@ contract ValkryieAIIntegrationTest is Test {
     function testFuzzRebalancing(uint256[3] memory allocations) public {
         // Setup three strategies
         vm.startPrank(owner);
-        vault.addStrategy(makeAddr("strategy1"), 0, "Strategy 1", 500, 3000, 0);
-        vault.addStrategy(makeAddr("strategy2"), 0, "Strategy 2", 700, 4000, 0);
-        vault.addStrategy(makeAddr("strategy3"), 0, "Strategy 3", 400, 2000, 0);
+        vault.addStrategy(makeAddr("strategy1"), 0, bytes32("Strategy 1"), 500, 3000, 0);
+        vault.addStrategy(makeAddr("strategy2"), 0, bytes32("Strategy 2"), 700, 4000, 0);
+        vault.addStrategy(makeAddr("strategy3"), 0, bytes32("Strategy 3"), 400, 2000, 0);
         vm.stopPrank();
         
         // Bound allocations to valid range and ensure they don't exceed 100%
@@ -388,7 +388,7 @@ contract ValkryieAIIntegrationTest is Test {
         uint256 totalAllocation = 0;
         
         for (uint256 i = 0; i < vault.strategyCount(); i++) {
-            ValkryieVault.Strategy memory strategy = vault.getStrategy(i);
+            ValkyrieVault.Strategy memory strategy = vault.getStrategy(i);
             if (strategy.isActive) {
                 totalAllocation += strategy.allocation;
             }
@@ -420,9 +420,9 @@ contract ValkryieAIIntegrationTest is Test {
     function testFullAIWorkflow() public {
         // 1. Setup strategies
         vm.startPrank(owner);
-        vault.addStrategy(makeAddr("strategy1"), 3000, "Conservative", 300, 2000, 0);
-        vault.addStrategy(makeAddr("strategy2"), 4000, "Moderate", 600, 5000, 0);
-        vault.addStrategy(makeAddr("strategy3"), 2000, "Aggressive", 1000, 8000, 0);
+        vault.addStrategy(makeAddr("strategy1"), 3000, bytes32("Conservative"), 300, 2000, 0);
+        vault.addStrategy(makeAddr("strategy2"), 4000, bytes32("Moderate"), 600, 5000, 0);
+        vault.addStrategy(makeAddr("strategy3"), 2000, bytes32("Aggressive"), 1000, 8000, 0);
         vm.stopPrank();
         
         // 2. Users deposit
@@ -534,10 +534,10 @@ contract ValkryieAIIntegrationTest is Test {
     
     function _addMultipleStrategies() internal {
         vm.startPrank(owner);
-        vault.addStrategy(makeAddr("strategy1"), 2500, "Strategy 1", 400, 3000, 0);
-        vault.addStrategy(makeAddr("strategy2"), 3000, "Strategy 2", 600, 4000, 0);
-        vault.addStrategy(makeAddr("strategy3"), 2000, "Strategy 3", 800, 5000, 0);
-        vault.addStrategy(makeAddr("strategy4"), 1500, "Strategy 4", 300, 2000, 0);
+        vault.addStrategy(makeAddr("strategy1"), 2500, bytes32("Strategy 1"), 400, 3000, 0);
+        vault.addStrategy(makeAddr("strategy2"), 3000, bytes32("Strategy 2"), 600, 4000, 0);
+        vault.addStrategy(makeAddr("strategy3"), 2000, bytes32("Strategy 3"), 800, 5000, 0);
+        vault.addStrategy(makeAddr("strategy4"), 1500, bytes32("Strategy 4"), 300, 2000, 0);
         vm.stopPrank();
     }
 } 

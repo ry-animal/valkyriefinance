@@ -1,7 +1,7 @@
 /**
  * Tenderly Web3 Actions: AI Vault Monitoring
  * 
- * This script implements automated monitoring for the AI-driven Valkryie Vault
+ * This script implements automated monitoring for the AI-driven Valkyrie Vault
  * following best practices from tenderly-best-practices.mdc
  */
 

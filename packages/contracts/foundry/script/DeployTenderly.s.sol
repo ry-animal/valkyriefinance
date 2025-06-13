@@ -3,9 +3,9 @@ pragma solidity ^0.8.28;
 
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
-import "../src/ValkryieToken.sol";
-import "../src/ValkryieVault.sol";
-import "../src/ValkryiePriceOracle.sol";
+import "../src/ValkyrieToken.sol";
+import "../src/ValkyrieVault.sol";
+import "../src/ValkyriePriceOracle.sol";
 
 /**
  * @title DeployTenderly
@@ -64,23 +64,23 @@ contract DeployTenderly is Script {
     
     function deployContracts(TenderlyConfig memory config) internal {
         // Deploy Price Oracle with simulation
-        console.log("Deploying ValkryiePriceOracle...");
-        deployedPriceOracle = address(new ValkryiePriceOracle());
-        console.log("ValkryiePriceOracle deployed at:", deployedPriceOracle);
+        console.log("Deploying ValkyriePriceOracle...");
+        deployedPriceOracle = address(new ValkyriePriceOracle());
+        console.log("ValkyriePriceOracle deployed at:", deployedPriceOracle);
         
-        // Deploy Valkryie Token with unlimited faucet simulation
-        console.log("Deploying ValkryieToken...");
-        deployedToken = address(new ValkryieToken(
+        // Deploy Valkyrie Token with unlimited faucet simulation
+        console.log("Deploying ValkyrieToken...");
+        deployedToken = address(new ValkyrieToken(
             config.tokenName,
             config.tokenSymbol,
             config.initialSupply,
             config.owner
         ));
-        console.log("ValkryieToken deployed at:", deployedToken);
+        console.log("ValkyrieToken deployed at:", deployedToken);
         
         // Deploy Vault with AI integration
-        console.log("Deploying ValkryieVault with AI capabilities...");
-        deployedVault = address(new ValkryieVault(
+        console.log("Deploying ValkyrieVault with AI capabilities...");
+        deployedVault = address(new ValkyrieVault(
             IERC20(deployedToken),
             config.vaultName,
             config.vaultSymbol,
@@ -90,13 +90,13 @@ contract DeployTenderly is Script {
             address(0), // VRF disabled for Virtual TestNet
             address(0)  // CCIP disabled for Virtual TestNet
         ));
-        console.log("ValkryieVault deployed at:", deployedVault);
+        console.log("ValkyrieVault deployed at:", deployedVault);
     }
     
     function setupAIStrategies() internal {
         console.log("Setting up AI strategies for testing...");
         
-        ValkryieVault vault = ValkryieVault(deployedVault);
+        ValkyrieVault vault = ValkyrieVault(deployedVault);
         
         // Strategy 1: Conservative DeFi Lending (Low Risk)
         vault.addStrategy(
@@ -144,7 +144,7 @@ contract DeployTenderly is Script {
         emit AIStrategyMonitoring(deployedVault, 3); // 3 strategies configured
         
         // Log key metrics for monitoring
-        ValkryieVault vault = ValkryieVault(deployedVault);
+        ValkyrieVault vault = ValkyrieVault(deployedVault);
         console.log("Total assets:", vault.totalAssets());
         console.log("Total supply:", vault.totalSupply());
         console.log("Strategies count: 3");
@@ -154,10 +154,10 @@ contract DeployTenderly is Script {
     
     function getTenderlyConfig() internal view returns (TenderlyConfig memory) {
         return TenderlyConfig({
-            tokenName: "Valkryie Token (Tenderly)",
+            tokenName: "Valkyrie Token (Tenderly)",
             tokenSymbol: "VLK-T",
             initialSupply: 10000000 * 1e18, // 10M tokens for testing
-            vaultName: "Valkryie AI Vault (Tenderly)",
+            vaultName: "Valkyrie AI Vault (Tenderly)",
             vaultSymbol: "vVLK-T",
             feeRecipient: vm.addr(vm.envUint("PRIVATE_KEY")),
             owner: vm.addr(vm.envUint("PRIVATE_KEY")),
@@ -182,7 +182,7 @@ contract TenderlySimulation is Script {
     function simulateAIRebalancing(address vaultAddress, uint256[] memory newAllocations) external {
         console.log("=== Simulating AI Rebalancing ===");
         
-        ValkryieVault vault = ValkryieVault(vaultAddress);
+        ValkyrieVault vault = ValkyrieVault(vaultAddress);
         
         // Pre-simulation state
         uint256 totalAssetsBefore = vault.totalAssets();
@@ -220,8 +220,8 @@ contract TenderlySimulation is Script {
     function simulateStressTest(address vaultAddress) external {
         console.log("=== Simulating Stress Test Scenarios ===");
         
-        ValkryieVault vault = ValkryieVault(vaultAddress);
-        ValkryieToken token = ValkryieToken(address(vault.asset()));
+        ValkyrieVault vault = ValkyrieVault(vaultAddress);
+        ValkyrieToken token = ValkyrieToken(address(vault.asset()));
         
         // Scenario 1: Large deposit
         address largeDepositor = address(0x9999);

@@ -3,9 +3,9 @@ pragma solidity ^0.8.28;
 
 import "forge-std/Script.sol";
 import "forge-std/console.sol";
-import "../src/ValkryieToken.sol";
-import "../src/ValkryieVault.sol";
-import "../src/ValkryiePriceOracle.sol";
+import "../src/ValkyrieToken.sol";
+import "../src/ValkyrieVault.sol";
+import "../src/ValkyriePriceOracle.sol";
 import "../test/MockUSDC.sol";
 
 /**
@@ -27,23 +27,23 @@ contract DeploySimple is Script {
         MockUSDC usdc = new MockUSDC();
         console.log("Mock USDC deployed at:", address(usdc));
         
-        // 2. Deploy ValkryieToken
-        ValkryieToken valkToken = new ValkryieToken(
-            "Valkryie",
+        // 2. Deploy ValkyrieToken
+        ValkyrieToken valkToken = new ValkyrieToken(
+            "Valkyrie",
             "VALK",
             1000000 * 10**18, // 1M tokens
             deployer
         );
-        console.log("ValkryieToken deployed at:", address(valkToken));
+        console.log("ValkyrieToken deployed at:", address(valkToken));
         
         // 3. Deploy Price Oracle
-        ValkryiePriceOracle priceOracle = new ValkryiePriceOracle();
+        ValkyriePriceOracle priceOracle = new ValkyriePriceOracle();
         console.log("PriceOracle deployed at:", address(priceOracle));
         
         // 4. Deploy Vault
-        ValkryieVault vault = new ValkryieVault(
+        ValkyrieVault vault = new ValkyrieVault(
             IERC20(address(usdc)),
-            "Valkryie Vault Shares",
+            "Valkyrie Vault Shares",
             "VALKS",
             deployer,                    // owner
             deployer,                    // feeRecipient  
@@ -51,7 +51,7 @@ contract DeploySimple is Script {
             address(0),                  // vrfCoordinator (disabled)
             address(0)                   // ccipRouter (disabled)
         );
-        console.log("ValkryieVault deployed at:", address(vault));
+        console.log("ValkyrieVault deployed at:", address(vault));
         
         // 5. Setup initial strategies
         vault.addStrategy(
@@ -86,9 +86,9 @@ contract DeploySimple is Script {
         
         console.log("=== Deployment Summary ===");
         console.log("Mock USDC:", address(usdc));
-        console.log("ValkryieToken:", address(valkToken));
+        console.log("ValkyrieToken:", address(valkToken));
         console.log("PriceOracle:", address(priceOracle));
-        console.log("ValkryieVault:", address(vault));
+        console.log("ValkyrieVault:", address(vault));
         console.log("=========================");
     }
 } 

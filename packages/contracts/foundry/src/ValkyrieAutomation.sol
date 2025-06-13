@@ -7,20 +7,20 @@ pragma solidity ^0.8.28;
 // import "lib/chainlink/contracts/src/v0.8/functions/v1_0_0/libraries/FunctionsRequest.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "./ValkryieVault.sol";
-import "./ValkryiePriceOracle.sol";
+import "./ValkyrieVault.sol";
+import "./ValkyriePriceOracle.sol";
 
 /**
- * @title ValkryieAutomation
- * @notice AI-driven automation system for the Valkryie vault using Chainlink Functions and Automation
+ * @title ValkyrieAutomation
+ * @notice AI-driven automation system for the Valkyrie vault using Chainlink Functions and Automation
  * @dev Implements the hybrid smart contract pattern for AI-driven DeFi vault management
  */
-contract ValkryieAutomation is Ownable, ReentrancyGuard {
+contract ValkyrieAutomation is Ownable, ReentrancyGuard {
     // using FunctionsRequest for FunctionsRequest.Request;
 
     // Vault and Oracle references
-    ValkryieVault public immutable vault;
-    ValkryiePriceOracle public immutable priceOracle;
+    ValkyrieVault public immutable vault;
+    ValkyriePriceOracle public immutable priceOracle;
 
     // Chainlink Functions configuration (simplified for testing)
     bytes32 public donId;
@@ -57,8 +57,8 @@ contract ValkryieAutomation is Ownable, ReentrancyGuard {
         bytes32 _donId,
         uint64 _subscriptionId
     ) Ownable(msg.sender) {
-        vault = ValkryieVault(_vault);
-        priceOracle = ValkryiePriceOracle(_priceOracle);
+        vault = ValkyrieVault(_vault);
+        priceOracle = ValkyriePriceOracle(_priceOracle);
         donId = _donId;
         subscriptionId = _subscriptionId;
         gasLimit = 300000;

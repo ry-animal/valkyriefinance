@@ -6,13 +6,13 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./interfaces/IChainlinkPriceFeed.sol";
 
 /**
- * @title ValkryiePriceOracle
- * @author Valkryie Finance Team
+ * @title ValkyriePriceOracle
+ * @author Valkyrie Finance Team
  * @notice Chainlink-powered price oracle for reliable, tamper-resistant asset pricing
  * @dev Aggregates Chainlink price feeds with staleness protection and fallback mechanisms
- * @custom:security-contact security@valkryie.finance
+ * @custom:security-contact security@valkyrie.finance
  */
-contract ValkryiePriceOracle is Ownable, ReentrancyGuard {
+contract ValkyriePriceOracle is Ownable, ReentrancyGuard {
     struct PriceFeedInfo {
         IChainlinkPriceFeed feed;
         uint32 stalePeriod;

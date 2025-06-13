@@ -3,9 +3,9 @@ pragma solidity ^0.8.28;
 
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
-import "../src/ValkryieToken.sol";
-import "../src/ValkryieVault.sol";
-import "../src/ValkryiePriceOracle.sol";
+import "../src/ValkyrieToken.sol";
+import "../src/ValkyrieVault.sol";
+import "../src/ValkyriePriceOracle.sol";
 
 /**
  * @title TenderlyIntegrationTest
@@ -14,9 +14,9 @@ import "../src/ValkryiePriceOracle.sol";
  */
 contract TenderlyIntegrationTest is Test {
     
-    ValkryieToken public token;
-    ValkryieVault public vault;
-    ValkryiePriceOracle public priceOracle;
+    ValkyrieToken public token;
+    ValkyrieVault public vault;
+    ValkyriePriceOracle public priceOracle;
     
     address public owner;
     address public feeRecipient;
@@ -40,20 +40,20 @@ contract TenderlyIntegrationTest is Test {
         // Deploy contracts for Tenderly monitoring
         vm.startPrank(owner);
         
-        priceOracle = new ValkryiePriceOracle();
+        priceOracle = new ValkyriePriceOracle();
         console.log("Tenderly Test: PriceOracle deployed at", address(priceOracle));
         
-        token = new ValkryieToken(
-            "Valkryie Token (Tenderly Test)",
+        token = new ValkyrieToken(
+            "Valkyrie Token (Tenderly Test)",
             "VLK-TEST",
             10000000 * 1e18,
             owner
         );
         console.log("Tenderly Test: Token deployed at", address(token));
         
-        vault = new ValkryieVault(
+        vault = new ValkyrieVault(
             IERC20(address(token)),
-            "Valkryie Vault (Tenderly Test)",
+            "Valkyrie Vault (Tenderly Test)",
             "vVLK-TEST",
             owner,
             feeRecipient,

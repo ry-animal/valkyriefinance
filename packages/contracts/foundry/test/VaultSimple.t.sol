@@ -3,8 +3,8 @@ pragma solidity ^0.8.20;
 
 import {Test, console} from "forge-std/Test.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {ValkryieVault} from "../src/ValkryieVault.sol";
-import {ValkryiePriceOracle} from "../src/ValkryiePriceOracle.sol";
+import {ValkyrieVault} from "../src/ValkyrieVault.sol";
+import {ValkyriePriceOracle} from "../src/ValkyriePriceOracle.sol";
 
 // Simple mock ERC20 for testing
 contract MockERC20 is IERC20 {
@@ -57,8 +57,8 @@ contract MockERC20 is IERC20 {
 }
 
 contract VaultSimpleTest is Test {
-    ValkryieVault public vault;
-    ValkryiePriceOracle public priceOracle;
+    ValkyrieVault public vault;
+    ValkyriePriceOracle public priceOracle;
     MockERC20 public asset;
     
     address public owner = address(0x1);
@@ -76,12 +76,12 @@ contract VaultSimpleTest is Test {
         vm.startPrank(owner);
         
         // Deploy price oracle
-        priceOracle = new ValkryiePriceOracle();
+        priceOracle = new ValkyriePriceOracle();
         
         // Deploy vault with all 8 required parameters
-        vault = new ValkryieVault(
+        vault = new ValkyrieVault(
             asset,
-            "Valkryie Vault",
+            "Valkyrie Vault",
             "vVLK",
             owner,
             feeRecipient,
@@ -105,7 +105,7 @@ contract VaultSimpleTest is Test {
     }
     
     function test_InitialState() public view {
-        assertEq(vault.name(), "Valkryie Vault");
+        assertEq(vault.name(), "Valkyrie Vault");
         assertEq(vault.symbol(), "vVLK");
         assertEq(address(vault.asset()), address(asset));
         assertEq(vault.totalAssets(), 0);
@@ -160,13 +160,13 @@ contract VaultSimpleTest is Test {
         vault.addStrategy(
             strategy, 
             5000, // allocation
-            "Test Strategy", // name
+            bytes32("Test Strategy"), // name
             1000, // expectedApy 
             5000, // riskScore
             0     // chainSelector
         );
         
-        ValkryieVault.Strategy memory strategyData = vault.getStrategy(0);
+        ValkyrieVault.Strategy memory strategyData = vault.getStrategy(0);
         
         assertEq(strategyData.strategyAddress, strategy);
         assertEq(strategyData.allocation, 5000);
@@ -197,7 +197,7 @@ contract VaultSimpleTest is Test {
         
         // Deposits should fail when paused
         vm.prank(user1);
-        vm.expectRevert(ValkryieVault.VaultPaused.selector);
+        vm.expectRevert(ValkyrieVault.VaultPaused.selector);
         vault.deposit(INITIAL_DEPOSIT, user1);
     }
     

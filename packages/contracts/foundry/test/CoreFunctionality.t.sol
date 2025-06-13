@@ -3,9 +3,9 @@ pragma solidity ^0.8.28;
 
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
-import "../src/ValkryieVault.sol";
-import "../src/ValkryiePriceOracle.sol";
-import "../src/ValkryieToken.sol";
+import "../src/ValkyrieVault.sol";
+import "../src/ValkyriePriceOracle.sol";
+import "../src/ValkyrieToken.sol";
 import "./MockUSDC.sol";
 
 /**
@@ -13,9 +13,9 @@ import "./MockUSDC.sol";
  * @dev Test suite for core AI vault functionality without complex dependencies
  */
 contract CoreFunctionalityTest is Test {
-    ValkryieVault public vault;
-    ValkryiePriceOracle public priceOracle;
-    ValkryieToken public valkToken;
+    ValkyrieVault public vault;
+    ValkyriePriceOracle public priceOracle;
+    ValkyrieToken public valkToken;
     MockUSDC public usdc;
     
     // Test accounts
@@ -39,12 +39,12 @@ contract CoreFunctionalityTest is Test {
         
         // Deploy contracts
         usdc = new MockUSDC();
-        valkToken = new ValkryieToken("Valkryie", "VALK", INITIAL_SUPPLY, owner);
-        priceOracle = new ValkryiePriceOracle();
+        valkToken = new ValkyrieToken("Valkyrie", "VALK", INITIAL_SUPPLY, owner);
+        priceOracle = new ValkyriePriceOracle();
         
-        vault = new ValkryieVault(
+        vault = new ValkyrieVault(
             IERC20(address(usdc)),
-            "Valkryie Vault Shares",
+            "Valkyrie Vault Shares",
             "VALKS",
             owner,
             feeRecipient,
@@ -87,7 +87,7 @@ contract CoreFunctionalityTest is Test {
     // ===== Basic Vault Tests =====
     
     function test_VaultInitialization() public {
-        assertEq(vault.name(), "Valkryie Vault Shares");
+        assertEq(vault.name(), "Valkyrie Vault Shares");
         assertEq(vault.symbol(), "VALKS");
         assertEq(address(vault.asset()), address(usdc));
         assertEq(vault.owner(), owner);
@@ -147,7 +147,7 @@ contract CoreFunctionalityTest is Test {
         
         assertEq(vault.strategyCount(), strategyCount + 1);
         
-        ValkryieVault.Strategy memory strategy = vault.getStrategy(strategyCount);
+        ValkyrieVault.Strategy memory strategy = vault.getStrategy(strategyCount);
         assertEq(strategy.strategyAddress, address(0x30));
         assertEq(strategy.allocation, 2000);
         assertEq(strategy.name, "New Strategy");
@@ -169,8 +169,8 @@ contract CoreFunctionalityTest is Test {
         vault.rebalanceStrategy(newAllocations);
         
         // Check strategies were updated
-        ValkryieVault.Strategy memory strategy1 = vault.getStrategy(0);
-        ValkryieVault.Strategy memory strategy2 = vault.getStrategy(1);
+        ValkyrieVault.Strategy memory strategy1 = vault.getStrategy(0);
+        ValkyrieVault.Strategy memory strategy2 = vault.getStrategy(1);
         
         assertEq(strategy1.allocation, 4000);
         assertEq(strategy2.allocation, 4000);
@@ -179,7 +179,7 @@ contract CoreFunctionalityTest is Test {
     // ===== AI Configuration Tests =====
     
     function test_UpdateAIConfig() public {
-        ValkryieVault.AIStrategyConfig memory newConfig = ValkryieVault.AIStrategyConfig({
+        ValkyrieVault.AIStrategyConfig memory newConfig = ValkyrieVault.AIStrategyConfig({
             rebalanceThreshold: 300,    // 3%
             riskThreshold: 8000,        // 80%
             maxLeverage: 20000,         // 2x
@@ -190,7 +190,7 @@ contract CoreFunctionalityTest is Test {
         
         vault.updateAIConfig(newConfig);
         
-        ValkryieVault.AIStrategyConfig memory config = vault.getAIConfig();
+        ValkyrieVault.AIStrategyConfig memory config = vault.getAIConfig();
         assertEq(config.rebalanceThreshold, 300);
         assertEq(config.riskThreshold, 8000);
         assertEq(config.maxLeverage, 20000);
@@ -200,7 +200,7 @@ contract CoreFunctionalityTest is Test {
         address newController = address(0x50);
         
         vm.expectEmit(true, true, false, false);
-        emit ValkryieVault.AIControllerUpdated(address(0), newController);
+        emit ValkyrieVault.AIControllerUpdated(address(0), newController);
         
         vault.setAIController(newController);
         assertEq(vault.aiController(), newController);
@@ -293,8 +293,8 @@ contract CoreFunctionalityTest is Test {
         
         vault.rebalanceStrategy(allocations);
         
-        ValkryieVault.Strategy memory strategy1 = vault.getStrategy(0);
-        ValkryieVault.Strategy memory strategy2 = vault.getStrategy(1);
+        ValkyrieVault.Strategy memory strategy1 = vault.getStrategy(0);
+        ValkyrieVault.Strategy memory strategy2 = vault.getStrategy(1);
         
         assertEq(strategy1.allocation, alloc1);
         assertEq(strategy2.allocation, alloc2);

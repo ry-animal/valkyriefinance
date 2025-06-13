@@ -3,14 +3,14 @@ pragma solidity ^0.8.28;
 
 import "forge-std/Script.sol";
 import "forge-std/console.sol";
-import "../src/ValkryieVault.sol";
-import "../src/ValkryieAutomation.sol";
-import "../src/ValkryiePriceOracle.sol";
-import "../src/ValkryieToken.sol";
+import "../src/ValkyrieVault.sol";
+import "../src/ValkyrieAutomation.sol";
+import "../src/ValkyriePriceOracle.sol";
+import "../src/ValkyrieToken.sol";
 
 /**
  * @title DeployAIVault
- * @dev Deployment script for AI-driven Valkryie Vault with Chainlink integration
+ * @dev Deployment script for AI-driven Valkyrie Vault with Chainlink integration
  * Implements the complete architecture from chainlink-for-ai-vault framework
  */
 contract DeployAIVault is Script {
@@ -44,14 +44,14 @@ contract DeployAIVault is Script {
     // Constants
     uint256 public constant INITIAL_VALK_SUPPLY = 1000000e18; // 1M VALK tokens
     uint256 public constant VAULT_MAX_ASSETS = 10000000e6; // 10M USDC max
-    string public constant VAULT_NAME = "Valkryie AI Vault";
+    string public constant VAULT_NAME = "Valkyrie AI Vault";
     string public constant VAULT_SYMBOL = "vAI-USDC";
     
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address deployer = vm.addr(deployerPrivateKey);
         
-        console.log("Deploying AI-driven Valkryie Vault...");
+        console.log("Deploying AI-driven Valkyrie Vault...");
         console.log("Deployer:", deployer);
         console.log("Chain ID:", block.chainid);
         
@@ -134,25 +134,25 @@ contract DeployAIVault is Script {
         deploymentAddresses.feeRecipient = makeAddr("feeRecipient");
         
         // Deploy VALK governance token
-        console.log("Deploying ValkryieToken...");
-        ValkryieToken valkToken = new ValkryieToken(
-            "Valkryie Token",
+        console.log("Deploying ValkyrieToken...");
+        ValkyrieToken valkToken = new ValkyrieToken(
+            "Valkyrie Token",
             "VLK",
             INITIAL_VALK_SUPPLY,
             deploymentAddresses.owner
         );
         deploymentAddresses.valkToken = address(valkToken);
-        console.log("ValkryieToken deployed at:", address(valkToken));
+        console.log("ValkyrieToken deployed at:", address(valkToken));
         
         // Deploy Price Oracle
-        console.log("Deploying ValkryiePriceOracle...");
-        ValkryiePriceOracle priceOracle = new ValkryiePriceOracle();
+        console.log("Deploying ValkyriePriceOracle...");
+        ValkyriePriceOracle priceOracle = new ValkyriePriceOracle();
         deploymentAddresses.priceOracle = address(priceOracle);
-        console.log("ValkryiePriceOracle deployed at:", address(priceOracle));
+        console.log("ValkyriePriceOracle deployed at:", address(priceOracle));
         
         // Deploy AI-driven Vault
-        console.log("Deploying ValkryieVault...");
-        ValkryieVault vault = new ValkryieVault(
+        console.log("Deploying ValkyrieVault...");
+        ValkyrieVault vault = new ValkyrieVault(
             IERC20(networkConfig.usdcToken),
             VAULT_NAME,
             VAULT_SYMBOL,
@@ -163,11 +163,11 @@ contract DeployAIVault is Script {
             networkConfig.ccipRouter
         );
         deploymentAddresses.vault = address(vault);
-        console.log("ValkryieVault deployed at:", address(vault));
+        console.log("ValkyrieVault deployed at:", address(vault));
         
         // Deploy Automation System
-        console.log("Deploying ValkryieAutomation...");
-        ValkryieAutomation automation = new ValkryieAutomation(
+        console.log("Deploying ValkyrieAutomation...");
+        ValkyrieAutomation automation = new ValkyrieAutomation(
             networkConfig.functionsRouter,
             deploymentAddresses.vault,
             deploymentAddresses.priceOracle,
@@ -175,15 +175,15 @@ contract DeployAIVault is Script {
             networkConfig.functionsSubscriptionId
         );
         deploymentAddresses.automation = address(automation);
-        console.log("ValkryieAutomation deployed at:", address(automation));
+        console.log("ValkyrieAutomation deployed at:", address(automation));
     }
     
     function _configureIntegrations() internal {
         console.log("Configuring Chainlink integrations...");
         
-        ValkryieVault vault = ValkryieVault(deploymentAddresses.vault);
-        ValkryiePriceOracle priceOracle = ValkryiePriceOracle(deploymentAddresses.priceOracle);
-        ValkryieAutomation automation = ValkryieAutomation(deploymentAddresses.automation);
+        ValkyrieVault vault = ValkyrieVault(deploymentAddresses.vault);
+        ValkyriePriceOracle priceOracle = ValkyriePriceOracle(deploymentAddresses.priceOracle);
+        ValkyrieAutomation automation = ValkyrieAutomation(deploymentAddresses.automation);
         
         // Configure Price Oracle with Chainlink Price Feeds
         if (networkConfig.ethUsdPriceFeed != address(0)) {
@@ -209,7 +209,7 @@ contract DeployAIVault is Script {
         console.log("Set automation as AI controller");
         
         // Configure automation parameters
-        ValkryieAutomation.StrategyConfig memory strategyConfig = ValkryieAutomation.StrategyConfig({
+        ValkyrieAutomation.StrategyConfig memory strategyConfig = ValkyrieAutomation.StrategyConfig({
             rebalanceThreshold: 500,     // 5%
             riskThreshold: 7500,         // 75%
             maxLeverage: 20000,          // 2x
@@ -234,7 +234,7 @@ contract DeployAIVault is Script {
     function _setupInitialStrategies() internal {
         console.log("Setting up initial AI strategies...");
         
-        ValkryieVault vault = ValkryieVault(deploymentAddresses.vault);
+        ValkyrieVault vault = ValkyrieVault(deploymentAddresses.vault);
         
         // Strategy 1: Conservative DeFi (Low risk, stable yield)
         vault.addStrategy(
@@ -284,9 +284,9 @@ contract DeployAIVault is Script {
     function _verifyDeployment() internal view {
         console.log("Verifying deployment...");
         
-        ValkryieVault vault = ValkryieVault(deploymentAddresses.vault);
-        ValkryieAutomation automation = ValkryieAutomation(deploymentAddresses.automation);
-        ValkryiePriceOracle priceOracle = ValkryiePriceOracle(deploymentAddresses.priceOracle);
+        ValkyrieVault vault = ValkyrieVault(deploymentAddresses.vault);
+        ValkyrieAutomation automation = ValkyrieAutomation(deploymentAddresses.automation);
+        ValkyriePriceOracle priceOracle = ValkyriePriceOracle(deploymentAddresses.priceOracle);
         
         // Verify vault configuration
         require(vault.owner() == deploymentAddresses.owner, "Invalid vault owner");
@@ -295,7 +295,7 @@ contract DeployAIVault is Script {
         require(vault.strategyCount() == 4, "Invalid strategy count");
         
         // Verify automation configuration
-        ValkryieAutomation.StrategyConfig memory config = automation.getStrategyConfig();
+        ValkyrieAutomation.StrategyConfig memory config = automation.getStrategyConfig();
         require(config.autoRebalanceEnabled, "Auto rebalance not enabled");
         require(config.emergencyPauseEnabled, "Emergency pause not enabled");
         
@@ -311,10 +311,10 @@ contract DeployAIVault is Script {
         console.log("Chain ID:", block.chainid);
         console.log("");
         console.log("CORE CONTRACTS:");
-        console.log("ValkryieToken:", deploymentAddresses.valkToken);
-        console.log("ValkryiePriceOracle:", deploymentAddresses.priceOracle);
-        console.log("ValkryieVault:", deploymentAddresses.vault);
-        console.log("ValkryieAutomation:", deploymentAddresses.automation);
+        console.log("ValkyrieToken:", deploymentAddresses.valkToken);
+        console.log("ValkyriePriceOracle:", deploymentAddresses.priceOracle);
+        console.log("ValkyrieVault:", deploymentAddresses.vault);
+        console.log("ValkyrieAutomation:", deploymentAddresses.automation);
         console.log("");
         console.log("CONFIGURATION:");
         console.log("Owner:", deploymentAddresses.owner);

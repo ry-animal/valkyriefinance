@@ -2,17 +2,17 @@
 pragma solidity ^0.8.20;
 
 import {Test, console} from "forge-std/Test.sol";
-import {ValkryieToken} from "../src/ValkryieToken.sol";
-import {ValkryieVault} from "../src/ValkryieVault.sol";
-import {ValkryiePriceOracle} from "../src/ValkryiePriceOracle.sol";
+import {ValkyrieToken} from "../src/ValkyrieToken.sol";
+import {ValkyrieVault} from "../src/ValkyrieVault.sol";
+import {ValkyriePriceOracle} from "../src/ValkyriePriceOracle.sol";
 
 // Malicious contract to test reentrancy protection
 contract MaliciousContract {
-    ValkryieVault public vault;
-    ValkryieToken public asset;
+    ValkyrieVault public vault;
+    ValkyrieToken public asset;
     bool public attacking = false;
     
-    constructor(ValkryieVault _vault, ValkryieToken _asset) {
+    constructor(ValkyrieVault _vault, ValkyrieToken _asset) {
         vault = _vault;
         asset = _asset;
     }
@@ -34,8 +34,8 @@ contract MaliciousContract {
 }
 
 contract SecurityTest is Test {
-    ValkryieToken public token;
-    ValkryieVault public vault;
+    ValkyrieToken public token;
+    ValkyrieVault public vault;
     
     address public owner = address(0x1);
     address public attacker = address(0x2);
@@ -52,13 +52,13 @@ contract SecurityTest is Test {
         vm.label(feeRecipient, "FeeRecipient");
         
         vm.prank(owner);
-        token = new ValkryieToken("Test Token", "TKN", 1_000_000 * 1e18, owner);
+        token = new ValkyrieToken("Test Token", "TKN", 1_000_000 * 1e18, owner);
         
         // Deploy a simple price oracle for testing
-        ValkryiePriceOracle priceOracle = new ValkryiePriceOracle();
+        ValkyriePriceOracle priceOracle = new ValkyriePriceOracle();
         
         vm.prank(owner);
-        vault = new ValkryieVault(
+        vault = new ValkyrieVault(
             token,
             "Test Vault",
             "tVLK",
@@ -168,13 +168,13 @@ contract SecurityTest is Test {
     
     function test_TokenStakeZeroAmount() public {
         vm.prank(user);
-        vm.expectRevert(ValkryieToken.ZeroAmount.selector);
+        vm.expectRevert(ValkyrieToken.ZeroAmount.selector);
         token.stake(0);
     }
     
     function test_TokenStakeInsufficientBalance() public {
         vm.prank(user);
-        vm.expectRevert(ValkryieToken.InsufficientBalance.selector);
+        vm.expectRevert(ValkyrieToken.InsufficientBalance.selector);
         token.stake(200_000 * 1e18); // More than user has
     }
     
@@ -207,7 +207,7 @@ contract SecurityTest is Test {
     
     function test_TokenRewardRateExceedsLimit() public {
         vm.prank(owner);
-        vm.expectRevert(ValkryieToken.RewardRateTooHigh.selector);
+        vm.expectRevert(ValkyrieToken.RewardRateTooHigh.selector);
         token.setRewardRate(10001); // 100.01%
     }
     

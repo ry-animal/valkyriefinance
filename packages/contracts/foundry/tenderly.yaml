@@ -3,10 +3,10 @@ access_key: "SBmRBvND8OEx5ot3-VbIiVuXHbAKVchA"
 alerts:
 - description: Monitor significant changes in vault total assets
   name: Vault Total Assets Changed
-  network: valkryie-ai-vault
+  network: valkyrie-ai-vault
   rule:
     contracts:
-    - name: ValkryieVault
+    - name: ValkyrieVault
     event: Transfer
     filters:
     - property: value
@@ -15,33 +15,33 @@ alerts:
     type: event
 - description: Monitor AI-driven rebalancing operations
   name: AI Rebalancing Activity
-  network: valkryie-ai-vault
+  network: valkyrie-ai-vault
   rule:
     contracts:
-    - name: ValkryieVault
+    - name: ValkyrieVault
     function: rebalanceStrategy
     type: function
 - description: Monitor strategy additions and modifications
   name: Strategy Changes
-  network: valkryie-ai-vault
+  network: valkyrie-ai-vault
   rule:
     contracts:
-    - name: ValkryieVault
+    - name: ValkyrieVault
     function: addStrategy
     type: function
 - description: Monitor pause and emergency functions
   name: Emergency Events
-  network: valkryie-ai-vault
+  network: valkyrie-ai-vault
   rule:
     contracts:
-    - name: ValkryieVault
+    - name: ValkyrieVault
     functions:
     - pauseDeposits
     - unpauseDeposits
     type: function
 - description: Alert on transactions using excessive gas
   name: High Gas Consumption
-  network: valkryie-ai-vault
+  network: valkyrie-ai-vault
   rule:
     gas_used:
       type: gt
@@ -49,10 +49,10 @@ alerts:
     type: transaction
 - description: Monitor failed AI-driven operations
   name: Failed AI Operations
-  network: valkryie-ai-vault
+  network: valkyrie-ai-vault
   rule:
     contracts:
-    - name: ValkryieVault
+    - name: ValkyrieVault
     status: failed
     type: transaction
 analytics:
@@ -73,16 +73,16 @@ analytics:
   - fee_generation
 contracts:
 - address: ""
-  name: ValkryieToken
-  network: valkryie-ai-vault
+  name: ValkyrieToken
+  network: valkyrie-ai-vault
 - address: ""
-  name: ValkryieVault
-  network: valkryie-ai-vault
+  name: ValkyrieVault
+  network: valkyrie-ai-vault
 - address: ""
-  name: ValkryiePriceOracle
-  network: valkryie-ai-vault
+  name: ValkyriePriceOracle
+  network: valkyrie-ai-vault
 devnets:
-  valkryie-ai-vault:
+  valkyrie-ai-vault:
     accounts:
     - balance: 1e+24
       name: deployer
@@ -119,7 +119,7 @@ environments:
   development:
     auto_verify: true
     gas_reporting: true
-    network: valkryie-ai-vault
+    network: valkyrie-ai-vault
   production:
     auto_verify: false
     gas_reporting: false
@@ -135,7 +135,7 @@ integrations:
   email:
     enabled: true
     recipients:
-    - alerts@valkryie.finance
+    - alerts@valkyrie.finance
   slack:
     enabled: false
     webhook_url: ""
@@ -148,20 +148,20 @@ provider: https://virtual.mainnet.rpc.tenderly.co
 simulations:
   ai_rebalancing:
     contracts:
-    - ValkryieVault
+    - ValkyrieVault
     description: Simulate AI-driven rebalancing strategies
-    network: valkryie-ai-vault
+    network: valkyrie-ai-vault
   emergency_scenarios:
     contracts:
-    - ValkryieVault
+    - ValkyrieVault
     description: Simulate emergency pause and recovery scenarios
-    network: valkryie-ai-vault
+    network: valkyrie-ai-vault
   stress_testing:
     contracts:
-    - ValkryieVault
-    - ValkryieToken
+    - ValkyrieVault
+    - ValkyrieToken
     description: Simulate high-volume operations and whale activities
-    network: valkryie-ai-vault
+    network: valkyrie-ai-vault
 web3_actions:
 - description: Automated response to AI anomalies
   name: ai_anomaly_responder
