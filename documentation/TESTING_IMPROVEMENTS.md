@@ -11,7 +11,7 @@
 
 ### ✅ **Fully Passing Test Suites** (2/4)
 
-1. **ValkryieToken.t.sol**: 26/26 tests (100% success)
+1. **ValkyrieToken.t.sol**: 26/26 tests (100% success)
 2. **VaultSimple.t.sol**: 10/10 tests (100% success)
 
 ### ⚠️ **Suites Needing Fixes** (2/4)

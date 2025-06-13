@@ -1,12 +1,12 @@
 import { useAccount, useChainId, useReadContract, useWriteContract } from 'wagmi'
 import { formatUnits, parseUnits } from 'viem'
-import { VALKRYIE_TOKEN_ABI, getContractAddress } from '@valkryie/contracts'
+import { VALKRYIE_TOKEN_ABI, getContractAddress } from '@valkyrie/contracts'
 import { useWeb3Store } from '@/stores/web3-store'
 
 // Basic token information
-export function useValkryieTokenInfo() {
+export function useValkyrieTokenInfo() {
   const chainId = useChainId()
-  const tokenAddress = getContractAddress(chainId, 'valkryieToken')
+  const tokenAddress = getContractAddress(chainId, 'valkyrieToken')
 
   const { data: name } = useReadContract({
     address: tokenAddress,
@@ -47,10 +47,10 @@ export function useValkryieTokenInfo() {
 }
 
 // User's token balance and staking info
-export function useValkryieTokenBalance() {
+export function useValkyrieTokenBalance() {
   const { address } = useAccount()
   const chainId = useChainId()
-  const tokenAddress = getContractAddress(chainId, 'valkryieToken')
+  const tokenAddress = getContractAddress(chainId, 'valkyrieToken')
 
   const { data: balance } = useReadContract({
     address: tokenAddress,
@@ -87,10 +87,10 @@ export function useValkryieTokenBalance() {
 }
 
 // Governance information
-export function useValkryieGovernance() {
+export function useValkyrieGovernance() {
   const { address } = useAccount()
   const chainId = useChainId()
-  const tokenAddress = getContractAddress(chainId, 'valkryieToken')
+  const tokenAddress = getContractAddress(chainId, 'valkyrieToken')
 
   const { data: delegates } = useReadContract({
     address: tokenAddress,
@@ -121,10 +121,10 @@ export function useValkryieGovernance() {
 }
 
 // Token operations
-export function useValkryieTokenOperations() {
+export function useValkyrieTokenOperations() {
   const { address } = useAccount()
   const chainId = useChainId()
-  const tokenAddress = getContractAddress(chainId, 'valkryieToken')
+  const tokenAddress = getContractAddress(chainId, 'valkyrieToken')
   const { writeContractAsync, isPending, error } = useWriteContract()
   const { addTransaction } = useWeb3Store()
 

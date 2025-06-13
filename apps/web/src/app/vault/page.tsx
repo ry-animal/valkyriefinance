@@ -17,12 +17,12 @@ import {
     useVaultBalance,
     useVaultPreviews,
     useVaultOperations
-} from '@/hooks/use-valkryie-vault'
+} from '@/hooks/use-valkyrie-vault'
 import {
-    useValkryieTokenInfo,
-    useValkryieTokenBalance,
-    useValkryieTokenOperations
-} from '@/hooks/use-valkryie-token'
+    useValkyrieTokenInfo,
+    useValkyrieTokenBalance,
+    useValkyrieTokenOperations
+} from '@/hooks/use-valkyrie-token'
 import { useWeb3Store } from '@/stores/web3-store'
 
 export default function VaultPage() {
@@ -35,9 +35,9 @@ export default function VaultPage() {
     const vaultOperations = useVaultOperations()
 
     // Token data
-    const tokenInfo = useValkryieTokenInfo()
-    const tokenBalance = useValkryieTokenBalance()
-    const tokenOperations = useValkryieTokenOperations()
+    const tokenInfo = useValkyrieTokenInfo()
+    const tokenBalance = useValkyrieTokenBalance()
+    const tokenOperations = useValkyrieTokenOperations()
 
     // Form states
     const [depositAmount, setDepositAmount] = useState('')
@@ -55,9 +55,9 @@ export default function VaultPage() {
             <div className="container mx-auto p-6">
                 <div className="text-center py-12">
                     <Vault className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                    <h1 className="text-3xl font-bold mb-2">Valkryie Vault</h1>
+                    <h1 className="text-3xl font-bold mb-2">Valkyrie Vault</h1>
                     <p className="text-muted-foreground mb-6">
-                        Connect your wallet to interact with the Valkryie DeFi vault
+                        Connect your wallet to interact with the Valkyrie DeFi vault
                     </p>
                     <ConnectButton />
                 </div>
@@ -107,7 +107,7 @@ export default function VaultPage() {
         <div className="container mx-auto p-6 space-y-6">
             {/* Header */}
             <div className="text-center space-y-2">
-                <h1 className="text-4xl font-bold tracking-tight">Valkryie Vault Demo</h1>
+                <h1 className="text-4xl font-bold tracking-tight">Valkyrie Vault Demo</h1>
                 <p className="text-muted-foreground">
                     Experience our ERC-4626 vault and platform token integration
                 </p>
@@ -133,7 +133,7 @@ export default function VaultPage() {
                     <CardContent>
                         <div className="text-2xl font-bold">{vaultInfo.formattedTotalAssets}</div>
                         <p className="text-xs text-muted-foreground">
-                            {vaultInfo.name || 'Valkryie Vault'}
+                            {vaultInfo.name || 'Valkyrie Vault'}
                         </p>
                     </CardContent>
                 </Card>
@@ -374,7 +374,7 @@ export default function VaultPage() {
                                 <div className="space-y-2">
                                     <div className="flex justify-between">
                                         <span className="text-sm font-medium">Token Name:</span>
-                                        <span className="text-sm">{tokenInfo.name || 'Valkryie Token'}</span>
+                                        <span className="text-sm">{tokenInfo.name || 'Valkyrie Token'}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-sm font-medium">Symbol:</span>

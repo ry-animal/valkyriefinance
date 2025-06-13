@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import type { Portfolio, PortfolioAsset } from '@valkryie/common/types';
+import type { Portfolio, PortfolioAsset } from '@valkyrie/common/types';
 
 interface PortfolioState {
   portfolios: Portfolio[];

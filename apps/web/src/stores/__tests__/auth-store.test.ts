@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useAuthStore } from '../auth-store';
-import type { User } from '@valkryie/common/types';
+import type { User } from '@valkyrie/common/types';
 
 // Mock user data
 const mockUser: User = {

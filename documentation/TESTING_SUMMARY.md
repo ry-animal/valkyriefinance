@@ -8,11 +8,11 @@
 
 ## Overview
 
-We have successfully implemented thorough Foundry testing for the Valkryie Finance smart contracts, following smart contract security best practices. This comprehensive testing suite provides confidence in the contract security, functionality, and performance.
+We have successfully implemented thorough Foundry testing for the Valkyrie Finance smart contracts, following smart contract security best practices. This comprehensive testing suite provides confidence in the contract security, functionality, and performance.
 
 ## Test Suite Breakdown
 
-### 1. **ValkryieToken.t.sol** - ✅ **26/26 Tests Passing** (100%)
+### 1. **ValkyrieToken.t.sol** - ✅ **26/26 Tests Passing** (100%)
 
 **Purpose**: Comprehensive testing of the ERC-20 token with governance, staking, and rewards
 
@@ -251,7 +251,7 @@ forge test
 forge test --gas-report
 
 # Run specific test file
-forge test --match-contract ValkryieTokenTest
+forge test --match-contract ValkyrieTokenTest
 
 # Run with verbosity
 forge test -vvv

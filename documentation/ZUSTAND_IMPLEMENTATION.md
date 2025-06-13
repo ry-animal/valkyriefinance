@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 
@@ -8,7 +8,7 @@ alwaysApply: true
 
 ## Overview
 
-We've successfully implemented comprehensive state management using Zustand across the Valkryie Finance platform. This provides type-safe, lightweight, and developer-friendly state management that works seamlessly with our existing tRPC + TanStack Query architecture.
+We've successfully implemented comprehensive state management using Zustand across the Valkyrie Finance platform. This provides type-safe, lightweight, and developer-friendly state management that works seamlessly with our existing tRPC + TanStack Query architecture.
 
 ## Store Architecture
 

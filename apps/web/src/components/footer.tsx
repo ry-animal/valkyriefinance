@@ -4,7 +4,7 @@ export default function Footer() {
             <div className="container mx-auto px-4 py-8">
                 <div className="grid md:grid-cols-4 gap-8">
                     <div>
-                        <h3 className="font-semibold mb-3">Valkryie Finance</h3>
+                        <h3 className="font-semibold mb-3">Valkyrie Finance</h3>
                         <p className="text-sm text-muted-foreground">
                             Next-generation DeFi platform with AI-powered yield optimization.
                         </p>
@@ -39,7 +39,7 @@ export default function Footer() {
                 </div>
 
                 <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-                    © 2024 Valkryie Finance. All rights reserved.
+                    © 2024 Valkyrie Finance. All rights reserved.
                 </div>
             </div>
         </footer>

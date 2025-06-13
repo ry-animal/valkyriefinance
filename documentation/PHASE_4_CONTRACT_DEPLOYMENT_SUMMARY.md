@@ -13,19 +13,19 @@ Following the successful completion of Phases A-B-C (smart contract integration,
 #### Local Anvil Network (Chain ID: 31337)
 
 - **Mock USDC**: `0x5FbDB2315678afecb367f032d93F642f64180aa3`
-- **ValkryieToken**: `0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512`
-- **ValkryieVault**: `0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0`
+- **ValkyrieToken**: `0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512`
+- **ValkyrieVault**: `0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0`
 
 ### 📋 **What We Built**
 
 #### 1. **Complete Foundry Project** (`packages/contracts/foundry/`)
 
-- ✅ **ValkryieToken.sol** - ERC-20 + Governance + Staking (2,458 gas units)
-- ✅ **ValkryieVault.sol** - ERC-4626 + AI Integration (2,517 gas units)
+- ✅ **ValkyrieToken.sol** - ERC-20 + Governance + Staking (2,458 gas units)
+- ✅ **ValkyrieVault.sol** - ERC-4626 + AI Integration (2,517 gas units)
 - ✅ **Deploy.s.sol** - Multi-chain deployment scripts
 - ✅ **MockERC20.sol** - Testing infrastructure
 
-#### 2. **ValkryieToken Features**
+#### 2. **ValkyrieToken Features**
 
 ```solidity
 // Core Features Implemented:
@@ -37,7 +37,7 @@ Following the successful completion of Phases A-B-C (smart contract integration,
 - Owner controls for reward rate adjustment
 ```
 
-#### 3. **ValkryieVault Features**
+#### 3. **ValkyrieVault Features**
 
 ```solidity
 // Advanced Vault Features:
@@ -119,8 +119,8 @@ Deployer: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 
 ### **Smart Contract Development** ✅ 100% Complete
 
-- [x] ValkryieToken contract with staking
-- [x] ValkryieVault contract with strategies
+- [x] ValkyrieToken contract with staking
+- [x] ValkyrieVault contract with strategies
 - [x] Deployment scripts and configuration
 - [x] Local testing environment setup
 
@@ -143,13 +143,13 @@ Deployer: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 ### **Smart Contract Architecture**
 
 ```solidity
-ValkryieToken (ERC-20 + Governance + Staking)
+ValkyrieToken (ERC-20 + Governance + Staking)
 ├── Standard ERC-20 functionality
 ├── Governance with ERC20Votes
 ├── Staking with time-based rewards
 └── Owner-controlled reward parameters
 
-ValkryieVault (ERC-4626 + AI + Strategies)
+ValkyrieVault (ERC-4626 + AI + Strategies)
 ├── Standard vault deposit/withdraw operations
 ├── Multiple strategy allocation system
 ├── AI controller for automated rebalancing

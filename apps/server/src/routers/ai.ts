@@ -44,7 +44,7 @@ export const aiRouter = router({
     .mutation(async ({ input }) => {
       try {
         // Build context-aware system prompt
-        let systemPrompt = `You are an AI assistant for Valkryie Finance, a sophisticated DeFi platform. You help users with:
+        let systemPrompt = `You are an AI assistant for Valkyrie Finance, a sophisticated DeFi platform. You help users with:
         - ERC-4626 vault strategies and yield optimization
         - Multi-chain portfolio management
         - Platform token (VLKR) staking and governance
@@ -155,7 +155,7 @@ export const aiRouter = router({
         2. Cross-chain diversification
         3. Yield farming opportunities
         4. Risk reduction strategies
-        5. Valkryie vault integration potential
+        5. Valkyrie vault integration potential
         
         Be specific and actionable.`;
 
@@ -226,7 +226,7 @@ export const aiRouter = router({
         2. Protocol security and track record
         3. Liquidity and exit options
         4. Gas efficiency and user experience
-        5. Integration with Valkryie ecosystem
+        5. Integration with Valkyrie ecosystem
         
         Format as numbered opportunities with clear rationale.`;
 

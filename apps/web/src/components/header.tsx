@@ -20,7 +20,7 @@ export default function Header() {
         <div className="flex h-14 items-center justify-between">
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center space-x-2">
-              <span className="text-xl font-bold">Valkryie</span>
+              <span className="text-xl font-bold">Valkyrie</span>
             </Link>
             <nav className="hidden md:flex gap-6">
               {links.map(({ to, label }) => (

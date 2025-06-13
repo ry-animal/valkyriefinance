@@ -1,21 +1,21 @@
 version: v1.0
 account_id: ${TENDERLY_ACCOUNT_NAME}
-project_slug: valkryiefinance
+project_slug: valkyriefinance
 
 contracts:
-  - name: ValkryieVault
+  - name: ValkyrieVault
     address: ""
     network_id: "1"
     
-  - name: ValkryieAutomation  
+  - name: ValkyrieAutomation  
     address: ""
     network_id: "1"
     
-  - name: ValkryiePriceOracle
+  - name: ValkyriePriceOracle
     address: ""
     network_id: "1"
     
-  - name: ValkryieToken
+  - name: ValkyrieToken
     address: ""
     network_id: "1"
 
@@ -63,7 +63,7 @@ alerts:
               value: "1000000000000" # $1M in 6 decimal USDC
     notifications:
       - type: "email"
-        to: ["security@valkryie.finance"]
+        to: ["security@valkyrie.finance"]
         
   - name: "Emergency Pause Triggered"
     description: "Alert when vault is paused by AI or admin"
@@ -128,7 +128,7 @@ actions:
     trigger:
       type: "event"
       event: "AIResponseReceived"
-      contract: "ValkryieAutomation"
+      contract: "ValkyrieAutomation"
     runtime: "v2"
     sources:
       - name: "index.js"
@@ -142,7 +142,7 @@ actions:
               const { requestId, action, riskScore } = event.args;
               
               // Log to external analytics system
-              await fetch('https://api.valkryie.finance/ai-analytics', {
+              await fetch('https://api.valkyrie.finance/ai-analytics', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -164,7 +164,7 @@ actions:
     trigger:
       type: "event"
       event: "EmergencyPause"
-      contract: "ValkryieVault"
+      contract: "ValkyrieVault"
     runtime: "v2"
     sources:
       - name: "index.js"
@@ -196,7 +196,7 @@ actions:
                     'Authorization': `Bearer ${process.env.INCIDENT_API_KEY}`
                   },
                   body: JSON.stringify({
-                    title: 'Valkryie Vault Emergency Pause',
+                    title: 'Valkyrie Vault Emergency Pause',
                     description: `Vault paused: ${reason}`,
                     priority: 'critical',
                     assignee: 'security-team'

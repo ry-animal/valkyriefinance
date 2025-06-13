@@ -22,7 +22,7 @@ We have successfully implemented **thorough Foundry and Solidity testing** as re
 
 ### **Test Results by Category**
 
-1. **ValkryieToken.t.sol**: ✅ 26/26 (100%) - Perfect
+1. **ValkyrieToken.t.sol**: ✅ 26/26 (100%) - Perfect
 2. **VaultSimple.t.sol**: ✅ 10/10 (100%) - Perfect
 3. **Security.t.sol**: ⚠️ 15/22 (68%) - Good with known fixes
 4. **GasOptimization.t.sol**: ⚠️ 13/19 (68%) - Good with adjustments needed
@@ -136,7 +136,7 @@ We have successfully implemented **thorough Foundry and Solidity testing** as re
 
 ```
 packages/contracts/foundry/test/
-├── ValkryieToken.t.sol      # 26 tests - ERC-20, staking, governance
+├── ValkyrieToken.t.sol      # 26 tests - ERC-20, staking, governance
 ├── VaultSimple.t.sol        # 10 tests - ERC-4626 vault operations
 ├── Security.t.sol           # 22 tests - Security and access control
 ├── GasOptimization.t.sol    # 19 tests - Performance and efficiency
@@ -178,7 +178,7 @@ forge test
 forge test --gas-report
 
 # Run specific test suite
-forge test --match-contract ValkryieTokenTest
+forge test --match-contract ValkyrieTokenTest
 
 # Run with detailed output
 forge test -vvv

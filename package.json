@@ -1,5 +1,5 @@
 {
-  "name": "valkryiefinance",
+  "name": "valkyriefinance",
   "private": true,
   "workspaces": [
     "apps/*",

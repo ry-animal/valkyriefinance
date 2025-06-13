@@ -1,6 +1,9 @@
-# Valkryie Finance: AI-Driven DeFi Platform
+[![CI](https://github.com/valkyriefinance/actions/workflows/ci.yml/badge.svg)](https://github.com/valkyriefinance/valkyriefinance/actions/workflows/ci.yml)
+[![Web CI](https://github.com/valkyriefinance/actions/workflows/web-ci.yml/badge.svg)](https://github.com/valkyriefinance/valkyriefinance/actions/workflows/web-ci.yml)
 
-🤖 **AI-Managed ERC-4626 Vault with Chainlink Integration**
+# Valkyrie Finance: AI-Driven DeFi Platform
+
+�� **AI-Managed ERC-4626 Vault with Chainlink Integration**
 
 [![Tests](https://img.shields.io/badge/Tests-144%2F144%20Passing-brightgreen)](packages/contracts/foundry/test)
 [![Foundry](https://img.shields.io/badge/Built%20with-Foundry-blue)](https://getfoundry.sh/)
@@ -26,15 +29,15 @@
 
 ### Core Innovation
 
-Valkryie Finance combines cutting-edge AI with battle-tested DeFi infrastructure to create autonomous, yield-optimizing vaults that adapt to market conditions in real-time.
+Valkyrie Finance combines cutting-edge AI with battle-tested DeFi infrastructure to create autonomous, yield-optimizing vaults that adapt to market conditions in real-time.
 
 ### Key Components
 
 #### 🤖 AI-Driven Smart Contracts
 
-- **ValkryieVault.sol** - ERC-4626 compliant AI-managed yield vault
-- **ValkryieToken.sol** - Governance token with staking and rewards
-- **ValkryiePriceOracle.sol** - Chainlink-integrated price feeds
+- **ValkyrieVault.sol** - ERC-4626 compliant AI-managed yield vault
+- **ValkyrieToken.sol** - Governance token with staking and rewards
+- **ValkyriePriceOracle.sol** - Chainlink-integrated price feeds
 - **AI Integration Layer** - Autonomous strategy execution framework
 
 #### 🌐 Modern Web Application
@@ -73,8 +76,8 @@ Valkryie Finance combines cutting-edge AI with battle-tested DeFi infrastructure
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/valkryiefinance.git
-cd valkryiefinance
+git clone https://github.com/your-org/valkyriefinance.git
+cd valkyriefinance
 
 # Install dependencies
 bun install
@@ -173,7 +176,7 @@ Our comprehensive test suite covers:
 ## 📁 Project Structure
 
 ```
-valkryiefinance/
+valkyriefinance/
 ├── apps/
 │   ├── web/                 # Next.js frontend application
 │   │   ├── src/app/         # App router pages and layouts
@@ -358,7 +361,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ### Reporting Security Issues
 
-Please report security vulnerabilities to security@valkryie.finance.
+Please report security vulnerabilities to security@valkyrie.finance.
 
 ---
 
@@ -380,13 +383,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact & Community
 
-- **Website**: [valkryie.finance](https://valkryie.finance)
-- **Twitter**: [@ValkryieFinance](https://twitter.com/ValkryieFinance)
-- **Discord**: [Join our community](https://discord.gg/valkryie)
-- **Email**: hello@valkryie.finance
+- **Website**: [valkyrie.finance](https://valkyrie.finance)
+- **Twitter**: [@ValkyrieFinance](https://twitter.com/ValkyrieFinance)
+- **Discord**: [Join our community](https://discord.gg/valkyrie)
+- **Email**: hello@valkyrie.finance
 
 ---
 
-**Built with ❤️ by the Valkryie Finance team**
+**Built with ❤️ by the Valkyrie Finance team**
 
 _Revolutionizing DeFi through AI-driven automation and intelligent yield optimization._

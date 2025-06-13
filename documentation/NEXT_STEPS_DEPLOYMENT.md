@@ -18,7 +18,7 @@
 cd packages/contracts/foundry
 tenderly login
 tenderly init
-tenderly devnet spawn-rpc --project valkryie-finance --template mainnet
+tenderly devnet spawn-rpc --project valkyrie-finance --template mainnet
 forge script script/DeployTenderly.s.sol --rpc-url $TENDERLY_RPC_URL --broadcast
 ```
 

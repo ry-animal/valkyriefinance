@@ -1,8 +1,8 @@
-# Tenderly Integration Guide for Valkryie Finance
+# Tenderly Integration Guide for Valkyrie Finance
 
 ## Overview
 
-This guide covers the complete Tenderly integration for the AI-driven Valkryie Finance DeFi vault, implementing best practices from `docs/tenderly-best-practices.mdc`.
+This guide covers the complete Tenderly integration for the AI-driven Valkyrie Finance DeFi vault, implementing best practices from `docs/tenderly-best-practices.mdc`.
 
 ## 🏗️ Architecture Integration
 
@@ -44,13 +44,13 @@ This guide covers the complete Tenderly integration for the AI-driven Valkryie F
 
    ```yaml
    account_id: "your-account-id"
-   project_slug: "valkryie-finance"
+   project_slug: "valkyrie-finance"
    ```
 
 4. **Create DevNet**:
 
    ```bash
-   tenderly devnet spawn-rpc --project valkryie-finance --template mainnet
+   tenderly devnet spawn-rpc --project valkyrie-finance --template mainnet
    ```
 
 5. **Deploy Contracts**:
@@ -404,7 +404,7 @@ Track performance across all vault strategies:
 2. **Deploy to DevNet**:
 
    ```bash
-   tenderly devnet spawn-rpc --project valkryie-finance
+   tenderly devnet spawn-rpc --project valkyrie-finance
    forge script script/DeployTenderly.s.sol --rpc-url $TENDERLY_RPC_URL --broadcast
    ```
 

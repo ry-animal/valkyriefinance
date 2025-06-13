@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { logger } from '@valkryie/common/utils';
+import { logger } from '@valkyrie/common/utils';
 
 export type TRPCErrorCode = 
   | 'UNAUTHORIZED' 

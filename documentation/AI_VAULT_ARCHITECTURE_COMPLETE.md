@@ -1,10 +1,10 @@
-# AI-Driven Valkryie Vault: Complete Architecture & Implementation
+# AI-Driven Valkyrie Vault: Complete Architecture & Implementation
 
 ## 🚀 Project Status: AI-Driven Vault Architecture Complete
 
 ### ✅ Implementation Summary
 
-The Valkryie AI-Driven Vault represents a revolutionary approach to decentralized finance, successfully combining:
+The Valkyrie AI-Driven Vault represents a revolutionary approach to decentralized finance, successfully combining:
 
 - **Standardized Infrastructure** (ERC-4626)
 - **Advanced AI Capabilities** (Chainlink Functions)
@@ -36,9 +36,9 @@ This architecture transforms passive DeFi instruments into intelligent, autonomo
 
 ```mermaid
 graph TB
-    A[Users] --> B[ValkryieVault ERC-4626]
-    B --> C[ValkryiePriceOracle]
-    B --> D[ValkryieAutomation]
+    A[Users] --> B[ValkyrieVault ERC-4626]
+    B --> C[ValkyriePriceOracle]
+    B --> D[ValkyrieAutomation]
     D --> E[Chainlink Functions]
     E --> F[AI Models]
     D --> G[Chainlink Automation]
@@ -62,7 +62,7 @@ Market Data → Chainlink Oracles → AI Processing → Strategy Execution → V
 
 ### 1.3 Key Components
 
-#### ✅ ValkryieVault (Core ERC-4626 Vault)
+#### ✅ ValkyrieVault (Core ERC-4626 Vault)
 
 - **Purpose**: Primary user interface and asset management
 - **Features**:
@@ -72,7 +72,7 @@ Market Data → Chainlink Oracles → AI Processing → Strategy Execution → V
   - Cross-chain asset management via CCIP
   - VRF integration for fair randomness
 
-#### ✅ ValkryieAutomation (AI Controller)
+#### ✅ ValkyrieAutomation (AI Controller)
 
 - **Purpose**: AI decision-making and automation hub
 - **Features**:
@@ -81,7 +81,7 @@ Market Data → Chainlink Oracles → AI Processing → Strategy Execution → V
   - Risk threshold monitoring and emergency actions
   - Strategy configuration and execution management
 
-#### ✅ ValkryiePriceOracle (Market Data Hub)
+#### ✅ ValkyriePriceOracle (Market Data Hub)
 
 - **Purpose**: Centralized price and market data management
 - **Features**:
@@ -89,7 +89,7 @@ Market Data → Chainlink Oracles → AI Processing → Strategy Execution → V
   - Staleness detection and failover mechanisms
   - Custom data aggregation for AI inputs
 
-#### ✅ ValkryieToken (Governance Token)
+#### ✅ ValkyrieToken (Governance Token)
 
 - **Purpose**: Custom ERC-20 for governance and utility
 - **Features**:
@@ -213,13 +213,13 @@ function rebalanceCrossChain(
 # tenderly.yaml
 version: v1.0
 account_id: ${TENDERLY_ACCOUNT_NAME}
-project_slug: valkryiefinance
+project_slug: valkyriefinance
 
 contracts:
-  - name: ValkryieVault
+  - name: ValkyrieVault
     address: ""
     network_id: "1"
-  - name: ValkryieAutomation
+  - name: ValkyrieAutomation
     address: ""
     network_id: "1"
 
@@ -247,17 +247,17 @@ alerts:
   - name: "AI Risk Threshold Breach"
     trigger:
       event: "RiskThresholdBreached"
-      contract: "ValkryieVault"
+      contract: "ValkyrieVault"
     actions:
       - slack: "#vault-alerts"
-      - webhook: "https://api.valkryie.finance/emergency"
+      - webhook: "https://api.valkyrie.finance/emergency"
 
   - name: "Large Withdrawal Detection"
     trigger:
       function: "withdraw"
       threshold: "amount > 1000000"
     actions:
-      - email: "security@valkryie.finance"
+      - email: "security@valkyrie.finance"
 ```
 
 ---
@@ -424,7 +424,7 @@ Integration Tests (🔄)
 **Following Foundry best practices:**
 
 ```solidity
-contract ValkryieAIIntegrationTest is Test {
+contract ValkyrieAIIntegrationTest is Test {
     // Unit Tests: Individual component validation
     function testVaultInitialization() public { /* ... */ }
     function testAIRebalancing() public { /* ... */ }
@@ -487,10 +487,10 @@ forge script script/DeployAIVault.s.sol --rpc-url $MAINNET_RPC_URL --broadcast -
 
 #### 1. Core Smart Contract Architecture
 
-- **ValkryieVault.sol**: ERC-4626 compliant vault with AI integration hooks
-- **ValkryieToken.sol**: Custom ERC-20 governance token with minting/burning
-- **ValkryiePriceOracle.sol**: Price oracle with Chainlink feed integration
-- **ValkryieAutomation.sol**: AI automation system with Chainlink Functions
+- **ValkyrieVault.sol**: ERC-4626 compliant vault with AI integration hooks
+- **ValkyrieToken.sol**: Custom ERC-20 governance token with minting/burning
+- **ValkyriePriceOracle.sol**: Price oracle with Chainlink feed integration
+- **ValkyrieAutomation.sol**: AI automation system with Chainlink Functions
 
 #### 2. Testing Infrastructure
 
@@ -677,7 +677,7 @@ contract AIModelRegistry {
 
 ## Conclusion
 
-The Valkryie AI-Driven Vault represents a paradigm shift in DeFi, successfully combining the robustness of established standards (ERC-4626) with cutting-edge AI capabilities through comprehensive Chainlink integration. The hybrid smart contract approach ensures that while AI drives strategic decisions, the core security and functionality remain anchored in battle-tested blockchain infrastructure.
+The Valkyrie AI-Driven Vault represents a paradigm shift in DeFi, successfully combining the robustness of established standards (ERC-4626) with cutting-edge AI capabilities through comprehensive Chainlink integration. The hybrid smart contract approach ensures that while AI drives strategic decisions, the core security and functionality remain anchored in battle-tested blockchain infrastructure.
 
 This implementation establishes a new paradigm for intelligent, autonomous DeFi applications while maintaining the security and transparency that users demand. The comprehensive architecture, testing framework, and operational tooling position this project to lead the next generation of AI-enhanced decentralized finance.
 
@@ -685,9 +685,9 @@ This implementation establishes a new paradigm for intelligent, autonomous DeFi 
 
 ---
 
-_This document represents the complete technical architecture and implementation status for the Valkryie AI-Driven Vault system._
+_This document represents the complete technical architecture and implementation status for the Valkyrie AI-Driven Vault system._
 
 **Version**: 1.0 Combined  
 **Last Updated**: December 2024  
-**Authors**: Valkryie Finance Development Team  
+**Authors**: Valkyrie Finance Development Team  
 **Review Status**: Architecture Complete - Testing Phase

@@ -22,7 +22,7 @@
     "ai": "^4.3.16",
     "@ai-sdk/google": "^1.2.3",
     "better-auth": "^1.2.8",
-    "@valkryie/common": "workspace:*",
+    "@valkyrie/common": "workspace:*",
     "zod": "^3.22.4"
   },
   "devDependencies": {

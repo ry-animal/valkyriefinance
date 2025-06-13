@@ -1,5 +1,5 @@
 {
-  "name": "@valkryie/common",
+  "name": "@valkyrie/common",
   "version": "0.1.0",
   "private": true,
   "main": "./dist/index.js",

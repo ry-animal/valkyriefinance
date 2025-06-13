@@ -1,4 +1,4 @@
-git # Valkryie AI Vault: Next Steps Summary
+git # Valkyrie AI Vault: Next Steps Summary
 
 ## 🎯 Current Status
 
@@ -26,8 +26,8 @@ forge test --via-ir
 **Files to check**:
 
 - `foundry.toml` - remappings configuration
-- `ValkryieAutomation.sol` - Chainlink Functions integration
-- `ValkryiePriceOracle.sol` - Price feed integration
+- `ValkyrieAutomation.sol` - Chainlink Functions integration
+- `ValkyriePriceOracle.sol` - Price feed integration
 
 ### 2. Deploy to Tenderly Virtual TestNet (Week 1-2)
 
@@ -59,10 +59,10 @@ forge script script/DeploySimple.s.sol --rpc-url $TENDERLY_VIRTUAL_TESTNET_RPC_U
 ### Core Components (All Implemented)
 
 ```
-ValkryieVault.sol        ✅ ERC-4626 compliant vault with AI hooks
-ValkryieToken.sol        ✅ Governance token with minting/burning
-ValkryiePriceOracle.sol  ✅ Chainlink price feed integration
-ValkryieAutomation.sol   ✅ AI automation via Chainlink Functions
+ValkyrieVault.sol        ✅ ERC-4626 compliant vault with AI hooks
+ValkyrieToken.sol        ✅ Governance token with minting/burning
+ValkyriePriceOracle.sol  ✅ Chainlink price feed integration
+ValkyrieAutomation.sol   ✅ AI automation via Chainlink Functions
 ```
 
 ### Testing Status

@@ -13,7 +13,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-12 md:py-16">
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-              Valkryie Finance
+              Valkyrie Finance
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Next-generation DeFi platform with AI-powered yield optimization.

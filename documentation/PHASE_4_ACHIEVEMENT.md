@@ -28,7 +28,7 @@ Ran 4 test suites in 2.81s: 77 tests passed, 0 failed, 0 skipped (77 total tests
 - **Emergency Controls**: Pause/unpause functionality working perfectly
 - **Boundary Testing**: Maximum values and edge cases thoroughly covered
 
-### **🔧 ValkryieTokenTest.sol** - 26/26 ✅ (Complete Token Functionality)
+### **🔧 ValkyrieTokenTest.sol** - 26/26 ✅ (Complete Token Functionality)
 
 - **ERC-20 Standard**: All standard operations (transfer, approve, allowance)
 - **Governance Features**: Voting power, delegation, proposal creation
@@ -56,7 +56,7 @@ Ran 4 test suites in 2.81s: 77 tests passed, 0 failed, 0 skipped (77 total tests
 
 ## 🚀 **Smart Contract Implementation**
 
-### **ValkryieToken.sol**
+### **ValkyrieToken.sol**
 
 - **ERC-20 Compliance** with extended functionality
 - **Governance Integration** (ERC20Votes standard)
@@ -64,7 +64,7 @@ Ran 4 test suites in 2.81s: 77 tests passed, 0 failed, 0 skipped (77 total tests
 - **Access Control** with role-based permissions
 - **Security Features** including pause/unpause functionality
 
-### **ValkryieVault.sol**
+### **ValkyrieVault.sol**
 
 - **ERC-4626 Standard** implementation
 - **AI Strategy Management** with allocation controls
@@ -131,8 +131,8 @@ Ran 4 test suites in 2.81s: 77 tests passed, 0 failed, 0 skipped (77 total tests
 ### **Local Deployment (Anvil)**
 
 - **Mock USDC**: `0x5FbDB2315678afecb367f032d93F642f64180aa3`
-- **ValkryieToken**: `0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512`
-- **ValkryieVault**: `0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0`
+- **ValkyrieToken**: `0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512`
+- **ValkyrieVault**: `0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0`
 
 ### **Multi-Chain Ready**
 
@@ -151,7 +151,7 @@ Configured for deployment across 5 major networks:
 ### **Immediate Actions**
 
 1. **Deploy to Ethereum Sepolia** - Primary testnet validation
-2. **Deploy to Layer 2 Testnets** - Arbitrum Sepolia, Optimism Sepolia
+2. **Deploy to Layer 2 Testnets** - Arbitrum Sepolia, Optimism Sepolia, Base Sepolia
 3. **Frontend Integration Testing** - Connect UI to live testnet contracts
 4. **User Acceptance Testing** - Real transaction testing with testnet tokens
 5. **Security Audit Preparation** - Documentation and code finalization
@@ -175,4 +175,4 @@ Configured for deployment across 5 major networks:
 🏗️ **Professional Standards** - Industry best practices and audit-ready codebase  
 🚀 **Deployment Ready** - Live contracts tested and ready for testnet deployment
 
-**The Valkryie Finance platform now has PRODUCTION-READY SMART CONTRACTS that meet the highest standards of security, efficiency, and functionality in the DeFi ecosystem.**
+**The Valkyrie Finance platform now has PRODUCTION-READY SMART CONTRACTS that meet the highest standards of security, efficiency, and functionality in the DeFi ecosystem.**

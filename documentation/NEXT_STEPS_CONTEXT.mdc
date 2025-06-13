@@ -23,9 +23,9 @@ alwaysApply: true
 - Comprehensive testing (Unit + E2E)
 
 **Smart Contract Integration**:
-- `@valkryie/contracts` package with complete ABIs and types
+- `@valkyrie/contracts` package with complete ABIs and types
 - ERC-4626 vault operations (deposit, withdraw, mint, redeem)
-- Valkryie token operations (stake, unstake, delegate, governance)
+- Valkyrie token operations (stake, unstake, delegate, governance)
 - Multi-chain support: Ethereum, Arbitrum, Optimism, Polygon, Base
 - Type-safe contract interaction hooks
 - Web3 store integration for transaction tracking
@@ -45,7 +45,7 @@ alwaysApply: true
 ### **Architecture Overview**
 
 ```
-valkryiefinance/
+valkyriefinance/
 ├── apps/
 │   ├── web/                    # Next.js frontend (port 3001)
 │   │   ├── src/app/           # 6 pages including vault demo
@@ -68,14 +68,14 @@ valkryiefinance/
 **Tasks**:
 - [ ] Set up Foundry project in `packages/contracts/foundry/`
 - [ ] Write ERC-4626 vault contract implementation
-- [ ] Write Valkryie token contract (ERC-20 + governance + staking)
+- [ ] Write Valkyrie token contract (ERC-20 + governance + staking)
 - [ ] Deploy to Sepolia testnet first
 - [ ] Update contract addresses in `packages/contracts/src/addresses/index.ts`
 - [ ] Test all operations with real deployed contracts
 
 **Files to Create**:
-- `packages/contracts/foundry/src/ValkryieVault.sol`
-- `packages/contracts/foundry/src/ValkryieToken.sol`
+- `packages/contracts/foundry/src/ValkyrieVault.sol`
+- `packages/contracts/foundry/src/ValkyrieToken.sol`
 - `packages/contracts/foundry/script/Deploy.s.sol`
 
 ### **2. Live Integration Testing**
@@ -175,7 +175,7 @@ bun run db:generate       # Generate new migrations
 
 **apps/server/.env.local**:
 ```env
-DATABASE_URL=postgresql://localhost:5432/valkryie_db
+DATABASE_URL=postgresql://localhost:5432/valkyrie_db
 BETTER_AUTH_SECRET=your_32_character_secret
 BETTER_AUTH_URL=http://localhost:3000
 CORS_ORIGIN=http://localhost:3001
@@ -193,8 +193,8 @@ NEXT_PUBLIC_ENABLE_WEB3=true
 ## 📚 Key Files to Know
 
 ### **Smart Contract Hooks**
-- `apps/web/src/hooks/use-valkryie-vault.ts` - Vault operations
-- `apps/web/src/hooks/use-valkryie-token.ts` - Token operations
+- `apps/web/src/hooks/use-valkyrie-vault.ts` - Vault operations
+- `apps/web/src/hooks/use-valkyrie-token.ts` - Token operations
 - `apps/web/src/hooks/use-token-balance.ts` - Multi-chain balances
 
 ### **Contract Integration**
@@ -245,4 +245,4 @@ NEXT_PUBLIC_ENABLE_WEB3=true
 
 ---
 
-**Quick Context**: Valkryie Finance is a next-gen DeFi platform integrating AI with blockchain. We've completed the foundation with smart contract integration, interactive vault operations, and AI preparation. The platform is now ready for real contract deployment and live testing.
+**Quick Context**: Valkyrie Finance is a next-gen DeFi platform integrating AI with blockchain. We've completed the foundation with smart contract integration, interactive vault operations, and AI preparation. The platform is now ready for real contract deployment and live testing.

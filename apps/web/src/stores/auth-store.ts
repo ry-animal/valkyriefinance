@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import type { User } from '@valkryie/common/types';
+import type { User } from '@valkyrie/common/types';
 
 interface AuthState {
   user: User | null;

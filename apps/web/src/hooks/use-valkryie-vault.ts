@@ -1,12 +1,12 @@
 import { useAccount, useChainId, useReadContract, useWriteContract } from 'wagmi'
 import { formatUnits, parseUnits } from 'viem'
-import { ERC4626_VAULT_ABI, getContractAddress } from '@valkryie/contracts'
+import { ERC4626_VAULT_ABI, getContractAddress } from '@valkyrie/contracts'
 import { useWeb3Store } from '@/stores/web3-store'
 
 // Vault information
 export function useVaultInfo() {
   const chainId = useChainId()
-  const vaultAddress = getContractAddress(chainId, 'valkryieVault')
+  const vaultAddress = getContractAddress(chainId, 'valkyrieVault')
 
   const { data: name } = useReadContract({
     address: vaultAddress,
@@ -59,7 +59,7 @@ export function useVaultInfo() {
 export function useVaultBalance() {
   const { address } = useAccount()
   const chainId = useChainId()
-  const vaultAddress = getContractAddress(chainId, 'valkryieVault')
+  const vaultAddress = getContractAddress(chainId, 'valkyrieVault')
 
   const { data: shares } = useReadContract({
     address: vaultAddress,
@@ -108,7 +108,7 @@ export function useVaultBalance() {
 // Preview functions for estimating operations
 export function useVaultPreviews() {
   const chainId = useChainId()
-  const vaultAddress = getContractAddress(chainId, 'valkryieVault')
+  const vaultAddress = getContractAddress(chainId, 'valkyrieVault')
 
   const previewDeposit = (assets: string) => {
     const assetsWei = parseUnits(assets, 18)
@@ -166,7 +166,7 @@ export function useVaultPreviews() {
 export function useVaultOperations() {
   const { address } = useAccount()
   const chainId = useChainId()
-  const vaultAddress = getContractAddress(chainId, 'valkryieVault')
+  const vaultAddress = getContractAddress(chainId, 'valkyrieVault')
   const { writeContractAsync, isPending, error } = useWriteContract()
   const { addTransaction } = useWeb3Store()
 

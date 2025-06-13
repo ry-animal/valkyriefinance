@@ -10,16 +10,16 @@ export const wagmiConfig = createConfig({
   connectors: [
     injected(),
     coinbaseWallet({ 
-      appName: 'Valkryie Finance',
-      appLogoUrl: 'https://valkryie.finance/logo.png'
+      appName: 'Valkyrie Finance',
+      appLogoUrl: 'https://valkyrie.finance/logo.png'
     }),
     walletConnect({ 
       projectId: env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'default-project-id',
       metadata: {
-        name: 'Valkryie Finance',
+        name: 'Valkyrie Finance',
         description: 'AI-Powered DeFi Vault Platform',
-        url: 'https://valkryie.finance',
-        icons: ['https://valkryie.finance/logo.png'],
+        url: 'https://valkyrie.finance',
+        icons: ['https://valkyrie.finance/logo.png'],
       },
     }),
   ],

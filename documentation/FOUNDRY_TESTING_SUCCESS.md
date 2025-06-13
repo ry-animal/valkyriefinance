@@ -25,7 +25,7 @@ Ran 4 test suites in 2.81s: 77 tests passed, 0 failed, 0 skipped (77 total tests
 - **Emergency Controls**: Pause/unpause functionality working
 - **Boundary Testing**: Max values and edge cases handled
 
-#### 2. **ValkryieToken.t.sol** - 26/26 ✅ (100%)
+#### 2. **ValkyrieToken.t.sol** - 26/26 ✅ (100%)
 
 - **ERC-20 Functionality**: Transfer, approve, allowance
 - **Governance Features**: Voting power, delegation
@@ -261,7 +261,7 @@ Solidity Version: 0.8.26
 
 **This represents a major milestone in smart contract development excellence.**
 
-The Valkryie Finance platform now has:
+The Valkyrie Finance platform now has:
 
 - **Production-ready smart contracts** with 100% test coverage
 - **Bank-level security** with comprehensive attack prevention

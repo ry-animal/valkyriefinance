@@ -1,6 +1,6 @@
 # Tenderly Integration Setup Guide
 
-This guide walks through setting up Tenderly for the AI-driven Valkryie Finance vault following best practices from `tenderly-best-practices.mdc`.
+This guide walks through setting up Tenderly for the AI-driven Valkyrie Finance vault following best practices from `tenderly-best-practices.mdc`.
 
 ## Prerequisites
 
@@ -35,7 +35,7 @@ This guide walks through setting up Tenderly for the AI-driven Valkryie Finance 
 1. **Create DevNet**:
 
    ```bash
-   tenderly devnet spawn-rpc --project valkryie-finance --template mainnet
+   tenderly devnet spawn-rpc --project valkyrie-finance --template mainnet
    ```
 
 2. **Get DevNet RPC URL**:
@@ -94,7 +94,7 @@ This guide walks through setting up Tenderly for the AI-driven Valkryie Finance 
      --name "Vault Health Monitor" \
      --network "your-devnet-id" \
      --type "function" \
-     --contract "ValkryieVault" \
+     --contract "ValkyrieVault" \
      --function "deposit"
    ```
 
@@ -214,7 +214,7 @@ This guide walks through setting up Tenderly for the AI-driven Valkryie Finance 
 1. **Create Mainnet Fork**:
 
    ```bash
-   tenderly devnet spawn-rpc --project valkryie-finance --template mainnet --chain-id 1
+   tenderly devnet spawn-rpc --project valkyrie-finance --template mainnet --chain-id 1
    ```
 
 2. **Test Against Real Protocols**:
@@ -279,14 +279,14 @@ This guide walks through setting up Tenderly for the AI-driven Valkryie Finance 
    tenderly devnet list
 
    # Restart if needed
-   tenderly devnet spawn-rpc --project valkryie-finance --template mainnet
+   tenderly devnet spawn-rpc --project valkyrie-finance --template mainnet
    ```
 
 2. **Contract Verification**:
 
    ```bash
    # Verify contracts manually
-   tenderly verify --networks your-devnet-id ValkryieVault
+   tenderly verify --networks your-devnet-id ValkyrieVault
    ```
 
 3. **Web3 Actions Debugging**:
