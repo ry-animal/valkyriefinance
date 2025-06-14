@@ -46,33 +46,28 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Install dependencies with Bun
+      - name: Install dependencies
         run: bun install
 
-      - name: Lint web app
+      - name: Build shared packages
         run: |
-          cd apps/web
-          bun run lint
+          cd packages/common && bun run build
+          cd ../contracts && bun run build
 
-      - name: Type check web app
+      - name: Type check
         run: |
           cd apps/web
           bun run check-types
 
-      - name: Test web app
+      - name: Lint
+        run: |
+          cd apps/web
+          bun run lint
+
+      - name: Unit tests
         run: |
           cd apps/web
           bun run test
-
-      - name: Build web app
-        run: |
-          cd apps/web
-          bun run build
 
   # Server Application Tests
   server:
@@ -85,18 +80,18 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Install dependencies with Bun
+      - name: Install dependencies
         run: bun install
 
-      - name: Type check server app
+      - name: Build shared packages
+        run: |
+          cd packages/common && bun run build
+          cd ../contracts && bun run build
+
+      - name: Type check
         run: |
           cd apps/server
           bun run check-types
-
-      - name: Build server app
-        run: |
-          cd apps/server
-          bun run build
 
   # E2E Tests (only if all other tests pass)
   e2e:
@@ -110,8 +105,13 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Install dependencies with Bun
+      - name: Install dependencies
         run: bun install
+
+      - name: Build shared packages
+        run: |
+          cd packages/common && bun run build
+          cd ../contracts && bun run build
 
       - name: Install Playwright
         run: |

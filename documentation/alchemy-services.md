@@ -1,6 +1,6 @@
-# Alchemy Services and Valkryie Finance Integration Brainstorm
+# Alchemy Services and Valkyrie Finance Integration Brainstorm
 
-This document provides an overview of the services offered by Alchemy and brainstorms their potential application within the Valkryie Finance platform.
+This document provides an overview of the services offered by Alchemy and brainstorms their potential application within the Valkyrie Finance platform.
 
 ## Alchemy Services Overview
 
@@ -25,9 +25,9 @@ Here is a list of services provided by the Alchemy platform:
 - **Webhooks**: Allows services to receive real-time notifications about on-chain events.
 - **Blast**: Dedicated service for interacting with the Blast L2 network.
 
-## Brainstorming for Valkryie Finance
+## Brainstorming for Valkyrie Finance
 
-This section explores how each Alchemy service can be integrated into Valkryie Finance to enhance existing features or enable new ones, aligning with our goals of AI-driven optimization, seamless cross-chain functionality, and superior user experience.
+This section explores how each Alchemy service can be integrated into Valkyrie Finance to enhance existing features or enable new ones, aligning with our goals of AI-driven optimization, seamless cross-chain functionality, and superior user experience.
 
 ### Core Data and Infrastructure
 
@@ -41,7 +41,7 @@ This section explores how each Alchemy service can be integrated into Valkryie F
 
 ### Account Abstraction (ERC-4337) - A Major UX Enhancement
 
-This suite of APIs (**Account Kit, Gas Manager API, Bundler API, userOp Simulation API**) could be a cornerstone of a "Valkryie Pro" or "Valkryie Easy" mode, fundamentally improving user onboarding and interaction.
+This suite of APIs (**Account Kit, Gas Manager API, Bundler API, userOp Simulation API**) could be a cornerstone of a "Valkyrie Pro" or "Valkyrie Easy" mode, fundamentally improving user onboarding and interaction.
 
 - **Account Kit**: We can offer embedded smart wallets, allowing users to onboard with just an email or social login. This removes the major friction point of seed phrases and wallet installation for new-to-DeFi users.
 - **Gas Manager API**: We can implement gas sponsoring for specific actions. For instance, the platform could pay the gas fee for a user's first vault deposit or for any AI-suggested rebalancing transaction. This is a powerful user acquisition and retention tool.
@@ -53,10 +53,10 @@ This suite of APIs (**Account Kit, Gas Manager API, Bundler API, userOp Simulati
   - **User-Facing**: Before any transaction, we can show a detailed preview: "You will receive X shares, your new balance will be Y, and it will cost Z in gas."
   - **AI-Facing**: Our AI models _must_ use this before executing any strategy. It can simulate a complex rebalancing across multiple protocols to verify profitability after gas fees and slippage, preventing costly errors.
 - **Webhooks**: Essential for making our platform real-time and event-driven.
-  - Our server can subscribe to webhooks to listen for deposits into our `ValkryieVault`. When a deposit happens, we can immediately update the user's off-chain portfolio and trigger an AI analysis.
+  - Our server can subscribe to webhooks to listen for deposits into our `ValkyrieVault`. When a deposit happens, we can immediately update the user's off-chain portfolio and trigger an AI analysis.
   - The AI services can use webhooks to monitor target DeFi protocols. A webhook on a large liquidity movement in a monitored protocol could trigger a risk assessment or a potential yield-switching opportunity.
 - **Websockets**: Perfect for a dynamic frontend experience. The UI can subscribe to a websocket stream to get notified instantly when a transaction is confirmed, a new AI recommendation is available, or the user's portfolio value changes, without needing to constantly poll the backend.
-- **Subgraphs**: We could deploy a custom subgraph for our `ValkryieVault` and other core contracts. This would allow our frontend to query for historical data (like vault share price over time, or all governance votes) in a very efficient and decentralized manner, potentially faster than our internal database for certain queries.
+- **Subgraphs**: We could deploy a custom subgraph for our `ValkyrieVault` and other core contracts. This would allow our frontend to query for historical data (like vault share price over time, or all governance votes) in a very efficient and decentralized manner, potentially faster than our internal database for certain queries.
 
 ### Developer and Niche Features
 

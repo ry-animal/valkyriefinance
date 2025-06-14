@@ -9,7 +9,7 @@ const projectId = env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '1a91f40c774bfe7c5
 
 // 2. Create a metadata object - optional
 const metadata = {
-  name: 'Valkryie Finance',
+  name: 'Valkyrie Finance',
   description: 'AI-Driven DeFi Platform',
   url: 'https://valkyrie.finance', // origin must match your domain & subdomain
   icons: ['https://assets.reown.com/reown-profile-pic.png']

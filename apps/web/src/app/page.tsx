@@ -3,93 +3,240 @@ import { VaultDashboard } from "@/components/vault/vault-dashboard";
 import { WalletConnect } from "@/components/wallet/wallet-connect";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Footer from "@/components/footer";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { BrutalGrid, BrutalSection, BrutalHeadline, BrutalBox, BrutalText } from "@/components/brutalist/layout";
 
-export default function Home() {
-
+export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="border-b bg-gradient-to-r from-background to-muted/20">
-        <div className="container mx-auto px-4 py-12 md:py-16">
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-              Valkyrie Finance
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Next-generation DeFi platform with AI-powered yield optimization.
-              Deposit assets into our intelligent vaults for automated cross-chain yield farming.
-            </p>
-            <div className="pt-4">
-              <WalletConnect />
-            </div>
+      <BrutalSection fullWidth className="min-h-screen flex items-center justify-center border-b-4 border-black">
+        <div className="text-center max-w-6xl mx-auto">
+          <BrutalHeadline size="mega" className="mb-8">
+            DEFI
+            <br />
+            BRUTALISM
+          </BrutalHeadline>
+          <BrutalText variant="mono" size="xl" className="mb-12 max-w-4xl mx-auto">
+            THE MOST AGGRESSIVE YIELD OPTIMIZATION PLATFORM. 
+            AI-POWERED. CROSS-CHAIN COMPATIBLE. ZERO COMPROMISE.
+          </BrutalText>
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Button size="xl" className="shadow-brutal-xl text-2xl px-16 py-8">
+              LAUNCH APP
+            </Button>
+            <Button variant="outline" size="xl" className="text-2xl px-16 py-8">
+              READ DOCS
+            </Button>
           </div>
         </div>
-      </section>
+      </BrutalSection>
 
-      {/* Main Vault Interface */}
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-2">Intelligent Yield Vaults</h2>
-            <p className="text-muted-foreground">
-              AI-driven strategies automatically optimize your yield across DeFi protocols
-            </p>
-          </div>
-
-          <VaultDashboard />
-        </div>
-      </section>
+      {/* Stats Section */}
+      <BrutalSection fullWidth className="bg-black text-white border-white">
+        <BrutalGrid cols={12} className="bg-black border-white">
+          <BrutalBox className="col-span-12 md:col-span-3 bg-black border-white text-white text-center" border>
+            <BrutalHeadline size="massive" className="text-white mb-4">
+              $127M
+            </BrutalHeadline>
+            <BrutalText variant="brutal" className="text-white">
+              TOTAL VALUE LOCKED
+            </BrutalText>
+          </BrutalBox>
+          
+          <BrutalBox className="col-span-12 md:col-span-3 bg-black border-white text-white text-center" border>
+            <BrutalHeadline size="massive" className="text-white mb-4">
+              24.7%
+            </BrutalHeadline>
+            <BrutalText variant="brutal" className="text-white">
+              AVERAGE APY
+            </BrutalText>
+          </BrutalBox>
+          
+          <BrutalBox className="col-span-12 md:col-span-3 bg-black border-white text-white text-center" border>
+            <BrutalHeadline size="massive" className="text-white mb-4">
+              7
+            </BrutalHeadline>
+            <BrutalText variant="brutal" className="text-white">
+              SUPPORTED CHAINS
+            </BrutalText>
+          </BrutalBox>
+          
+          <BrutalBox className="col-span-12 md:col-span-3 bg-black border-white text-white text-center" border>
+            <BrutalHeadline size="massive" className="text-white mb-4">
+              99.9%
+            </BrutalHeadline>
+            <BrutalText variant="brutal" className="text-white">
+              UPTIME
+            </BrutalText>
+          </BrutalBox>
+        </BrutalGrid>
+      </BrutalSection>
 
       {/* Features Section */}
-      <section className="py-12 bg-muted/20">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  🤖 AI-Powered
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Advanced machine learning algorithms continuously optimize yield strategies
-                  across multiple DeFi protocols and chains.
-                </CardDescription>
-              </CardContent>
-            </Card>
+      <BrutalSection className="py-20">
+        <BrutalHeadline size="giant" className="mb-16 text-center">
+          FEATURES
+        </BrutalHeadline>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>AI OPTIMIZATION</CardTitle>
+              <CardDescription>MACHINE LEARNING ALGORITHMS</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BrutalText variant="mono" className="mb-6">
+                ADVANCED AI MODELS CONTINUOUSLY ANALYZE MARKET CONDITIONS 
+                AND OPTIMIZE YIELD STRATEGIES IN REAL-TIME.
+              </BrutalText>
+              <Button className="w-full">LEARN MORE</Button>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  🌉 Cross-Chain
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Seamlessly bridge assets from any supported chain directly into
-                  high-yield vaults with a single transaction.
-                </CardDescription>
-              </CardContent>
-            </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>CROSS-CHAIN SWAPS</CardTitle>
+              <CardDescription>SEAMLESS BRIDGING</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BrutalText variant="mono" className="mb-6">
+                SWAP FROM ANY SUPPORTED CHAIN DIRECTLY INTO OUR 
+                YIELD-BEARING VAULT WITH ONE TRANSACTION.
+              </BrutalText>
+              <Button className="w-full">LEARN MORE</Button>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  📈 Optimized Yield
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Automated rebalancing and strategy execution ensures you&apos;re always
-                  earning the highest risk-adjusted returns.
-                </CardDescription>
-              </CardContent>
-            </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>UNISWAP V4 HOOKS</CardTitle>
+              <CardDescription>CUSTOM LIQUIDITY MANAGEMENT</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BrutalText variant="mono" className="mb-6">
+                PROPRIETARY HOOKS OPTIMIZE LIQUIDITY POSITIONS AND 
+                MINIMIZE IMPERMANENT LOSS AUTOMATICALLY.
+              </BrutalText>
+              <Button className="w-full">LEARN MORE</Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>ERC-4626 VAULT</CardTitle>
+              <CardDescription>STANDARDIZED INTERFACE</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BrutalText variant="mono" className="mb-6">
+                FULLY COMPLIANT ERC-4626 TOKENIZED VAULT WITH 
+                MAXIMUM COMPOSABILITY AND INTEROPERABILITY.
+              </BrutalText>
+              <Button className="w-full">LEARN MORE</Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>RISK MANAGEMENT</CardTitle>
+              <CardDescription>AUTOMATED PROTECTION</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BrutalText variant="mono" className="mb-6">
+                AI-POWERED RISK ASSESSMENT AND AUTOMATED CIRCUIT 
+                BREAKERS PROTECT YOUR FUNDS 24/7.
+              </BrutalText>
+              <Button className="w-full">LEARN MORE</Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>GOVERNANCE TOKEN</CardTitle>
+              <CardDescription>DECENTRALIZED CONTROL</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BrutalText variant="mono" className="mb-6">
+                PARTICIPATE IN PROTOCOL GOVERNANCE AND EARN 
+                REWARDS WITH THE VALKYRIE TOKEN.
+              </BrutalText>
+              <Button className="w-full">LEARN MORE</Button>
+            </CardContent>
+          </Card>
+        </div>
+      </BrutalSection>
+
+      {/* Technology Stack */}
+      <BrutalSection fullWidth className="bg-white border-black">
+        <div className="max-w-7xl mx-auto">
+          <BrutalHeadline size="giant" className="mb-16 text-center">
+            TECHNOLOGY
+          </BrutalHeadline>
+          
+          <BrutalGrid cols={4} className="gap-8">
+            <BrutalBox className="text-center">
+              <BrutalText variant="brutal" size="lg" className="mb-4">
+                SOLIDITY
+              </BrutalText>
+              <BrutalText variant="mono">
+                SMART CONTRACTS
+              </BrutalText>
+            </BrutalBox>
+            
+            <BrutalBox className="text-center">
+              <BrutalText variant="brutal" size="lg" className="mb-4">
+                FOUNDRY
+              </BrutalText>
+              <BrutalText variant="mono">
+                TESTING FRAMEWORK
+              </BrutalText>
+            </BrutalBox>
+            
+            <BrutalBox className="text-center">
+              <BrutalText variant="brutal" size="lg" className="mb-4">
+                CHAINLINK
+              </BrutalText>
+              <BrutalText variant="mono">
+                ORACLE NETWORK
+              </BrutalText>
+            </BrutalBox>
+            
+            <BrutalBox className="text-center">
+              <BrutalText variant="brutal" size="lg" className="mb-4">
+                UNISWAP V4
+              </BrutalText>
+              <BrutalText variant="mono">
+                DEX PROTOCOL
+              </BrutalText>
+            </BrutalBox>
+          </BrutalGrid>
+        </div>
+      </BrutalSection>
+
+      {/* Call to Action */}
+      <BrutalSection fullWidth className="bg-black text-white border-white py-20">
+        <div className="text-center max-w-4xl mx-auto">
+          <BrutalHeadline size="giant" className="text-white mb-8">
+            READY TO
+            <br />
+            MAXIMIZE YIELD?
+          </BrutalHeadline>
+          <BrutalText variant="mono" size="xl" className="text-white mb-12">
+            JOIN THE MOST AGGRESSIVE DEFI PLATFORM. NO BULLSHIT. NO COMPROMISE.
+          </BrutalText>
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Link href="/dashboard">
+              <Button size="xl" variant="outline" className="border-white text-white hover:bg-white hover:text-black text-2xl px-16 py-8">
+                GET STARTED
+              </Button>
+            </Link>
+            <Button variant="ghost" size="xl" className="text-white hover:bg-white hover:text-black text-2xl px-16 py-8">
+              VIEW GITHUB
+            </Button>
           </div>
         </div>
-      </section>
-
-      <Footer />
+      </BrutalSection>
     </div>
   );
 }

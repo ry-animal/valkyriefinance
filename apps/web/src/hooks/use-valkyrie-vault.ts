@@ -1,6 +1,6 @@
 import { useAccount, useChainId, useReadContract, useWriteContract } from 'wagmi'
 import { formatUnits, parseUnits, formatEther } from 'viem'
-import { ERC4626_VAULT_ABI, getContractAddress } from '@valkryie/contracts'
+import { ERC4626_VAULT_ABI, getContractAddress } from '@valkyrie/contracts'
 import { useWeb3Store } from '@/stores/web3-store'
 
 // Vault information
