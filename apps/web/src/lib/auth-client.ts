@@ -1,4 +1,4 @@
-import { useAuthStore, WalletUser } from '@/stores/auth-store';
+import { useAuthStore, type WalletUser } from '@/stores/auth-store';
 
 // Session data structure to match the expected interface
 export interface SessionData {

@@ -55,7 +55,7 @@ export function BrutalSection({ children, className, fullWidth = false }: Brutal
 
 interface BrutalHeadlineProps {
   children: ReactNode
-  size?: "sm" | "md" | "lg" | "xl" | "huge" | "massive" | "mega"
+  size?: "sm" | "md" | "lg" | "xl" | "huge" | "massive" | "mega" | "giant"
   className?: string
 }
 
@@ -68,6 +68,7 @@ export function BrutalHeadline({ children, size = "lg", className }: BrutalHeadl
     huge: "text-4xl font-black",
     massive: "text-5xl font-black",
     mega: "text-6xl font-black",
+    giant: "text-7xl font-black",
   }[size]
 
   return (

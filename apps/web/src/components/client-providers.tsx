@@ -5,7 +5,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { WagmiProvider } from 'wagmi'
 import { useEffect } from 'react'
 
-import { wagmiConfig, queryClient, initializeAppKit } from '@/lib/wagmi-config'
+import { queryClient, wagmiConfig, initializeAppKit } from '@/lib/wagmi-config'
 
 export default function ClientProviders({
     children,
@@ -13,7 +13,7 @@ export default function ClientProviders({
     children: React.ReactNode
 }) {
     useEffect(() => {
-        // Initialize AppKit on the client side
+        // Initialize AppKit after component mounts
         initializeAppKit()
     }, [])
 
@@ -21,7 +21,7 @@ export default function ClientProviders({
         <QueryClientProvider client={queryClient}>
             <WagmiProvider config={wagmiConfig}>
                 {children}
-                <ReactQueryDevtools initialIsOpen={false} />
+                <ReactQueryDevtools />
             </WagmiProvider>
         </QueryClientProvider>
     )

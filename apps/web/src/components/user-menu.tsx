@@ -15,8 +15,25 @@ import { useAccount, useDisconnect } from "wagmi";
 import { getAppKit } from '@/lib/wagmi-config';
 import { cn } from "@/lib/utils";
 import { bt } from "@/lib/theme-utils";
+import { useEffect, useState } from "react";
 
 export default function UserMenu() {
+  const [mounted, setMounted] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Don't render anything until after client-side hydration
+  if (!mounted) {
+    return <Skeleton className="h-9 w-24" />;
+  }
+
+  return <UserMenuClient />;
+}
+
+function UserMenuClient() {
   const router = useRouter();
   const { address, isConnected, isConnecting } = useAccount();
   const { disconnect } = useDisconnect();

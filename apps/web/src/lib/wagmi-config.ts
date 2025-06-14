@@ -49,25 +49,46 @@ export function getAppKit() {
   return appKit
 }
 
-// 6. Export wagmi config
-export const wagmiConfig = createConfig({
-  chains: env.NEXT_PUBLIC_ENABLE_TESTNETS 
-    ? [mainnet, sepolia, arbitrum, optimism] 
-    : [mainnet, arbitrum, optimism],
-  connectors: [
-    injected(),
-    coinbaseWallet({ appName: 'Valkyrie Finance' }),
-    walletConnect({ 
-      projectId: env.NEXT_PUBLIC_REOWN_PROJECT_ID 
-    }),
-  ],
-  transports: {
-    [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY}`),
-    [sepolia.id]: http(`https://eth-sepolia.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY}`),
-    [arbitrum.id]: http(`https://arb-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY}`),
-    [optimism.id]: http(`https://opt-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY}`),
-  },
-})
+// 6. Create wagmi config function
+function createWagmiConfig() {
+  return createConfig({
+    chains: env.NEXT_PUBLIC_ENABLE_TESTNETS 
+      ? [mainnet, sepolia, arbitrum, optimism] 
+      : [mainnet, arbitrum, optimism],
+    connectors: [
+      injected(),
+      coinbaseWallet({ appName: 'Valkyrie Finance' }),
+      ...(typeof window !== 'undefined' ? [walletConnect({ 
+        projectId: env.NEXT_PUBLIC_REOWN_PROJECT_ID 
+      })] : []),
+    ],
+    transports: {
+      [mainnet.id]: http(
+        env.NEXT_PUBLIC_ALCHEMY_API_KEY 
+          ? `https://eth-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
+          : 'https://cloudflare-eth.com'
+      ),
+      [sepolia.id]: http(
+        env.NEXT_PUBLIC_ALCHEMY_API_KEY 
+          ? `https://eth-sepolia.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
+          : 'https://rpc.sepolia.org'
+      ),
+      [arbitrum.id]: http(
+        env.NEXT_PUBLIC_ALCHEMY_API_KEY 
+          ? `https://arb-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
+          : 'https://arb1.arbitrum.io/rpc'
+      ),
+      [optimism.id]: http(
+        env.NEXT_PUBLIC_ALCHEMY_API_KEY 
+          ? `https://opt-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
+          : 'https://mainnet.optimism.io'
+      ),
+    },
+  })
+}
+
+// Always create a config (both server and client side)
+export const wagmiConfig = createWagmiConfig()
 
 // 7. Export query client
 export const queryClient = new QueryClient()

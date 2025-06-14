@@ -2,7 +2,7 @@
 
 import { useAccount } from 'wagmi'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 interface WalletGuardProps {
   children: React.ReactNode
@@ -15,10 +15,17 @@ export function WalletGuard({
   redirectTo = '/dashboard', 
   requireConnection = false 
 }: WalletGuardProps) {
+  const [mounted, setMounted] = useState(false)
   const { isConnected } = useAccount()
   const router = useRouter()
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+
     if (requireConnection && !isConnected) {
       // Redirect to home page if wallet connection is required but not connected
       router.push('/')
@@ -26,7 +33,12 @@ export function WalletGuard({
       // Redirect away from home if wallet is connected
       router.push(redirectTo)
     }
-  }, [isConnected, requireConnection, redirectTo, router])
+  }, [mounted, isConnected, requireConnection, redirectTo, router])
+
+  // Don't render anything until mounted
+  if (!mounted) {
+    return null
+  }
 
   // For home page (requireConnection = false), don't render if connected
   if (!requireConnection && isConnected) {
