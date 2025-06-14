@@ -21,7 +21,10 @@
     "db:generate": "turbo -F server db:generate",
     "db:migrate": "turbo -F server db:migrate"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@reown/appkit": "^1.7.9",
+    "@reown/appkit-adapter-wagmi": "^1.7.9"
+  },
   "devDependencies": {
     "turbo": "^2.4.2"
   },

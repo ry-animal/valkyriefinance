@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAccount } from 'wagmi'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -26,15 +26,18 @@ import {
 import { useWeb3Store } from '@/stores/web3-store'
 
 export default function VaultPage() {
+    const [mounted, setMounted] = useState(false)
+
+    // Always call hooks first (React rule)
     const { isConnected } = useAccount()
     const { pendingTransactions } = useWeb3Store()
 
-    // Vault data
+    // Vault data - always call hooks
     const vaultInfo = useVaultInfo()
     const vaultBalance = useVaultBalance()
     const vaultOperations = useVaultOperations()
 
-    // Token data
+    // Token data - always call hooks
     const tokenInfo = useValkyrieTokenInfo()
     const tokenBalance = useValkyrieTokenBalance()
     const tokenOperations = useValkyrieTokenOperations()
@@ -44,22 +47,24 @@ export default function VaultPage() {
     const [withdrawAmount, setWithdrawAmount] = useState('')
     const [stakeAmount, setStakeAmount] = useState('')
 
-    // Previews for current inputs
+    // Previews for current inputs - always call hooks
     const { previewDeposit } = useVaultPreviews()
     const depositPreview = previewDeposit(depositAmount)
     const { previewWithdraw } = useVaultPreviews()
     const withdrawPreview = previewWithdraw(withdrawAmount)
 
-    if (!isConnected) {
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    // Early return AFTER all hooks have been called
+    if (!mounted) {
         return (
             <div className="container mx-auto p-6">
                 <div className="text-center py-12">
                     <Vault className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                     <h1 className="text-3xl font-bold mb-2">Valkyrie Vault</h1>
-                    <p className="text-muted-foreground mb-6">
-                        Connect your wallet to interact with the Valkyrie DeFi vault
-                    </p>
-                    <ConnectButton />
+                    <p className="text-muted-foreground mb-6">Loading...</p>
                 </div>
             </div>
         )

@@ -1,51 +1,54 @@
-import { http, createConfig } from 'wagmi'
-import { mainnet, sepolia, arbitrum, optimism, polygon } from 'wagmi/chains'
-import { coinbaseWallet, injected, walletConnect } from 'wagmi/connectors'
+import { createAppKit } from '@reown/appkit/react'
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
+import { mainnet, sepolia, arbitrum, optimism, polygon } from '@reown/appkit/networks'
+import { QueryClient } from '@tanstack/react-query'
 import { env } from './env'
 
-export const wagmiConfig = createConfig({
-  chains: env.NEXT_PUBLIC_ENABLE_TESTNETS 
-    ? [mainnet, sepolia, arbitrum, optimism, polygon] 
-    : [mainnet, arbitrum, optimism, polygon],
-  connectors: [
-    injected(),
-    coinbaseWallet({ 
-      appName: 'Valkyrie Finance',
-      appLogoUrl: 'https://valkyrie.finance/logo.png'
-    }),
-    walletConnect({ 
-      projectId: env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'default-project-id',
-      metadata: {
-        name: 'Valkyrie Finance',
-        description: 'AI-Powered DeFi Vault Platform',
-        url: 'https://valkyrie.finance',
-        icons: ['https://valkyrie.finance/logo.png'],
-      },
-    }),
-  ],
-  transports: {
-    [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY || 'demo'}`),
-    [sepolia.id]: http(`https://eth-sepolia.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY || 'demo'}`),
-    [arbitrum.id]: http(`https://arb-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY || 'demo'}`),
-    [optimism.id]: http(`https://opt-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY || 'demo'}`),
-    [polygon.id]: http(`https://polygon-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY || 'demo'}`),
-  },
-  ssr: true,
+// 1. Get projectId from environment
+const projectId = env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '1a91f40c774bfe7c56b13d36dc0fe7a6'
+
+// 2. Create a metadata object - optional
+const metadata = {
+  name: 'Valkryie Finance',
+  description: 'AI-Driven DeFi Platform',
+  url: 'https://valkyrie.finance', // origin must match your domain & subdomain
+  icons: ['https://assets.reown.com/reown-profile-pic.png']
+}
+
+// 3. Set the networks
+export const networks = [mainnet, sepolia, arbitrum, optimism, polygon]
+
+// 4. Create Wagmi Adapter
+export const wagmiAdapter = new WagmiAdapter({
+  projectId,
+  networks
 })
 
-declare module 'wagmi' {
-  interface Register {
-    config: typeof wagmiConfig
+// 5. Create modal
+let appKit: any = null
+
+export function initializeAppKit() {
+  if (typeof window === 'undefined') return null
+  
+  if (!appKit) {
+    appKit = createAppKit({
+      adapters: [wagmiAdapter],
+      projectId,
+      networks: networks as any,
+      metadata
+    })
   }
+  
+  return appKit
 }
 
-export const supportedChains = [mainnet, arbitrum, optimism, polygon]
-export const supportedChainIds = supportedChains.map(chain => chain.id)
+// 6. Export wagmi config
+export const wagmiConfig = wagmiAdapter.wagmiConfig
 
+// 7. Export query client
+export const queryClient = new QueryClient()
+
+// Helper function to get chain by ID
 export function getChainById(chainId: number) {
-  return supportedChains.find(chain => chain.id === chainId)
-}
-
-export function isSupportedChain(chainId: number): boolean {
-  return supportedChainIds.includes(chainId as any)
+  return networks.find(chain => chain.id === chainId)
 } 

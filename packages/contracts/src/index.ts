@@ -1,6 +1,6 @@
 // ABIs
 export { ERC4626_VAULT_ABI } from './abis/erc4626-vault'
-export { VALKRYIE_TOKEN_ABI } from './abis/valkyrie-token'
+export { VALKYRIE_TOKEN_ABI } from './abis/valkyrie-token'
 
 // Contract addresses
 export {

@@ -1,4 +1,4 @@
-export const VALKRYIE_TOKEN_ABI = [
+export const VALKYRIE_TOKEN_ABI = [
   // Standard ERC-20 functions
   {
     inputs: [{ name: "account", type: "address" }],

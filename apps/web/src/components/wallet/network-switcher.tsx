@@ -7,7 +7,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
-import { getChainById, supportedChains } from "@/lib/wagmi-config"
+import { getChainById, networks } from "@/lib/wagmi-config"
 import { ChevronDown, Network } from "lucide-react"
 
 export function NetworkSwitcher() {
@@ -25,7 +25,7 @@ export function NetworkSwitcher() {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                {supportedChains.map((chain) => (
+                {networks.map((chain) => (
                     <DropdownMenuItem
                         key={chain.id}
                         onClick={() => switchChain({ chainId: chain.id })}

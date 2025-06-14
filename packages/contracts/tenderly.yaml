@@ -41,7 +41,7 @@ alerts:
       filters:
         - eventSignature: "RiskThresholdBreached(uint256,uint256)"
           network: "1"
-          address: "${VALKRYIE_VAULT_ADDRESS}"
+          address: "${VALKYRIE_VAULT_ADDRESS}"
     notifications:
       - type: "slack"
         channel: "#vault-alerts"
@@ -56,7 +56,7 @@ alerts:
       filters:
         - functionSignature: "withdraw(uint256,address,address)"
           network: "1" 
-          address: "${VALKRYIE_VAULT_ADDRESS}"
+          address: "${VALKYRIE_VAULT_ADDRESS}"
           parameterFilters:
             - parameter: "assets"
               condition: "gte"
@@ -72,7 +72,7 @@ alerts:
       filters:
         - eventSignature: "EmergencyPause(bool,string)"
           network: "1"
-          address: "${VALKRYIE_VAULT_ADDRESS}"
+          address: "${VALKYRIE_VAULT_ADDRESS}"
     notifications:
       - type: "slack"
         channel: "#critical-alerts"
@@ -87,7 +87,7 @@ alerts:
       filters:
         - eventSignature: "AIRebalanceExecuted(address,uint256,uint256[])"
           network: "1"
-          address: "${VALKRYIE_VAULT_ADDRESS}"
+          address: "${VALKYRIE_VAULT_ADDRESS}"
     notifications:
       - type: "slack"
         channel: "#ai-operations"
@@ -100,7 +100,7 @@ alerts:
       filters:
         - eventSignature: "CrossChainRebalance(uint64,uint256,bytes32)"
           network: "1"
-          address: "${VALKRYIE_VAULT_ADDRESS}"
+          address: "${VALKYRIE_VAULT_ADDRESS}"
     notifications:
       - type: "slack"
         channel: "#cross-chain"
@@ -112,7 +112,7 @@ alerts:
       type: "function-call"
       filters:
         - network: "1"
-          address: "${VALKRYIE_VAULT_ADDRESS}"
+          address: "${VALKYRIE_VAULT_ADDRESS}"
           gasUsed: 
             condition: "gte"
             value: "500000" # 500k gas
@@ -221,7 +221,7 @@ simulations:
     network_id: "1" 
     block_number: "latest"
     state_overrides:
-      - address: "${VALKRYIE_VAULT_ADDRESS}"
+      - address: "${VALKYRIE_VAULT_ADDRESS}"
         storage:
           # Override paused state
           "0x0": "0x0000000000000000000000000000000000000000000000000000000000000001"

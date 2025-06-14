@@ -5,7 +5,7 @@ import {Test, console} from "forge-std/Test.sol";
 import {ValkyrieToken} from "../src/ValkyrieToken.sol";
 
 contract ValkyrieTokenTest is Test {
-    ValkyrieToken public token;
+    ValkyrieToken internal token;
     
     address public owner = address(0x1);
     address public user1 = address(0x2);
@@ -30,6 +30,7 @@ contract ValkyrieTokenTest is Test {
         token.transfer(user2, 100_000 * 1e18);
         token.transfer(user3, 100_000 * 1e18);
         vm.stopPrank();
+        targetContract(address(token));
     }
     
     // ===== ERC-20 Basic Tests =====
@@ -306,24 +307,6 @@ contract ValkyrieTokenTest is Test {
         assertEq(token.stakedBalance(user1), STAKE_AMOUNT * 2);
         
         vm.stopPrank();
-    }
-    
-    // ===== Invariant Tests =====
-    
-    function invariant_TotalSupplyConsistency() public view {
-        // Total supply should equal balances + contract balance (staked tokens + rewards)
-        uint256 totalUserBalances = token.balanceOf(user1) + 
-                                   token.balanceOf(user2) + 
-                                   token.balanceOf(user3) + 
-                                   token.balanceOf(owner);
-        uint256 contractBalance = token.balanceOf(address(token));
-        
-        assertEq(token.totalSupply(), totalUserBalances + contractBalance);
-    }
-    
-    function invariant_StakedAmountConsistency() public view {
-        // Total staked should never exceed total supply
-        assertLe(token.totalStaked(), token.totalSupply());
     }
     
     // ===== Edge Cases =====

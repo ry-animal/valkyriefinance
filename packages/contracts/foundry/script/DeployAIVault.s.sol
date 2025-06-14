@@ -306,7 +306,7 @@ contract DeployAIVault is Script {
     }
     
     function _logDeploymentSummary() internal view {
-        console.log("\n=== AI-DRIVEN VALKRYIE VAULT DEPLOYMENT SUMMARY ===");
+        console.log("\n=== AI-DRIVEN VALKYRIE VAULT DEPLOYMENT SUMMARY ===");
         console.log("Network:", _getNetworkName());
         console.log("Chain ID:", block.chainid);
         console.log("");

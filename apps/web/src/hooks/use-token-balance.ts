@@ -67,7 +67,7 @@ export function useTokenBalance(tokenAddress?: `0x${string}`) {
 export const TOKENS_BY_CHAIN = {
   // Ethereum Mainnet (Chain ID: 1)
   1: {
-    USDC: '0xA0b86a33E6441d5f95c0d7b5C5dB0Ab01B2B5Fef' as `0x${string}`,
+    USDC: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' as `0x${string}`,
     USDT: '0xdAC17F958D2ee523a2206206994597C13D831ec7' as `0x${string}`,
     WETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' as `0x${string}`,
     DAI: '0x6B175474E89094C44Da98b954EedeAC495271d0F' as `0x${string}`,

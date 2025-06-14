@@ -1,6 +1,6 @@
 import { useAccount, useChainId, useReadContract, useWriteContract } from 'wagmi'
 import { formatUnits, parseUnits } from 'viem'
-import { VALKRYIE_TOKEN_ABI, getContractAddress } from '@valkyrie/contracts'
+import { VALKYRIE_TOKEN_ABI, getContractAddress } from '@valkyrie/contracts'
 import { useWeb3Store } from '@/stores/web3-store'
 
 // Basic token information
@@ -10,28 +10,28 @@ export function useValkyrieTokenInfo() {
 
   const { data: name } = useReadContract({
     address: tokenAddress,
-    abi: VALKRYIE_TOKEN_ABI,
+    abi: VALKYRIE_TOKEN_ABI,
     functionName: 'name',
     query: { enabled: !!tokenAddress },
   })
 
   const { data: symbol } = useReadContract({
     address: tokenAddress,
-    abi: VALKRYIE_TOKEN_ABI,
+    abi: VALKYRIE_TOKEN_ABI,
     functionName: 'symbol',
     query: { enabled: !!tokenAddress },
   })
 
   const { data: decimals } = useReadContract({
     address: tokenAddress,
-    abi: VALKRYIE_TOKEN_ABI,
+    abi: VALKYRIE_TOKEN_ABI,
     functionName: 'decimals',
     query: { enabled: !!tokenAddress },
   })
 
   const { data: totalSupply } = useReadContract({
     address: tokenAddress,
-    abi: VALKRYIE_TOKEN_ABI,
+    abi: VALKYRIE_TOKEN_ABI,
     functionName: 'totalSupply',
     query: { enabled: !!tokenAddress },
   })
@@ -54,7 +54,7 @@ export function useValkyrieTokenBalance() {
 
   const { data: balance } = useReadContract({
     address: tokenAddress,
-    abi: VALKRYIE_TOKEN_ABI,
+    abi: VALKYRIE_TOKEN_ABI,
     functionName: 'balanceOf',
     args: [address!],
     query: { enabled: !!tokenAddress && !!address },
@@ -62,7 +62,7 @@ export function useValkyrieTokenBalance() {
 
   const { data: stakedBalance } = useReadContract({
     address: tokenAddress,
-    abi: VALKRYIE_TOKEN_ABI,
+    abi: VALKYRIE_TOKEN_ABI,
     functionName: 'stakedBalance',
     args: [address!],
     query: { enabled: !!tokenAddress && !!address },
@@ -70,7 +70,7 @@ export function useValkyrieTokenBalance() {
 
   const { data: pendingRewards } = useReadContract({
     address: tokenAddress,
-    abi: VALKRYIE_TOKEN_ABI,
+    abi: VALKYRIE_TOKEN_ABI,
     functionName: 'pendingRewards',
     args: [address!],
     query: { enabled: !!tokenAddress && !!address },
@@ -94,7 +94,7 @@ export function useValkyrieGovernance() {
 
   const { data: delegates } = useReadContract({
     address: tokenAddress,
-    abi: VALKRYIE_TOKEN_ABI,
+    abi: VALKYRIE_TOKEN_ABI,
     functionName: 'delegates',
     args: [address!],
     query: { enabled: !!tokenAddress && !!address },
@@ -102,7 +102,7 @@ export function useValkyrieGovernance() {
 
   const { data: votes } = useReadContract({
     address: tokenAddress,
-    abi: VALKRYIE_TOKEN_ABI,
+    abi: VALKYRIE_TOKEN_ABI,
     functionName: 'getVotes',
     args: [address!],
     query: { enabled: !!tokenAddress && !!address },
@@ -136,7 +136,7 @@ export function useValkyrieTokenOperations() {
     try {
       const hash = await writeContractAsync({
         address: tokenAddress,
-        abi: VALKRYIE_TOKEN_ABI,
+        abi: VALKYRIE_TOKEN_ABI,
         functionName: 'stake',
         args: [amountWei],
       })
@@ -165,7 +165,7 @@ export function useValkyrieTokenOperations() {
     try {
       const hash = await writeContractAsync({
         address: tokenAddress,
-        abi: VALKRYIE_TOKEN_ABI,
+        abi: VALKYRIE_TOKEN_ABI,
         functionName: 'unstake',
         args: [amountWei],
       })
@@ -192,7 +192,7 @@ export function useValkyrieTokenOperations() {
     try {
       const hash = await writeContractAsync({
         address: tokenAddress,
-        abi: VALKRYIE_TOKEN_ABI,
+        abi: VALKYRIE_TOKEN_ABI,
         functionName: 'claimRewards',
       })
 
@@ -217,7 +217,7 @@ export function useValkyrieTokenOperations() {
     try {
       const hash = await writeContractAsync({
         address: tokenAddress,
-        abi: VALKRYIE_TOKEN_ABI,
+        abi: VALKYRIE_TOKEN_ABI,
         functionName: 'delegate',
         args: [delegatee],
       })
@@ -245,7 +245,7 @@ export function useValkyrieTokenOperations() {
     try {
       const hash = await writeContractAsync({
         address: tokenAddress,
-        abi: VALKRYIE_TOKEN_ABI,
+        abi: VALKYRIE_TOKEN_ABI,
         functionName: 'approve',
         args: [spender, amountWei],
       })

@@ -58,7 +58,7 @@ contract ValkyrieAIIntegrationTest is Test {
     uint256 public constant MAX_ALLOCATION = 10000;
     
     // Events for testing
-    event StrategyAdded(uint256 indexed strategyId, address strategyAddress, string name);
+    event StrategyAdded(uint256 indexed strategyId, address strategyAddress, bytes32 name);
     event AIRebalanceExecuted(address indexed aiController, uint256 timestamp, uint256[] allocations);
     event RiskThresholdBreached(uint256 riskScore, uint256 threshold);
     event EmergencyPause(bool paused, string reason);
@@ -149,7 +149,7 @@ contract ValkyrieAIIntegrationTest is Test {
         address mockStrategy = makeAddr("strategy1");
         
         vm.expectEmit(true, true, false, true, address(vault));
-        emit StrategyAdded(0, mockStrategy, "Test Strategy");
+        emit StrategyAdded(0, mockStrategy, bytes32("Test Strategy"));
         
         vault.addStrategy(
             mockStrategy,

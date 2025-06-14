@@ -1,57 +1,51 @@
 import { useAccount, useChainId, useReadContract, useWriteContract } from 'wagmi'
-import { formatUnits, parseUnits } from 'viem'
-import { ERC4626_VAULT_ABI, getContractAddress } from '@valkyrie/contracts'
+import { formatUnits, parseUnits, formatEther } from 'viem'
+import { ERC4626_VAULT_ABI, getContractAddress } from '@valkryie/contracts'
 import { useWeb3Store } from '@/stores/web3-store'
 
 // Vault information
 export function useVaultInfo() {
   const chainId = useChainId()
-  const vaultAddress = getContractAddress(chainId, 'valkyrieVault')
 
   const { data: name } = useReadContract({
-    address: vaultAddress,
+    address: getContractAddress(chainId, 'valkyrieVault'),
     abi: ERC4626_VAULT_ABI,
     functionName: 'name',
-    query: { enabled: !!vaultAddress },
   })
 
   const { data: symbol } = useReadContract({
-    address: vaultAddress,
+    address: getContractAddress(chainId, 'valkyrieVault'),
     abi: ERC4626_VAULT_ABI,
     functionName: 'symbol',
-    query: { enabled: !!vaultAddress },
   })
 
   const { data: asset } = useReadContract({
-    address: vaultAddress,
+    address: getContractAddress(chainId, 'valkyrieVault'),
     abi: ERC4626_VAULT_ABI,
     functionName: 'asset',
-    query: { enabled: !!vaultAddress },
   })
 
   const { data: totalSupply } = useReadContract({
-    address: vaultAddress,
+    address: getContractAddress(chainId, 'valkyrieVault'),
     abi: ERC4626_VAULT_ABI,
     functionName: 'totalSupply',
-    query: { enabled: !!vaultAddress },
   })
 
   const { data: totalAssets } = useReadContract({
-    address: vaultAddress,
+    address: getContractAddress(chainId, 'valkyrieVault'),
     abi: ERC4626_VAULT_ABI,
     functionName: 'totalAssets',
-    query: { enabled: !!vaultAddress },
   })
 
   return {
-    vaultAddress,
-    name,
-    symbol,
+    name: name || '',
+    symbol: symbol || '',
     asset,
     totalSupply,
-    totalAssets,
+    totalAssets: totalAssets || BigInt(0),
+    vaultAddress: getContractAddress(chainId, 'valkyrieVault'),
     formattedTotalSupply: totalSupply ? formatUnits(totalSupply, 18) : '0',
-    formattedTotalAssets: totalAssets ? formatUnits(totalAssets, 18) : '0',
+    formattedTotalAssets: totalAssets ? formatEther(totalAssets) : '0.0',
   }
 }
 
@@ -59,49 +53,48 @@ export function useVaultInfo() {
 export function useVaultBalance() {
   const { address } = useAccount()
   const chainId = useChainId()
-  const vaultAddress = getContractAddress(chainId, 'valkyrieVault')
 
   const { data: shares } = useReadContract({
-    address: vaultAddress,
+    address: getContractAddress(chainId, 'valkyrieVault'),
     abi: ERC4626_VAULT_ABI,
     functionName: 'balanceOf',
-    args: [address!],
-    query: { enabled: !!vaultAddress && !!address },
+    args: address ? [address] : undefined,
+    query: { enabled: !!address },
   })
 
   const { data: assetsFromShares } = useReadContract({
-    address: vaultAddress,
+    address: getContractAddress(chainId, 'valkyrieVault'),
     abi: ERC4626_VAULT_ABI,
     functionName: 'convertToAssets',
-    args: [shares || BigInt(0)],
-    query: { enabled: !!vaultAddress && !!shares },
+    args: shares ? [shares] : undefined,
+    query: { enabled: !!shares },
   })
 
   const { data: maxWithdraw } = useReadContract({
-    address: vaultAddress,
+    address: getContractAddress(chainId, 'valkyrieVault'),
     abi: ERC4626_VAULT_ABI,
     functionName: 'maxWithdraw',
-    args: [address!],
-    query: { enabled: !!vaultAddress && !!address },
+    args: address ? [address] : undefined,
+    query: { enabled: !!address },
   })
 
   const { data: maxRedeem } = useReadContract({
-    address: vaultAddress,
+    address: getContractAddress(chainId, 'valkyrieVault'),
     abi: ERC4626_VAULT_ABI,
     functionName: 'maxRedeem',
-    args: [address!],
-    query: { enabled: !!vaultAddress && !!address },
+    args: address ? [address] : undefined,
+    query: { enabled: !!address },
   })
 
   return {
-    shares,
-    assetsFromShares,
+    shares: shares || BigInt(0),
+    assetsFromShares: assetsFromShares || BigInt(0),
     maxWithdraw,
     maxRedeem,
-    formattedShares: shares ? formatUnits(shares, 18) : '0',
-    formattedAssetsFromShares: assetsFromShares ? formatUnits(assetsFromShares, 18) : '0',
-    formattedMaxWithdraw: maxWithdraw ? formatUnits(maxWithdraw, 18) : '0',
-    formattedMaxRedeem: maxRedeem ? formatUnits(maxRedeem, 18) : '0',
+    formattedShares: shares ? formatEther(shares) : '0.0',
+    formattedAssetsFromShares: assetsFromShares ? formatEther(assetsFromShares) : '0.0',
+    formattedMaxWithdraw: maxWithdraw ? formatEther(maxWithdraw) : '0.0',
+    formattedMaxRedeem: maxRedeem ? formatEther(maxRedeem) : '0.0',
   }
 }
 
