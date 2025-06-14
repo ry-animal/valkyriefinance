@@ -15,18 +15,7 @@ export const trpc = createTRPCClient<any>({
   ],
 });
 
-/**
- * Inference helper for inputs.
- *
- * @example type HelloInput = RouterInputs['example']['hello']
- */
-export type RouterInputs = inferRouterInputs<AppRouter>;
-
-/**
- * Inference helper for outputs.
- *
-
- * @example type HelloOutput = RouterOutputs['example']['hello']
- */
-export type RouterOutputs = inferRouterOutputs<AppRouter>;
+// TODO: Add proper type inference when AppRouter is available
+// export type RouterInputs = inferRouterInputs<AppRouter>;
+// export type RouterOutputs = inferRouterOutputs<AppRouter>;
 

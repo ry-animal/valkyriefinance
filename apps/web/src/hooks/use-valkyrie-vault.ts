@@ -99,60 +99,60 @@ export function useVaultBalance() {
 }
 
 // Preview functions for estimating operations
-export function useVaultPreviews() {
+export function useVaultPreviewDeposit(assets: string) {
   const chainId = useChainId()
   const vaultAddress = getContractAddress(chainId, 'valkyrieVault')
+  const assetsWei = assets ? parseUnits(assets, 18) : 0n
 
-  const previewDeposit = (assets: string) => {
-    const assetsWei = parseUnits(assets, 18)
-    return useReadContract({
-      address: vaultAddress,
-      abi: ERC4626_VAULT_ABI,
-      functionName: 'previewDeposit',
-      args: [assetsWei],
-      query: { enabled: !!vaultAddress && !!assets },
-    })
-  }
+  return useReadContract({
+    address: vaultAddress,
+    abi: ERC4626_VAULT_ABI,
+    functionName: 'previewDeposit',
+    args: [assetsWei],
+    query: { enabled: !!vaultAddress && !!assets },
+  })
+}
 
-  const previewMint = (shares: string) => {
-    const sharesWei = parseUnits(shares, 18)
-    return useReadContract({
-      address: vaultAddress,
-      abi: ERC4626_VAULT_ABI,
-      functionName: 'previewMint',
-      args: [sharesWei],
-      query: { enabled: !!vaultAddress && !!shares },
-    })
-  }
+export function useVaultPreviewMint(shares: string) {
+  const chainId = useChainId()
+  const vaultAddress = getContractAddress(chainId, 'valkyrieVault')
+  const sharesWei = shares ? parseUnits(shares, 18) : 0n
 
-  const previewWithdraw = (assets: string) => {
-    const assetsWei = parseUnits(assets, 18)
-    return useReadContract({
-      address: vaultAddress,
-      abi: ERC4626_VAULT_ABI,
-      functionName: 'previewWithdraw',
-      args: [assetsWei],
-      query: { enabled: !!vaultAddress && !!assets },
-    })
-  }
+  return useReadContract({
+    address: vaultAddress,
+    abi: ERC4626_VAULT_ABI,
+    functionName: 'previewMint',
+    args: [sharesWei],
+    query: { enabled: !!vaultAddress && !!shares },
+  })
+}
 
-  const previewRedeem = (shares: string) => {
-    const sharesWei = parseUnits(shares, 18)
-    return useReadContract({
-      address: vaultAddress,
-      abi: ERC4626_VAULT_ABI,
-      functionName: 'previewRedeem',
-      args: [sharesWei],
-      query: { enabled: !!vaultAddress && !!shares },
-    })
-  }
+export function useVaultPreviewWithdraw(assets: string) {
+  const chainId = useChainId()
+  const vaultAddress = getContractAddress(chainId, 'valkyrieVault')
+  const assetsWei = assets ? parseUnits(assets, 18) : 0n
 
-  return {
-    previewDeposit,
-    previewMint,
-    previewWithdraw,
-    previewRedeem,
-  }
+  return useReadContract({
+    address: vaultAddress,
+    abi: ERC4626_VAULT_ABI,
+    functionName: 'previewWithdraw',
+    args: [assetsWei],
+    query: { enabled: !!vaultAddress && !!assets },
+  })
+}
+
+export function useVaultPreviewRedeem(shares: string) {
+  const chainId = useChainId()
+  const vaultAddress = getContractAddress(chainId, 'valkyrieVault')
+  const sharesWei = shares ? parseUnits(shares, 18) : 0n
+
+  return useReadContract({
+    address: vaultAddress,
+    abi: ERC4626_VAULT_ABI,
+    functionName: 'previewRedeem',
+    args: [sharesWei],
+    query: { enabled: !!vaultAddress && !!shares },
+  })
 }
 
 // Vault operations

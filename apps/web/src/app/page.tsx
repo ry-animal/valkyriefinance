@@ -80,7 +80,7 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Automated rebalancing and strategy execution ensures you're always
+                  Automated rebalancing and strategy execution ensures you&apos;re always
                   earning the highest risk-adjusted returns.
                 </CardDescription>
               </CardContent>

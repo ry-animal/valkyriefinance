@@ -15,7 +15,8 @@ import { AlertCircle, TrendingUp, Coins, Vault, ArrowUpRight, ArrowDownLeft } fr
 import {
     useVaultInfo,
     useVaultBalance,
-    useVaultPreviews,
+    useVaultPreviewDeposit,
+    useVaultPreviewWithdraw,
     useVaultOperations
 } from '@/hooks/use-valkyrie-vault'
 import {
@@ -48,10 +49,8 @@ export default function VaultPage() {
     const [stakeAmount, setStakeAmount] = useState('')
 
     // Previews for current inputs - always call hooks
-    const { previewDeposit } = useVaultPreviews()
-    const depositPreview = previewDeposit(depositAmount)
-    const { previewWithdraw } = useVaultPreviews()
-    const withdrawPreview = previewWithdraw(withdrawAmount)
+    const depositPreview = useVaultPreviewDeposit(depositAmount)
+    const withdrawPreview = useVaultPreviewWithdraw(withdrawAmount)
 
     useEffect(() => {
         setMounted(true)

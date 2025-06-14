@@ -25,8 +25,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "lint": "eslint .",
-    "type-check": "tsc --noEmit"
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "zod": "^3.22.4"
