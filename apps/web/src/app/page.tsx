@@ -227,11 +227,11 @@ export default function HomePage() {
           </BrutalText>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Link href="/dashboard">
-              <Button size="xl" variant="outline" className="border-white text-white hover:bg-white hover:text-black text-2xl px-16 py-8">
+            <Button variant="ghost" size="xl" className="text-white hover:bg-white hover:text-black hover:cursor-pointer text-2xl px-16 py-8">
                 GET STARTED
               </Button>
             </Link>
-            <Button variant="ghost" size="xl" className="text-white hover:bg-white hover:text-black text-2xl px-16 py-8">
+            <Button variant="ghost" size="xl" className="text-white hover:bg-white hover:text-black hover:cursor-pointer text-2xl px-16 py-8">
               VIEW GITHUB
             </Button>
           </div>

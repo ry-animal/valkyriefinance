@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
 import UserMenu from "@/components/user-menu";
+import { ConnectButton } from "@/components/wallet/connect-button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
@@ -53,6 +54,7 @@ export default function Header() {
 
           {/* Right Side Controls */}
           <div className="hidden md:flex items-center gap-4">
+            <ConnectButton />
             <ModeToggle />
             <UserMenu />
           </div>
@@ -87,6 +89,7 @@ export default function Header() {
                 </Link>
               ))}
               <div className="p-6 border-b-4 border-black flex gap-4">
+                <ConnectButton />
                 <ModeToggle />
                 <UserMenu />
               </div>
