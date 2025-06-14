@@ -9,6 +9,8 @@
     "dev": "turbo dev",
     "dev:apps": "turbo -F web -F server dev",
     "build": "turbo build",
+    "build:web": "turbo -F web build",
+    "prepare:deploy": "node scripts/prepare-npm-deploy.js",
     "check-types": "turbo check-types",
     "test": "turbo test",
     "test:watch": "turbo test:watch",

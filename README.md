@@ -322,20 +322,67 @@ The project uses Reown AppKit (formerly WalletConnect) for wallet connections:
 
 ## 🚀 Deployment
 
-### Development Deployment
+### Vercel Deployment
 
-The application is configured for easy deployment on modern platforms:
+The project is configured for deployment on Vercel with automatic handling of workspace dependencies:
 
-- **Vercel**: Optimized for Next.js applications
-- **Railway**: Full-stack deployment with database
-- **Docker**: Containerized deployment option
+1. **Automatic Deployment**: Push to `main` branch triggers automatic deployment
+2. **Build Process**: Vercel runs the preparation script to convert workspace dependencies
+3. **Environment Variables**: Set required environment variables in Vercel dashboard
 
-### Production Considerations
+#### Required Environment Variables for Vercel:
 
-- **Database**: PostgreSQL with connection pooling
-- **Caching**: Redis for session and API caching
-- **Monitoring**: Error tracking and performance monitoring
-- **Security**: Environment variable validation and secure headers
+```bash
+# Database
+DATABASE_URL=your_production_database_url
+
+# Authentication
+BETTER_AUTH_SECRET=your_production_auth_secret
+BETTER_AUTH_URL=https://your-domain.vercel.app
+
+# AI Services
+GOOGLE_AI_API_KEY=your_google_ai_api_key
+
+# Web3 (Optional)
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_walletconnect_project_id
+NEXT_PUBLIC_ALCHEMY_API_KEY=your_alchemy_api_key
+```
+
+#### Manual Deployment:
+
+```bash
+# Prepare for npm-based deployment
+bun run prepare:deploy
+
+# Deploy to Vercel
+vercel --prod
+```
+
+### Local Production Build
+
+To test the production build locally:
+
+```bash
+# Build all packages
+bun run build
+
+# Or build just the web app
+bun run build:web
+
+# Start production server
+cd apps/web && bun start
+```
+
+## CI/CD
+
+The project uses GitHub Actions for continuous integration:
+
+- **Smart Contract Tests**: Foundry tests with gas reporting
+- **Web App Tests**: Lint, type-check, unit tests, and build
+- **Server Tests**: Type-check and build
+- **E2E Tests**: Playwright tests (runs after other tests pass)
+
+All tests must pass before deployment to production.
 
 ---
 
