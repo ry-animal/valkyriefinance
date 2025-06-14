@@ -9,24 +9,26 @@ import { BrutalGrid, BrutalSection, BrutalHeadline, BrutalBox, BrutalText } from
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-black">
       {/* Hero Section */}
-      <BrutalSection fullWidth className="min-h-screen flex items-center justify-center border-b-4 border-black">
+      <BrutalSection fullWidth className="min-h-screen flex items-center justify-center border-b-4 border-black dark:border-white">
         <div className="text-center max-w-6xl mx-auto">
-          <BrutalHeadline size="mega" className="mb-8">
+          <BrutalHeadline size="mega" className="mb-8 text-black dark:text-white">
             DEFI
             <br />
             BRUTALISM
           </BrutalHeadline>
-          <BrutalText variant="mono" size="xl" className="mb-12 max-w-4xl mx-auto">
+          <BrutalText variant="mono" size="xl" className="mb-12 max-w-4xl mx-auto text-black dark:text-white">
             THE MOST AGGRESSIVE YIELD OPTIMIZATION PLATFORM. 
             AI-POWERED. CROSS-CHAIN COMPATIBLE. ZERO COMPROMISE.
           </BrutalText>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Button size="xl" className="shadow-brutal-xl text-2xl px-16 py-8">
-              LAUNCH APP
-            </Button>
-            <Button variant="outline" size="xl" className="text-2xl px-16 py-8">
+            <Link href="/dashboard">
+              <Button size="xl" className="shadow-brutal-xl text-2xl px-16 py-8 bg-black text-white dark:bg-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200">
+                LAUNCH APP
+              </Button>
+            </Link>
+            <Button size="xl" className="shadow-brutal-xl text-2xl px-16 py-8 bg-black text-white dark:bg-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"> 
               READ DOCS
             </Button>
           </div>
@@ -34,40 +36,40 @@ export default function HomePage() {
       </BrutalSection>
 
       {/* Stats Section */}
-      <BrutalSection fullWidth className="bg-black text-white border-white">
-        <BrutalGrid cols={12} className="bg-black border-white">
-          <BrutalBox className="col-span-12 md:col-span-3 bg-black border-white text-white text-center" border>
-            <BrutalHeadline size="massive" className="text-white mb-4">
+      <BrutalSection fullWidth className="bg-white dark:bg-black text-black dark:text-white border-black dark:border-white">
+        <BrutalGrid cols={12} className="bg-white dark:bg-black border-black dark:border-white">
+          <BrutalBox className="col-span-12 md:col-span-3 bg-white dark:bg-black border-black dark:border-white text-black dark:text-white text-center" border>
+            <BrutalHeadline size="massive" className="text-black dark:text-white mb-4">
               $127M
             </BrutalHeadline>
-            <BrutalText variant="brutal" className="text-white">
+            <BrutalText variant="brutal" className="text-black dark:text-white">
               TOTAL VALUE LOCKED
             </BrutalText>
           </BrutalBox>
           
-          <BrutalBox className="col-span-12 md:col-span-3 bg-black border-white text-white text-center" border>
-            <BrutalHeadline size="massive" className="text-white mb-4">
+          <BrutalBox className="col-span-12 md:col-span-3 bg-white dark:bg-black border-black dark:border-white text-black dark:text-white text-center" border>
+            <BrutalHeadline size="massive" className="text-black dark:text-white mb-4">
               24.7%
             </BrutalHeadline>
-            <BrutalText variant="brutal" className="text-white">
+            <BrutalText variant="brutal" className="text-black dark:text-white">
               AVERAGE APY
             </BrutalText>
           </BrutalBox>
           
-          <BrutalBox className="col-span-12 md:col-span-3 bg-black border-white text-white text-center" border>
-            <BrutalHeadline size="massive" className="text-white mb-4">
+          <BrutalBox className="col-span-12 md:col-span-3 bg-white dark:bg-black border-black dark:border-white text-black dark:text-white text-center" border>
+            <BrutalHeadline size="massive" className="text-black dark:text-white mb-4">
               7
             </BrutalHeadline>
-            <BrutalText variant="brutal" className="text-white">
+            <BrutalText variant="brutal" className="text-black dark:text-white">
               SUPPORTED CHAINS
             </BrutalText>
           </BrutalBox>
           
-          <BrutalBox className="col-span-12 md:col-span-3 bg-black border-white text-white text-center" border>
-            <BrutalHeadline size="massive" className="text-white mb-4">
+          <BrutalBox className="col-span-12 md:col-span-3 bg-white dark:bg-black border-black dark:border-white text-black dark:text-white text-center" border>
+            <BrutalHeadline size="massive" className="text-black dark:text-white mb-4">
               99.9%
             </BrutalHeadline>
-            <BrutalText variant="brutal" className="text-white">
+            <BrutalText variant="brutal" className="text-black dark:text-white">
               UPTIME
             </BrutalText>
           </BrutalBox>
@@ -75,168 +77,180 @@ export default function HomePage() {
       </BrutalSection>
 
       {/* Features Section */}
-      <BrutalSection className="py-20">
-        <BrutalHeadline size="giant" className="mb-16 text-center">
+      <BrutalSection className="py-20 bg-white dark:bg-black">
+        <BrutalHeadline size="giant" className="mb-16 text-center text-black dark:text-white">
           FEATURES
         </BrutalHeadline>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <Card>
+          <Card className="bg-white dark:bg-gray-900 border-black dark:border-white">
             <CardHeader>
-              <CardTitle>AI OPTIMIZATION</CardTitle>
-              <CardDescription>MACHINE LEARNING ALGORITHMS</CardDescription>
+              <CardTitle className="text-black dark:text-white">AI OPTIMIZATION</CardTitle>
+              <CardDescription className="text-gray-600 dark:text-gray-400">MACHINE LEARNING ALGORITHMS</CardDescription>
             </CardHeader>
             <CardContent>
-              <BrutalText variant="mono" className="mb-6">
+              <BrutalText variant="mono" className="text-black dark:text-white">
                 ADVANCED AI MODELS CONTINUOUSLY ANALYZE MARKET CONDITIONS 
                 AND OPTIMIZE YIELD STRATEGIES IN REAL-TIME.
               </BrutalText>
-              <Button className="w-full">LEARN MORE</Button>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-white dark:bg-gray-900 border-black dark:border-white">
             <CardHeader>
-              <CardTitle>CROSS-CHAIN SWAPS</CardTitle>
-              <CardDescription>SEAMLESS BRIDGING</CardDescription>
+              <CardTitle className="text-black dark:text-white">CROSS-CHAIN SWAPS</CardTitle>
+              <CardDescription className="text-gray-600 dark:text-gray-400">SEAMLESS BRIDGING</CardDescription>
             </CardHeader>
             <CardContent>
-              <BrutalText variant="mono" className="mb-6">
+              <BrutalText variant="mono" className="text-black dark:text-white">
                 SWAP FROM ANY SUPPORTED CHAIN DIRECTLY INTO OUR 
                 YIELD-BEARING VAULT WITH ONE TRANSACTION.
               </BrutalText>
-              <Button className="w-full">LEARN MORE</Button>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-white dark:bg-gray-900 border-black dark:border-white">
             <CardHeader>
-              <CardTitle>UNISWAP V4 HOOKS</CardTitle>
-              <CardDescription>CUSTOM LIQUIDITY MANAGEMENT</CardDescription>
+              <CardTitle className="text-black dark:text-white">UNISWAP V4 HOOKS</CardTitle>
+              <CardDescription className="text-gray-600 dark:text-gray-400">CUSTOM LIQUIDITY MANAGEMENT</CardDescription>
             </CardHeader>
             <CardContent>
-              <BrutalText variant="mono" className="mb-6">
+              <BrutalText variant="mono" className="text-black dark:text-white">
                 PROPRIETARY HOOKS OPTIMIZE LIQUIDITY POSITIONS AND 
                 MINIMIZE IMPERMANENT LOSS AUTOMATICALLY.
               </BrutalText>
-              <Button className="w-full">LEARN MORE</Button>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-white dark:bg-gray-900 border-black dark:border-white">
             <CardHeader>
-              <CardTitle>ERC-4626 VAULT</CardTitle>
-              <CardDescription>STANDARDIZED INTERFACE</CardDescription>
+              <CardTitle className="text-black dark:text-white">ERC-4626 VAULT</CardTitle>
+              <CardDescription className="text-gray-600 dark:text-gray-400">STANDARDIZED INTERFACE</CardDescription>
             </CardHeader>
             <CardContent>
-              <BrutalText variant="mono" className="mb-6">
+              <BrutalText variant="mono" className="text-black dark:text-white">
                 FULLY COMPLIANT ERC-4626 TOKENIZED VAULT WITH 
                 MAXIMUM COMPOSABILITY AND INTEROPERABILITY.
               </BrutalText>
-              <Button className="w-full">LEARN MORE</Button>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-white dark:bg-gray-900 border-black dark:border-white">
             <CardHeader>
-              <CardTitle>RISK MANAGEMENT</CardTitle>
-              <CardDescription>AUTOMATED PROTECTION</CardDescription>
+              <CardTitle className="text-black dark:text-white">RISK MANAGEMENT</CardTitle>
+              <CardDescription className="text-gray-600 dark:text-gray-400">AUTOMATED PROTECTION</CardDescription>
             </CardHeader>
             <CardContent>
-              <BrutalText variant="mono" className="mb-6">
+              <BrutalText variant="mono" className="text-black dark:text-white">
                 AI-POWERED RISK ASSESSMENT AND AUTOMATED CIRCUIT 
                 BREAKERS PROTECT YOUR FUNDS 24/7.
               </BrutalText>
-              <Button className="w-full">LEARN MORE</Button>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-white dark:bg-gray-900 border-black dark:border-white">
             <CardHeader>
-              <CardTitle>GOVERNANCE TOKEN</CardTitle>
-              <CardDescription>DECENTRALIZED CONTROL</CardDescription>
+              <CardTitle className="text-black dark:text-white">GOVERNANCE TOKEN</CardTitle>
+              <CardDescription className="text-gray-600 dark:text-gray-400">DECENTRALIZED CONTROL</CardDescription>
             </CardHeader>
             <CardContent>
-              <BrutalText variant="mono" className="mb-6">
+              <BrutalText variant="mono" className="text-black dark:text-white">
                 PARTICIPATE IN PROTOCOL GOVERNANCE AND EARN 
                 REWARDS WITH THE VALKYRIE TOKEN.
               </BrutalText>
-              <Button className="w-full">LEARN MORE</Button>
             </CardContent>
           </Card>
         </div>
       </BrutalSection>
 
       {/* Technology Stack */}
-      <BrutalSection fullWidth className="bg-white border-black">
+      <BrutalSection fullWidth className="bg-white dark:bg-black border-black dark:border-white">
         <div className="max-w-7xl mx-auto">
-          <BrutalHeadline size="giant" className="mb-16 text-center">
+          <BrutalHeadline size="giant" className="mb-16 text-center text-black dark:text-white">
             TECHNOLOGY
           </BrutalHeadline>
           
-          <BrutalGrid cols={4} className="gap-8">
-            <BrutalBox className="text-center">
-              <BrutalText variant="brutal" size="lg" className="mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-8">
+            <BrutalBox className="text-center bg-white dark:bg-black border-black dark:border-white" border>
+              <BrutalText variant="brutal" size="lg" className="mb-4 text-black dark:text-white">
                 SOLIDITY
               </BrutalText>
-              <BrutalText variant="mono">
+              <BrutalText variant="mono" className="text-black dark:text-white">
                 SMART CONTRACTS
               </BrutalText>
             </BrutalBox>
             
-            <BrutalBox className="text-center">
-              <BrutalText variant="brutal" size="lg" className="mb-4">
+            <BrutalBox className="text-center bg-white dark:bg-black border-black dark:border-white" border>
+              <BrutalText variant="brutal" size="lg" className="mb-4 text-black dark:text-white">
                 FOUNDRY
               </BrutalText>
-              <BrutalText variant="mono">
+              <BrutalText variant="mono" className="text-black dark:text-white">
                 TESTING FRAMEWORK
               </BrutalText>
             </BrutalBox>
             
-            <BrutalBox className="text-center">
-              <BrutalText variant="brutal" size="lg" className="mb-4">
+            <BrutalBox className="text-center bg-white dark:bg-black border-black dark:border-white" border>
+              <BrutalText variant="brutal" size="lg" className="mb-4 text-black dark:text-white">
                 CHAINLINK
               </BrutalText>
-              <BrutalText variant="mono">
+              <BrutalText variant="mono" className="text-black dark:text-white">
                 ORACLE NETWORK
               </BrutalText>
             </BrutalBox>
             
-            <BrutalBox className="text-center">
-              <BrutalText variant="brutal" size="lg" className="mb-4">
-                UNISWAP V4
+            <BrutalBox className="text-center bg-white dark:bg-black border-black dark:border-white" border>
+              <BrutalText variant="brutal" size="lg" className="mb-4 text-black dark:text-white">
+                TYPESCRIPT
               </BrutalText>
-              <BrutalText variant="mono">
-                DEX PROTOCOL
+              <BrutalText variant="mono" className="text-black dark:text-white">
+                TYPE SAFETY
               </BrutalText>
             </BrutalBox>
-          </BrutalGrid>
+            
+            <BrutalBox className="text-center bg-white dark:bg-black border-black dark:border-white" border>
+              <BrutalText variant="brutal" size="lg" className="mb-4 text-black dark:text-white">
+                NEXT.JS
+              </BrutalText>
+              <BrutalText variant="mono" className="text-black dark:text-white">
+                REACT FRAMEWORK
+              </BrutalText>
+            </BrutalBox>
+            
+            <BrutalBox className="text-center bg-white dark:bg-black border-black dark:border-white" border>
+              <BrutalText variant="brutal" size="lg" className="mb-4 text-black dark:text-white">
+                WAGMI
+              </BrutalText>
+              <BrutalText variant="mono" className="text-black dark:text-white">
+                WEB3 HOOKS
+              </BrutalText>
+            </BrutalBox>
+          </div>
         </div>
       </BrutalSection>
 
-      {/* Call to Action */}
-      <BrutalSection fullWidth className="bg-black text-white border-white py-20">
+      {/* CTA Section */}
+      <BrutalSection fullWidth className="bg-white dark:bg-black text-black dark:text-white border-black dark:border-white py-20">
         <div className="text-center max-w-4xl mx-auto">
-          <BrutalHeadline size="giant" className="text-white mb-8">
-            READY TO
-            <br />
-            MAXIMIZE YIELD?
+          <BrutalHeadline size="huge" className="mb-8 text-black dark:text-white">
+            READY TO OPTIMIZE?
           </BrutalHeadline>
-          <BrutalText variant="mono" size="xl" className="text-white mb-12">
-            JOIN THE MOST AGGRESSIVE DEFI PLATFORM. NO BULLSHIT. NO COMPROMISE.
+          <BrutalText variant="mono" size="lg" className="mb-12 text-black dark:text-white">
+            JOIN THE MOST AGGRESSIVE YIELD FARMING PLATFORM IN DEFI
           </BrutalText>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Link href="/dashboard">
-            <Button variant="ghost" size="xl" className="text-white hover:bg-white hover:text-black hover:cursor-pointer text-2xl px-16 py-8">
-                GET STARTED
+              <Button size="xl" className="text-2xl px-16 py-8 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 dark:hover:text-white">
+                START EARNING
               </Button>
             </Link>
-            <Button variant="ghost" size="xl" className="text-white hover:bg-white hover:text-black hover:cursor-pointer text-2xl px-16 py-8">
-              VIEW GITHUB
+            <Button size="xl" className="text-2xl px-16 py-8 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 dark:hover:text-white">
+              LEARN MORE
             </Button>
           </div>
         </div>
       </BrutalSection>
+
+      <Footer />
     </div>
   );
 }

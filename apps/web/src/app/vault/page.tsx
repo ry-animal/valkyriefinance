@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import React, { useState, useEffect } from 'react'
 import { useAccount } from 'wagmi'
@@ -10,7 +10,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ConnectButton } from '@/components/wallet/connect-button'
-import { AlertCircle, TrendingUp, Coins, Vault, ArrowUpRight, ArrowDownLeft } from 'lucide-react'
+import { AlertCircle, TrendingUp, Coins, Vault, ArrowUpRight, ArrowDownLeft, Gift, Lock } from 'lucide-react'
+import { BrutalHeadline, BrutalText, BrutalSection, BrutalBox, BrutalGrid } from '@/components/brutalist/layout'
+import { WalletGuard } from "@/components/wallet/wallet-guard"
+import { cn } from "@/lib/utils"
+import { bt } from "@/lib/theme-utils"
 
 import {
     useVaultInfo,
@@ -26,6 +30,45 @@ import {
 } from '@/hooks/use-valkyrie-token'
 import { useWeb3Store } from '@/stores/web3-store'
 
+// Mock data - replace with actual contract calls
+const mockVaultInfo = {
+    vaultAddress: '0x1234567890123456789012345678901234567890',
+    asset: '0x0987654321098765432109876543210987654321',
+    name: 'Valkyrie Vault',
+    totalAssets: '1000000',
+    totalSupply: '950000',
+    formattedTotalAssets: '1,000,000 USDC',
+    formattedTotalSupply: '950,000 shares'
+};
+
+const mockVaultBalance = {
+    shares: '1000',
+    assetsFromShares: '1050',
+    maxWithdraw: '1050',
+    maxRedeem: '1000',
+    formattedShares: '1,000 shares',
+    formattedAssetsFromShares: '1,050 USDC',
+    formattedMaxWithdraw: '1,050 USDC',
+    formattedMaxRedeem: '1,000 shares'
+};
+
+const mockTokenInfo = {
+    tokenAddress: '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd',
+    name: 'Valkyrie Token',
+    symbol: 'VLKR',
+    totalSupply: '10000000',
+    formattedTotalSupply: '10,000,000 VLKR'
+};
+
+const mockTokenBalance = {
+    balance: '5000',
+    stakedBalance: '2000',
+    pendingRewards: '150',
+    formattedBalance: '5,000 VLKR',
+    formattedStakedBalance: '2,000 VLKR',
+    formattedPendingRewards: '150 VLKR'
+};
+
 export default function VaultPage() {
     const [mounted, setMounted] = useState(false)
 
@@ -33,24 +76,24 @@ export default function VaultPage() {
     const { isConnected } = useAccount()
     const { pendingTransactions } = useWeb3Store()
 
-    // Vault data - always call hooks
-    const vaultInfo = useVaultInfo()
-    const vaultBalance = useVaultBalance()
-    const vaultOperations = useVaultOperations()
+    // Use mock data for now - replace with actual hooks when contracts are deployed
+    const vaultInfo = mockVaultInfo
+    const vaultBalance = mockVaultBalance
+    const vaultOperations = { isPending: false }
 
-    // Token data - always call hooks
-    const tokenInfo = useValkyrieTokenInfo()
-    const tokenBalance = useValkyrieTokenBalance()
-    const tokenOperations = useValkyrieTokenOperations()
+    const tokenInfo = mockTokenInfo
+    const tokenBalance = mockTokenBalance
+    const tokenOperations = { isPending: false }
 
     // Form states
     const [depositAmount, setDepositAmount] = useState('')
     const [withdrawAmount, setWithdrawAmount] = useState('')
     const [stakeAmount, setStakeAmount] = useState('')
+    const [unstakeAmount, setUnstakeAmount] = useState('')
 
-    // Previews for current inputs - always call hooks
-    const depositPreview = useVaultPreviewDeposit(depositAmount)
-    const withdrawPreview = useVaultPreviewWithdraw(withdrawAmount)
+    // Mock previews for current inputs
+    const depositPreview = { data: depositAmount ? (parseFloat(depositAmount) * 0.95).toString() : null }
+    const withdrawPreview = { data: withdrawAmount ? (parseFloat(withdrawAmount) * 1.05).toString() : null }
 
     useEffect(() => {
         setMounted(true)
@@ -69,381 +112,384 @@ export default function VaultPage() {
         )
     }
 
-    const handleDeposit = async () => {
-        if (!depositAmount) return
-        try {
-            await vaultOperations.deposit(depositAmount)
-            setDepositAmount('')
-        } catch (error) {
-            console.error('Deposit failed:', error)
-        }
-    }
+    const handleDeposit = () => {
+        console.log('Deposit:', depositAmount);
+    };
 
-    const handleWithdraw = async () => {
-        if (!withdrawAmount) return
-        try {
-            await vaultOperations.withdraw(withdrawAmount)
-            setWithdrawAmount('')
-        } catch (error) {
-            console.error('Withdraw failed:', error)
-        }
-    }
+    const handleWithdraw = () => {
+        console.log('Withdraw:', withdrawAmount);
+    };
 
-    const handleStake = async () => {
-        if (!stakeAmount) return
-        try {
-            await tokenOperations.stake(stakeAmount)
-            setStakeAmount('')
-        } catch (error) {
-            console.error('Stake failed:', error)
-        }
-    }
+    const handleStake = () => {
+        console.log('Stake:', stakeAmount);
+    };
 
-    const handleClaimRewards = async () => {
-        try {
-            await tokenOperations.claimRewards()
-        } catch (error) {
-            console.error('Claim failed:', error)
-        }
-    }
+    const handleUnstake = () => {
+        console.log('Unstake:', unstakeAmount);
+    };
+
+    const handleClaimRewards = () => {
+        console.log('Claim rewards');
+    };
 
     return (
-        <div className="container mx-auto p-6 space-y-6">
-            {/* Header */}
-            <div className="text-center space-y-2">
-                <h1 className="text-4xl font-bold tracking-tight">Valkyrie Vault Demo</h1>
-                <p className="text-muted-foreground">
-                    Experience our ERC-4626 vault and platform token integration
-                </p>
-            </div>
-
-            {/* Pending Transactions Alert */}
-            {pendingTransactions.length > 0 && (
-                <Alert>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                        {pendingTransactions.length} transaction(s) pending confirmation
-                    </AlertDescription>
-                </Alert>
-            )}
-
-            {/* Vault Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Vault Assets</CardTitle>
-                        <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{vaultInfo.formattedTotalAssets}</div>
-                        <p className="text-xs text-muted-foreground">
-                            {vaultInfo.name || 'Valkyrie Vault'}
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Your Vault Position</CardTitle>
-                        <Vault className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{vaultBalance.formattedAssetsFromShares}</div>
-                        <p className="text-xs text-muted-foreground">
-                            {vaultBalance.formattedShares} shares
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Platform Tokens</CardTitle>
-                        <Coins className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{tokenBalance.formattedBalance}</div>
-                        <p className="text-xs text-muted-foreground">
-                            {tokenInfo.symbol || 'VLKR'} tokens
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Main Interface */}
-            <Tabs defaultValue="vault" className="space-y-6">
-                <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="vault">Vault Operations</TabsTrigger>
-                    <TabsTrigger value="token">Token Operations</TabsTrigger>
-                </TabsList>
-
-                {/* Vault Operations */}
-                <TabsContent value="vault" className="space-y-6">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {/* Deposit */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <ArrowUpRight className="h-5 w-5" />
-                                    Deposit Assets
-                                </CardTitle>
-                                <CardDescription>
-                                    Deposit assets to mint vault shares and earn yield
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="deposit-amount">Amount</Label>
-                                    <Input
-                                        id="deposit-amount"
-                                        type="number"
-                                        placeholder="0.0"
-                                        value={depositAmount}
-                                        onChange={(e) => setDepositAmount(e.target.value)}
-                                    />
-                                    {depositPreview.data && (
-                                        <p className="text-sm text-muted-foreground">
-                                            Will receive: {Number(depositPreview.data).toFixed(6)} shares
-                                        </p>
-                                    )}
-                                </div>
-                                <Button
-                                    onClick={handleDeposit}
-                                    disabled={!depositAmount || vaultOperations.isPending}
-                                    className="w-full"
-                                >
-                                    {vaultOperations.isPending ? 'Depositing...' : 'Deposit'}
-                                </Button>
-                            </CardContent>
-                        </Card>
-
-                        {/* Withdraw */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <ArrowDownLeft className="h-5 w-5" />
-                                    Withdraw Assets
-                                </CardTitle>
-                                <CardDescription>
-                                    Withdraw your assets from the vault
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="withdraw-amount">Amount</Label>
-                                    <Input
-                                        id="withdraw-amount"
-                                        type="number"
-                                        placeholder="0.0"
-                                        value={withdrawAmount}
-                                        onChange={(e) => setWithdrawAmount(e.target.value)}
-                                    />
-                                    {withdrawPreview.data && (
-                                        <p className="text-sm text-muted-foreground">
-                                            Will burn: {Number(withdrawPreview.data).toFixed(6)} shares
-                                        </p>
-                                    )}
-                                </div>
-                                <Button
-                                    onClick={handleWithdraw}
-                                    disabled={!withdrawAmount || vaultOperations.isPending}
-                                    className="w-full"
-                                    variant="outline"
-                                >
-                                    {vaultOperations.isPending ? 'Withdrawing...' : 'Withdraw'}
-                                </Button>
-                            </CardContent>
-                        </Card>
+        <WalletGuard requireConnection={true}>
+            <div className="min-h-screen bg-white dark:bg-black">
+                {/* Header */}
+                <BrutalSection fullWidth className="border-b-4 border-black dark:border-white py-20">
+                    <div className="max-w-7xl mx-auto text-center">
+                        <BrutalHeadline size="mega" className="mb-8 text-center text-black dark:text-white">
+                            VALKYRIE
+                            <br />
+                            VAULT
+                        </BrutalHeadline>
+                        <BrutalText variant="mono" size="xl" className="text-center max-w-3xl mx-auto text-black dark:text-white">
+                            EXPERIENCE OUR ERC-4626 VAULT AND PLATFORM TOKEN INTEGRATION.
+                            MAXIMUM YIELD. ZERO COMPROMISE.
+                        </BrutalText>
                     </div>
+                </BrutalSection>
 
-                    {/* Vault Details */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Vault Details</CardTitle>
-                            <CardDescription>
-                                Comprehensive information about the vault
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <div className="flex justify-between">
-                                        <span className="text-sm font-medium">Vault Address:</span>
-                                        <Badge variant="outline" className="font-mono text-xs">
-                                            {vaultInfo.vaultAddress ? `${vaultInfo.vaultAddress.slice(0, 6)}...${vaultInfo.vaultAddress.slice(-4)}` : 'N/A'}
-                                        </Badge>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-sm font-medium">Total Supply:</span>
-                                        <span className="text-sm">{vaultInfo.formattedTotalSupply}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-sm font-medium">Asset Address:</span>
-                                        <Badge variant="outline" className="font-mono text-xs">
-                                            {vaultInfo.asset ? `${vaultInfo.asset.slice(0, 6)}...${vaultInfo.asset.slice(-4)}` : 'N/A'}
-                                        </Badge>
-                                    </div>
+                {/* Pending Transactions Alert */}
+                {pendingTransactions.length > 0 && (
+                    <BrutalSection className="py-8 bg-red-500 dark:bg-red-600">
+                        <div className="max-w-7xl mx-auto">
+                            <BrutalBox className="bg-white dark:bg-black border-4 border-black dark:border-white p-6" border>
+                                <div className="flex items-center gap-4">
+                                    <AlertCircle className="h-8 w-8 text-red-500" />
+                                    <BrutalText variant="brutal" size="lg" className="text-black dark:text-white">
+                                        {pendingTransactions.length} TRANSACTION(S) PENDING CONFIRMATION
+                                    </BrutalText>
                                 </div>
-                                <div className="space-y-2">
-                                    <div className="flex justify-between">
-                                        <span className="text-sm font-medium">Your Shares:</span>
-                                        <span className="text-sm">{vaultBalance.formattedShares}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-sm font-medium">Max Withdraw:</span>
-                                        <span className="text-sm">{vaultBalance.formattedMaxWithdraw}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-sm font-medium">Max Redeem:</span>
-                                        <span className="text-sm">{vaultBalance.formattedMaxRedeem}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-
-                {/* Token Operations */}
-                <TabsContent value="token" className="space-y-6">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {/* Staking */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Stake Platform Tokens</CardTitle>
-                                <CardDescription>
-                                    Stake {tokenInfo.symbol || 'VLKR'} tokens to earn rewards and participate in governance
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="stake-amount">Amount to Stake</Label>
-                                    <Input
-                                        id="stake-amount"
-                                        type="number"
-                                        placeholder="0.0"
-                                        value={stakeAmount}
-                                        onChange={(e) => setStakeAmount(e.target.value)}
-                                    />
-                                </div>
-                                <Button
-                                    onClick={handleStake}
-                                    disabled={!stakeAmount || tokenOperations.isPending}
-                                    className="w-full"
-                                >
-                                    {tokenOperations.isPending ? 'Staking...' : 'Stake Tokens'}
-                                </Button>
-                            </CardContent>
-                        </Card>
-
-                        {/* Rewards */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Staking Rewards</CardTitle>
-                                <CardDescription>
-                                    View and claim your staking rewards
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <div className="flex justify-between">
-                                        <span className="text-sm font-medium">Staked Balance:</span>
-                                        <span className="text-sm">{tokenBalance.formattedStakedBalance}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-sm font-medium">Pending Rewards:</span>
-                                        <span className="text-sm">{tokenBalance.formattedPendingRewards}</span>
-                                    </div>
-                                </div>
-                                <Button
-                                    onClick={handleClaimRewards}
-                                    disabled={tokenOperations.isPending}
-                                    className="w-full"
-                                    variant="outline"
-                                >
-                                    {tokenOperations.isPending ? 'Claiming...' : 'Claim Rewards'}
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    {/* Token Details */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Token Information</CardTitle>
-                            <CardDescription>
-                                Platform token details and supply information
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <div className="flex justify-between">
-                                        <span className="text-sm font-medium">Token Name:</span>
-                                        <span className="text-sm">{tokenInfo.name || 'Valkyrie Token'}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-sm font-medium">Symbol:</span>
-                                        <span className="text-sm">{tokenInfo.symbol || 'VLKR'}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-sm font-medium">Total Supply:</span>
-                                        <span className="text-sm">{tokenInfo.formattedTotalSupply}</span>
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <div className="flex justify-between">
-                                        <span className="text-sm font-medium">Your Balance:</span>
-                                        <span className="text-sm">{tokenBalance.formattedBalance}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-sm font-medium">Staked Amount:</span>
-                                        <span className="text-sm">{tokenBalance.formattedStakedBalance}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-sm font-medium">Token Address:</span>
-                                        <Badge variant="outline" className="font-mono text-xs">
-                                            {tokenInfo.tokenAddress ? `${tokenInfo.tokenAddress.slice(0, 6)}...${tokenInfo.tokenAddress.slice(-4)}` : 'N/A'}
-                                        </Badge>
-                                    </div>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-            </Tabs>
-
-            {/* Recent Transactions */}
-            {pendingTransactions.length > 0 && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Recent Transactions</CardTitle>
-                        <CardDescription>
-                            Track your recent vault and token transactions
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-2">
-                            {pendingTransactions.slice(0, 5).map((tx, index) => (
-                                <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                                    <div className="flex items-center gap-3">
-                                        <Badge variant="outline" className="capitalize">
-                                            {tx.type.replace('_', ' ')}
-                                        </Badge>
-                                        <span className="text-sm font-mono">
-                                            {tx.hash.slice(0, 6)}...{tx.hash.slice(-4)}
-                                        </span>
-                                    </div>
-                                    <Badge
-                                        variant={tx.status === 'confirmed' ? 'default' : 'secondary'}
-                                        className="capitalize"
-                                    >
-                                        {tx.status}
-                                    </Badge>
-                                </div>
-                            ))}
+                            </BrutalBox>
                         </div>
-                    </CardContent>
-                </Card>
-            )}
-        </div>
+                    </BrutalSection>
+                )}
+
+                {/* Vault Overview Stats */}
+                <BrutalSection fullWidth className="bg-black dark:bg-white text-white dark:text-black py-16">
+                    <BrutalGrid cols={3} className="gap-8 max-w-7xl mx-auto">
+                        <BrutalBox className="text-center bg-black dark:bg-white border-white dark:border-black text-white dark:text-black p-8" border>
+                            <BrutalHeadline size="massive" className="text-white dark:text-black mb-4">
+                                {vaultInfo.formattedTotalAssets}
+                            </BrutalHeadline>
+                            <BrutalText variant="brutal" className="text-white dark:text-black">
+                                TOTAL VAULT ASSETS
+                            </BrutalText>
+                        </BrutalBox>
+
+                        <BrutalBox className="text-center bg-black dark:bg-white border-white dark:border-black text-white dark:text-black p-8" border>
+                            <BrutalHeadline size="massive" className="text-white dark:text-black mb-4">
+                                {vaultBalance.formattedAssetsFromShares}
+                            </BrutalHeadline>
+                            <BrutalText variant="brutal" className="text-white dark:text-black">
+                                YOUR POSITION
+                            </BrutalText>
+                        </BrutalBox>
+
+                        <BrutalBox className="text-center bg-black dark:bg-white border-white dark:border-black text-white dark:text-black p-8" border>
+                            <BrutalHeadline size="massive" className="text-white dark:text-black mb-4">
+                                {tokenBalance.formattedBalance}
+                            </BrutalHeadline>
+                            <BrutalText variant="brutal" className="text-white dark:text-black">
+                                PLATFORM TOKENS
+                            </BrutalText>
+                        </BrutalBox>
+                    </BrutalGrid>
+                </BrutalSection>
+
+                {/* Main Interface */}
+                <BrutalSection className="py-16 bg-white dark:bg-black">
+                    <div className="max-w-7xl mx-auto">
+                        <BrutalHeadline size="giant" className="mb-16 text-center text-black dark:text-white">
+                            OPERATIONS
+                        </BrutalHeadline>
+
+                        <Tabs defaultValue="vault" className="space-y-12">
+                            <TabsList className="grid w-full grid-cols-2 border-4 border-black dark:border-white bg-white dark:bg-gray-900 h-16">
+                                <TabsTrigger 
+                                    value="vault" 
+                                    className="font-brutal font-black uppercase text-xl h-full data-[state=active]:bg-black data-[state=active]:dark:bg-white data-[state=active]:text-white data-[state=active]:dark:text-black text-black dark:text-white"
+                                >
+                                    VAULT OPERATIONS
+                                </TabsTrigger>
+                                <TabsTrigger 
+                                    value="token" 
+                                    className="font-brutal font-black uppercase text-xl h-full data-[state=active]:bg-black data-[state=active]:dark:bg-white data-[state=active]:text-white data-[state=active]:dark:text-black text-black dark:text-white"
+                                >
+                                    TOKEN OPERATIONS
+                                </TabsTrigger>
+                            </TabsList>
+
+                            {/* Vault Operations */}
+                            <TabsContent value="vault" className="space-y-12">
+                                <BrutalGrid cols={2} className="gap-8">
+                                    {/* Deposit */}
+                                    <BrutalBox className="bg-white dark:bg-gray-900 border-4 border-black dark:border-white p-8" border>
+                                        <BrutalHeadline size="lg" className="mb-6 text-black dark:text-white flex items-center gap-4">
+                                            <ArrowUpRight className="h-8 w-8" />
+                                            DEPOSIT ASSETS
+                                        </BrutalHeadline>
+                                        <BrutalText variant="mono" className="mb-8 text-black dark:text-white">
+                                            DEPOSIT ASSETS TO MINT VAULT SHARES AND EARN YIELD
+                                        </BrutalText>
+                                        
+                                        <div className="space-y-6">
+                                            <div>
+                                                <BrutalText variant="brutal" className="mb-3 text-black dark:text-white">
+                                                    AMOUNT
+                                                </BrutalText>
+                                                <Input
+                                                    type="number"
+                                                    placeholder="0.0"
+                                                    value={depositAmount}
+                                                    onChange={(e) => setDepositAmount(e.target.value)}
+                                                    className="border-4 border-black dark:border-white font-mono text-xl h-16 bg-white dark:bg-gray-800 text-black dark:text-white"
+                                                />
+                                                {depositPreview.data && (
+                                                    <BrutalText variant="mono" size="sm" className="mt-2 text-gray-600 dark:text-gray-400">
+                                                        WILL RECEIVE: {Number(depositPreview.data).toFixed(6)} SHARES
+                                                    </BrutalText>
+                                                )}
+                                            </div>
+                                            <Button
+                                                onClick={handleDeposit}
+                                                disabled={!depositAmount || vaultOperations.isPending}
+                                                className="w-full font-brutal font-black uppercase text-xl h-16 border-4 border-black dark:border-white bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+                                            >
+                                                {vaultOperations.isPending ? 'DEPOSITING...' : 'DEPOSIT'}
+                                            </Button>
+                                        </div>
+                                    </BrutalBox>
+
+                                    {/* Withdraw */}
+                                    <BrutalBox className="bg-white dark:bg-gray-900 border-4 border-black dark:border-white p-8" border>
+                                        <BrutalHeadline size="lg" className="mb-6 text-black dark:text-white flex items-center gap-4">
+                                            <ArrowDownLeft className="h-8 w-8" />
+                                            WITHDRAW ASSETS
+                                        </BrutalHeadline>
+                                        <BrutalText variant="mono" className="mb-8 text-black dark:text-white">
+                                            WITHDRAW YOUR ASSETS FROM THE VAULT
+                                        </BrutalText>
+                                        
+                                        <div className="space-y-6">
+                                            <div>
+                                                <BrutalText variant="brutal" className="mb-3 text-black dark:text-white">
+                                                    AMOUNT
+                                                </BrutalText>
+                                                <Input
+                                                    type="number"
+                                                    placeholder="0.0"
+                                                    value={withdrawAmount}
+                                                    onChange={(e) => setWithdrawAmount(e.target.value)}
+                                                    className="border-4 border-black dark:border-white font-mono text-xl h-16 bg-white dark:bg-gray-800 text-black dark:text-white"
+                                                />
+                                                {withdrawPreview.data && (
+                                                    <BrutalText variant="mono" size="sm" className="mt-2 text-gray-600 dark:text-gray-400">
+                                                        WILL BURN: {Number(withdrawPreview.data).toFixed(6)} SHARES
+                                                    </BrutalText>
+                                                )}
+                                            </div>
+                                            <Button
+                                                onClick={handleWithdraw}
+                                                disabled={!withdrawAmount || vaultOperations.isPending}
+                                                className="w-full font-brutal font-black uppercase text-xl h-16 border-4 border-black dark:border-white bg-white dark:bg-gray-900 text-black dark:text-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black"
+                                                variant="outline"
+                                            >
+                                                {vaultOperations.isPending ? 'WITHDRAWING...' : 'WITHDRAW'}
+                                            </Button>
+                                        </div>
+                                    </BrutalBox>
+                                </BrutalGrid>
+
+                                {/* Vault Details */}
+                                <BrutalBox className="bg-white dark:bg-gray-900 border-4 border-black dark:border-white p-8" border>
+                                    <BrutalHeadline size="lg" className="mb-8 text-black dark:text-white">
+                                        VAULT DETAILS
+                                    </BrutalHeadline>
+                                    
+                                    <BrutalGrid cols={2} className="gap-8">
+                                        <div className="space-y-6">
+                                            <div className="flex justify-between items-center">
+                                                <BrutalText variant="brutal" className="text-black dark:text-white">VAULT ADDRESS:</BrutalText>
+                                                <Badge variant="outline" className="font-mono border-2 border-black dark:border-white bg-white dark:bg-gray-800 text-black dark:text-white px-3 py-1">
+                                                    {vaultInfo.vaultAddress ? `${vaultInfo.vaultAddress.slice(0, 6)}...${vaultInfo.vaultAddress.slice(-4)}` : 'N/A'}
+                                                </Badge>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <BrutalText variant="brutal" className="text-black dark:text-white">TOTAL SUPPLY:</BrutalText>
+                                                <BrutalText variant="mono" className="text-black dark:text-white">{vaultInfo.formattedTotalSupply}</BrutalText>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <BrutalText variant="brutal" className="text-black dark:text-white">ASSET ADDRESS:</BrutalText>
+                                                <Badge variant="outline" className="font-mono border-2 border-black dark:border-white bg-white dark:bg-gray-800 text-black dark:text-white px-3 py-1">
+                                                    {vaultInfo.asset ? `${vaultInfo.asset.slice(0, 6)}...${vaultInfo.asset.slice(-4)}` : 'N/A'}
+                                                </Badge>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-6">
+                                            <div className="flex justify-between items-center">
+                                                <BrutalText variant="brutal" className="text-black dark:text-white">YOUR SHARES:</BrutalText>
+                                                <BrutalText variant="mono" className="text-black dark:text-white">{vaultBalance.formattedShares}</BrutalText>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <BrutalText variant="brutal" className="text-black dark:text-white">MAX WITHDRAW:</BrutalText>
+                                                <BrutalText variant="mono" className="text-black dark:text-white">{vaultBalance.formattedMaxWithdraw}</BrutalText>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <BrutalText variant="brutal" className="text-black dark:text-white">MAX REDEEM:</BrutalText>
+                                                <BrutalText variant="mono" className="text-black dark:text-white">{vaultBalance.formattedMaxRedeem}</BrutalText>
+                                            </div>
+                                        </div>
+                                    </BrutalGrid>
+                                </BrutalBox>
+                            </TabsContent>
+
+                            {/* Token Operations */}
+                            <TabsContent value="token" className="space-y-12">
+                                <BrutalGrid cols={2} className="gap-8">
+                                    {/* Staking */}
+                                    <BrutalBox className="bg-white dark:bg-gray-900 border-4 border-black dark:border-white p-8" border>
+                                        <BrutalHeadline size="lg" className="mb-6 text-black dark:text-white">
+                                            STAKE PLATFORM TOKENS
+                                        </BrutalHeadline>
+                                        <BrutalText variant="mono" className="mb-8 text-black dark:text-white">
+                                            STAKE {tokenInfo.symbol || 'VLKR'} TOKENS TO EARN REWARDS AND PARTICIPATE IN GOVERNANCE
+                                        </BrutalText>
+                                        
+                                        <div className="space-y-6">
+                                            <div>
+                                                <BrutalText variant="brutal" className="mb-3 text-black dark:text-white">
+                                                    AMOUNT TO STAKE
+                                                </BrutalText>
+                                                <Input
+                                                    type="number"
+                                                    placeholder="0.0"
+                                                    value={stakeAmount}
+                                                    onChange={(e) => setStakeAmount(e.target.value)}
+                                                    className="border-4 border-black dark:border-white font-mono text-xl h-16 bg-white dark:bg-gray-800 text-black dark:text-white"
+                                                />
+                                            </div>
+                                            <Button
+                                                onClick={handleStake}
+                                                disabled={!stakeAmount || tokenOperations.isPending}
+                                                className="w-full font-brutal font-black uppercase text-xl h-16 border-4 border-black dark:border-white bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+                                            >
+                                                {tokenOperations.isPending ? 'STAKING...' : 'STAKE TOKENS'}
+                                            </Button>
+                                        </div>
+                                    </BrutalBox>
+
+                                    {/* Rewards */}
+                                    <BrutalBox className="bg-white dark:bg-gray-900 border-4 border-black dark:border-white p-8" border>
+                                        <BrutalHeadline size="lg" className="mb-6 text-black dark:text-white">
+                                            STAKING REWARDS
+                                        </BrutalHeadline>
+                                        <BrutalText variant="mono" className="mb-8 text-black dark:text-white">
+                                            VIEW AND CLAIM YOUR STAKING REWARDS
+                                        </BrutalText>
+                                        
+                                        <div className="space-y-6">
+                                            <div className="space-y-4">
+                                                <div className="flex justify-between items-center">
+                                                    <BrutalText variant="brutal" className="text-black dark:text-white">STAKED BALANCE:</BrutalText>
+                                                    <BrutalText variant="mono" className="text-black dark:text-white">{tokenBalance.formattedStakedBalance}</BrutalText>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <BrutalText variant="brutal" className="text-black dark:text-white">PENDING REWARDS:</BrutalText>
+                                                    <BrutalText variant="mono" className="text-green-500">{tokenBalance.formattedPendingRewards}</BrutalText>
+                                                </div>
+                                            </div>
+                                            <Button
+                                                onClick={handleClaimRewards}
+                                                disabled={tokenOperations.isPending}
+                                                className="w-full font-brutal font-black uppercase text-xl h-16 border-4 border-black dark:border-white bg-white dark:bg-gray-900 text-black dark:text-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black"
+                                                variant="outline"
+                                            >
+                                                {tokenOperations.isPending ? 'CLAIMING...' : 'CLAIM REWARDS'}
+                                            </Button>
+                                        </div>
+                                    </BrutalBox>
+                                </BrutalGrid>
+
+                                {/* Token Details */}
+                                <BrutalBox className="bg-white dark:bg-gray-900 border-4 border-black dark:border-white p-8" border>
+                                    <BrutalHeadline size="lg" className="mb-8 text-black dark:text-white">
+                                        TOKEN INFORMATION
+                                    </BrutalHeadline>
+                                    
+                                    <BrutalGrid cols={2} className="gap-8">
+                                        <div className="space-y-6">
+                                            <div className="flex justify-between items-center">
+                                                <BrutalText variant="brutal" className="text-black dark:text-white">TOKEN NAME:</BrutalText>
+                                                <BrutalText variant="mono" className="text-black dark:text-white">{tokenInfo.name || 'Valkyrie Token'}</BrutalText>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <BrutalText variant="brutal" className="text-black dark:text-white">SYMBOL:</BrutalText>
+                                                <BrutalText variant="mono" className="text-black dark:text-white">{tokenInfo.symbol || 'VLKR'}</BrutalText>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <BrutalText variant="brutal" className="text-black dark:text-white">TOTAL SUPPLY:</BrutalText>
+                                                <BrutalText variant="mono" className="text-black dark:text-white">{tokenInfo.formattedTotalSupply}</BrutalText>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-6">
+                                            <div className="flex justify-between items-center">
+                                                <BrutalText variant="brutal" className="text-black dark:text-white">YOUR BALANCE:</BrutalText>
+                                                <BrutalText variant="mono" className="text-black dark:text-white">{tokenBalance.formattedBalance}</BrutalText>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <BrutalText variant="brutal" className="text-black dark:text-white">STAKED AMOUNT:</BrutalText>
+                                                <BrutalText variant="mono" className="text-black dark:text-white">{tokenBalance.formattedStakedBalance}</BrutalText>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <BrutalText variant="brutal" className="text-black dark:text-white">TOKEN ADDRESS:</BrutalText>
+                                                <Badge variant="outline" className="font-mono border-2 border-black dark:border-white bg-white dark:bg-gray-800 text-black dark:text-white px-3 py-1">
+                                                    {tokenInfo.tokenAddress ? `${tokenInfo.tokenAddress.slice(0, 6)}...${tokenInfo.tokenAddress.slice(-4)}` : 'N/A'}
+                                                </Badge>
+                                            </div>
+                                        </div>
+                                    </BrutalGrid>
+                                </BrutalBox>
+                            </TabsContent>
+                        </Tabs>
+                    </div>
+                </BrutalSection>
+
+                {/* Recent Transactions */}
+                {pendingTransactions.length > 0 && (
+                    <BrutalSection className="py-16 bg-gray-50 dark:bg-gray-900 border-t-4 border-black dark:border-white">
+                        <div className="max-w-7xl mx-auto">
+                            <BrutalHeadline size="giant" className="mb-12 text-center text-black dark:text-white">
+                                RECENT TRANSACTIONS
+                            </BrutalHeadline>
+                            
+                            <BrutalBox className="bg-white dark:bg-gray-800 border-4 border-black dark:border-white p-8" border>
+                                <div className="space-y-4">
+                                    {pendingTransactions.slice(0, 5).map((tx, index) => (
+                                        <div key={index} className="flex items-center justify-between p-6 border-2 border-black dark:border-white bg-gray-50 dark:bg-gray-700">
+                                            <div className="flex items-center gap-6">
+                                                <Badge variant="outline" className="font-brutal font-black uppercase border-2 border-black dark:border-white bg-white dark:bg-gray-800 text-black dark:text-white px-4 py-2">
+                                                    {tx.type.replace('_', ' ')}
+                                                </Badge>
+                                                <BrutalText variant="mono" className="text-black dark:text-white">
+                                                    {tx.hash.slice(0, 6)}...{tx.hash.slice(-4)}
+                                                </BrutalText>
+                                            </div>
+                                            <Badge
+                                                variant={tx.status === 'confirmed' ? 'default' : 'secondary'}
+                                                className="font-brutal font-black uppercase border-2 border-black dark:border-white bg-white dark:bg-gray-800 text-black dark:text-white px-4 py-2"
+                                            >
+                                                {tx.status}
+                                            </Badge>
+                                        </div>
+                                    ))}
+                                </div>
+                            </BrutalBox>
+                        </div>
+                    </BrutalSection>
+                )}
+            </div>
+        </WalletGuard>
     )
 } 

@@ -5,8 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1749417228038,
-      "tag": "0000_clammy_stone_men",
+      "when": 1734567890000,
+      "tag": "0000_initial_migration",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1734567891000,
+      "tag": "0001_wallet_auth_migration",
       "breakpoints": true
     }
   ]

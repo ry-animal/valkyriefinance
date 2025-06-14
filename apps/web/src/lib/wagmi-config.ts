@@ -3,9 +3,11 @@ import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { mainnet, sepolia, arbitrum, optimism, polygon } from '@reown/appkit/networks'
 import { QueryClient } from '@tanstack/react-query'
 import { env } from './env'
+import { http, createConfig } from 'wagmi'
+import { coinbaseWallet, injected, walletConnect } from 'wagmi/connectors'
 
 // 1. Get projectId from environment
-const projectId = env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '1a91f40c774bfe7c56b13d36dc0fe7a6'
+const projectId = env.NEXT_PUBLIC_REOWN_PROJECT_ID
 
 // 2. Create a metadata object - optional
 const metadata = {
@@ -42,8 +44,30 @@ export function initializeAppKit() {
   return appKit
 }
 
+// Export function to get AppKit instance
+export function getAppKit() {
+  return appKit
+}
+
 // 6. Export wagmi config
-export const wagmiConfig = wagmiAdapter.wagmiConfig
+export const wagmiConfig = createConfig({
+  chains: env.NEXT_PUBLIC_ENABLE_TESTNETS 
+    ? [mainnet, sepolia, arbitrum, optimism] 
+    : [mainnet, arbitrum, optimism],
+  connectors: [
+    injected(),
+    coinbaseWallet({ appName: 'Valkyrie Finance' }),
+    walletConnect({ 
+      projectId: env.NEXT_PUBLIC_REOWN_PROJECT_ID 
+    }),
+  ],
+  transports: {
+    [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY}`),
+    [sepolia.id]: http(`https://eth-sepolia.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY}`),
+    [arbitrum.id]: http(`https://arb-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY}`),
+    [optimism.id]: http(`https://opt-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY}`),
+  },
+})
 
 // 7. Export query client
 export const queryClient = new QueryClient()

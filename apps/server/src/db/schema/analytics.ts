@@ -1,5 +1,5 @@
 import { pgTable, text, numeric, integer, boolean, uuid, timestamp, index, jsonb } from 'drizzle-orm/pg-core'
-import { user } from './auth'
+import { user } from './user'
 
 export const aiRecommendations = pgTable('ai_recommendations', {
   id: uuid('id').primaryKey().defaultRandom(),

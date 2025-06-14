@@ -7,6 +7,9 @@ const envSchema = z.object({
   // Wallet Connect Project ID (from WalletConnect Cloud)
   NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: z.string().optional(),
   
+  // Reown Project ID (for AppKit)
+  NEXT_PUBLIC_REOWN_PROJECT_ID: z.string().default("1a91f40c774bfe7c56b13d36dc0fe7a6"),
+  
   // Alchemy API Key for RPC endpoints
   NEXT_PUBLIC_ALCHEMY_API_KEY: z.string().optional(),
   
@@ -16,7 +19,7 @@ const envSchema = z.object({
   
   // Feature Flags
   NEXT_PUBLIC_ENABLE_AI_CHAT: z.coerce.boolean().default(true),
-  NEXT_PUBLIC_ENABLE_WEB3: z.coerce.boolean().default(false),
+  NEXT_PUBLIC_ENABLE_WEB3: z.coerce.boolean().default(true),
   
   // Analytics (optional)
   NEXT_PUBLIC_GA_MEASUREMENT_ID: z.string().optional(),
@@ -36,11 +39,12 @@ let env: z.infer<typeof envSchema>;
 const getDefaultEnv = () => ({
   NEXT_PUBLIC_SERVER_URL: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
   NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
+  NEXT_PUBLIC_REOWN_PROJECT_ID: process.env.NEXT_PUBLIC_REOWN_PROJECT_ID || "1a91f40c774bfe7c56b13d36dc0fe7a6",
   NEXT_PUBLIC_ALCHEMY_API_KEY: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
   NEXT_PUBLIC_DEFAULT_CHAIN: Number(process.env.NEXT_PUBLIC_DEFAULT_CHAIN) || 1,
   NEXT_PUBLIC_ENABLE_TESTNETS: process.env.NEXT_PUBLIC_ENABLE_TESTNETS === 'true',
   NEXT_PUBLIC_ENABLE_AI_CHAT: process.env.NEXT_PUBLIC_ENABLE_AI_CHAT !== 'false',
-  NEXT_PUBLIC_ENABLE_WEB3: process.env.NEXT_PUBLIC_ENABLE_WEB3 === 'true',
+  NEXT_PUBLIC_ENABLE_WEB3: process.env.NEXT_PUBLIC_ENABLE_WEB3 !== 'false',
   NEXT_PUBLIC_GA_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
   NODE_ENV: process.env.NODE_ENV || 'development',
 });

@@ -15,48 +15,60 @@ import {
 } from '@/stores';
 
 export function AuthStoreExample() {
-    const { user, isAuthenticated, login, logout } = useAuthStore();
+    const { user, isAuthenticated, setUser, connectWallet, disconnectWallet } = useAuthStore();
+
+    const mockWalletConnect = () => {
+        const mockUser = {
+            id: '1',
+            walletAddress: '0x1234...5678',
+            ensName: 'demo.eth',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+        setUser(mockUser);
+        connectWallet(mockUser);
+    };
+
+    const mockWalletDisconnect = () => {
+        disconnectWallet();
+    };
 
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Auth Store Example</CardTitle>
+                <CardTitle>Wallet Auth Store Example</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div>
                     <p className="text-sm text-muted-foreground">Status:</p>
                     <Badge variant={isAuthenticated ? "default" : "secondary"}>
-                        {isAuthenticated ? "Authenticated" : "Not Authenticated"}
+                        {isAuthenticated ? "Wallet Connected" : "Wallet Disconnected"}
                     </Badge>
                 </div>
 
                 {user && (
                     <div>
-                        <p className="text-sm text-muted-foreground">User:</p>
-                        <p className="text-sm">{user.email}</p>
+                        <p className="text-sm text-muted-foreground">Wallet:</p>
+                        <p className="text-sm font-mono">{user.walletAddress}</p>
+                        {user.ensName && (
+                            <p className="text-sm text-muted-foreground">ENS: {user.ensName}</p>
+                        )}
                     </div>
                 )}
 
                 <div className="flex gap-2">
                     <Button
-                        onClick={() => login({
-                            id: '1',
-                            email: 'demo@example.com',
-                            name: 'Demo User',
-                            image: undefined,
-                            createdAt: new Date(),
-                            updatedAt: new Date(),
-                        })}
+                        onClick={mockWalletConnect}
                         disabled={isAuthenticated}
                     >
-                        Mock Login
+                        Mock Connect Wallet
                     </Button>
                     <Button
-                        onClick={logout}
+                        onClick={mockWalletDisconnect}
                         variant="outline"
                         disabled={!isAuthenticated}
                     >
-                        Logout
+                        Disconnect Wallet
                     </Button>
                 </div>
             </CardContent>

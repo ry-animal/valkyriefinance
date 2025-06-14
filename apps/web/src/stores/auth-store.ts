@@ -1,19 +1,27 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import type { User } from '@valkyrie/common/types';
+
+export interface WalletUser {
+  id: string;
+  walletAddress: string;
+  ensName?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
 interface AuthState {
-  user: User | null;
+  user: WalletUser | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  walletAddress: string | null;
 }
 
 interface AuthActions {
-  setUser: (user: User | null) => void;
+  setUser: (user: WalletUser | null) => void;
   setLoading: (loading: boolean) => void;
-  login: (user: User) => void;
-  logout: () => void;
-  updateUser: (updates: Partial<User>) => void;
+  connectWallet: (user: WalletUser) => void;
+  disconnectWallet: () => void;
+  setWalletAddress: (address: string | null) => void;
 }
 
 type AuthStore = AuthState & AuthActions;
@@ -25,6 +33,7 @@ export const useAuthStore = create<AuthStore>()(
       user: null,
       isLoading: false,
       isAuthenticated: false,
+      walletAddress: null,
 
       // Actions
       setUser: (user) =>
@@ -32,6 +41,7 @@ export const useAuthStore = create<AuthStore>()(
           {
             user,
             isAuthenticated: !!user,
+            walletAddress: user?.walletAddress || null,
           },
           false,
           'auth/setUser'
@@ -44,40 +54,36 @@ export const useAuthStore = create<AuthStore>()(
           'auth/setLoading'
         ),
 
-      login: (user) =>
+      connectWallet: (user) =>
         set(
           {
             user,
+            walletAddress: user.walletAddress,
             isAuthenticated: true,
             isLoading: false,
           },
           false,
-          'auth/login'
+          'auth/connectWallet'
         ),
 
-      logout: () =>
+      disconnectWallet: () =>
         set(
           {
             user: null,
             isAuthenticated: false,
             isLoading: false,
+            walletAddress: null,
           },
           false,
-          'auth/logout'
+          'auth/disconnectWallet'
         ),
 
-      updateUser: (updates) => {
-        const currentUser = get().user;
-        if (currentUser) {
-          set(
-            {
-              user: { ...currentUser, ...updates },
-            },
-            false,
-            'auth/updateUser'
-          );
-        }
-      },
+      setWalletAddress: (address) =>
+        set(
+          { walletAddress: address },
+          false,
+          'auth/setWalletAddress'
+        ),
     }),
     { name: 'auth-store' }
   )

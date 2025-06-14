@@ -1,5 +1,5 @@
 import { pgTable, text, numeric, integer, boolean, uuid, timestamp, index } from 'drizzle-orm/pg-core'
-import { user } from './auth'
+import { user } from './user'
 
 export const portfolios = pgTable('portfolios', {
   id: uuid('id').primaryKey().defaultRandom(),

@@ -23,9 +23,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/favicon.png" style={{ filter: 'invert(1)' }} />
+      </head>
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased",
+          "min-h-screen bg-white dark:bg-black text-black dark:text-white font-sans antialiased",
           geistSans.variable,
           geistMono.variable
         )}

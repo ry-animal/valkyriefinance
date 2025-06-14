@@ -42,8 +42,8 @@ test.describe('Error Handling', () => {
     // Should load the page structure with brutalist design
     await expect(page.locator('text=VALKYRIE').first()).toBeVisible();
     
-    // Should show the brutal grid layout even if data fetching fails
-    await expect(page.locator('.brutal-grid, [class*="grid"]')).toBeVisible();
+    // Should show the brutal grid layout even if data fetching fails (use first grid)
+    await expect(page.locator('[class*="grid"]').first()).toBeVisible();
     
     // Wait for any async operations
     await page.waitForTimeout(2000);

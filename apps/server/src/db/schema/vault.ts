@@ -1,5 +1,5 @@
 import { pgTable, text, numeric, integer, boolean, uuid, timestamp, index, pgEnum, jsonb } from 'drizzle-orm/pg-core'
-import { user } from './auth'
+import { user } from './user'
 
 export const vaultOperationTypeEnum = pgEnum('vault_operation_type', [
   'deposit',

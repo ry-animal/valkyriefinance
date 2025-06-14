@@ -1,6 +1,7 @@
 "use client";
 
 import ClientProviders from '@/components/client-providers';
+import { ThemeProvider } from '@/components/theme-provider';
 
 export default function ProvidersWrapper({
     children,
@@ -8,8 +9,15 @@ export default function ProvidersWrapper({
     children: React.ReactNode;
 }) {
     return (
-        <ClientProviders>
-            {children}
-        </ClientProviders>
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem={false}
+            themes={['light', 'dark']}
+        >
+            <ClientProviders>
+                {children}
+            </ClientProviders>
+        </ThemeProvider>
     );
 } 

@@ -1,209 +1,101 @@
 "use client"
-import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+
+import { VaultDashboard } from "@/components/vault/vault-dashboard"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { BrutalGrid, BrutalSection, BrutalHeadline, BrutalBox, BrutalText } from "@/components/brutalist/layout"
+import { WalletGuard } from "@/components/wallet/wallet-guard"
 
 export default function DashboardPage() {
-  const router = useRouter()
-  const { data: session, isPending } = authClient.useSession();
-
-  // TODO: Re-enable tRPC integration after fixing type issues
-  // const privateData = useQuery({
-  //   queryKey: ['privateData'],
-  //   queryFn: () => trpc.privateData.query(),
-  // });
-
-  useEffect(() => {
-    if (!session && !isPending) {
-      router.push("/login");
-    }
-  }, [session, isPending, router]);
-
-  if (isPending) {
-    return <div>Loading...</div>;
-  }
-
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <BrutalSection fullWidth className="border-b-4 border-black">
-        <div className="max-w-7xl mx-auto">
-          <BrutalHeadline size="mega" className="mb-8">
-            VALKYRIE
-            <br />
-            FINANCE
+    <WalletGuard requireConnection={true}>
+      <div className="min-h-screen bg-white dark:bg-black">
+        {/* Dashboard Header */}
+        <BrutalSection className="py-12 border-b-4 border-black dark:border-white">
+          <BrutalHeadline size="huge" className="mb-8 text-center text-black dark:text-white">
+            VALKYRIE DASHBOARD
           </BrutalHeadline>
-          <BrutalText variant="mono" size="xl" className="mb-8 max-w-3xl">
-            DEFI BRUTALISM. NO COMPROMISES. MAXIMUM YIELD. ZERO BULLSHIT.
+          <BrutalText variant="mono" size="lg" className="text-center max-w-4xl mx-auto text-black dark:text-white">
+            MONITOR YOUR POSITIONS. TRACK YOUR YIELDS. OPTIMIZE YOUR STRATEGY.
           </BrutalText>
-          <div className="flex gap-4">
-            <Button size="xl" className="shadow-brutal-lg">
-              DEPOSIT NOW
-            </Button>
-            <Button variant="outline" size="xl">
-              VIEW VAULT
-            </Button>
-          </div>
-        </div>
-      </BrutalSection>
+        </BrutalSection>
 
-      {/* Portfolio Overview */}
-      <BrutalSection className="py-16">
-        <BrutalHeadline size="huge" className="mb-12">
-          PORTFOLIO
-        </BrutalHeadline>
-        
-        <BrutalGrid cols={12} className="mb-12">
-          {/* Total Value */}
-          <BrutalBox className="col-span-4">
-            <BrutalText variant="brutal" size="sm">TOTAL VALUE</BrutalText>
-            <BrutalHeadline size="massive" className="text-6xl mb-2">
-              $127,432
-            </BrutalHeadline>
-            <BrutalText variant="mono" className="text-green-600">
-              +12.5% TODAY
-            </BrutalText>
-          </BrutalBox>
+        {/* Main Dashboard Content */}
+        <BrutalSection className="py-8">
+          <VaultDashboard />
+        </BrutalSection>
 
-          {/* Active Strategies */}
-          <BrutalBox className="col-span-4">
-            <BrutalText variant="brutal" size="sm">ACTIVE STRATEGIES</BrutalText>
-            <BrutalHeadline size="massive" className="text-6xl mb-2">
-              7
-            </BrutalHeadline>
-            <BrutalText variant="mono">
-              YIELD FARMING ACTIVE
-            </BrutalText>
-          </BrutalBox>
-
-          {/* APY */}
-          <BrutalBox className="col-span-4">
-            <BrutalText variant="brutal" size="sm">CURRENT APY</BrutalText>
-            <BrutalHeadline size="massive" className="text-6xl mb-2">
-              24.7%
-            </BrutalHeadline>
-            <BrutalText variant="mono">
-              ANNUALIZED RETURN
-            </BrutalText>
-          </BrutalBox>
-        </BrutalGrid>
+        {/* Portfolio Stats */}
+        <BrutalSection className="py-16 bg-gray-50 dark:bg-gray-900 border-t-4 border-black dark:border-white">
+          <BrutalHeadline size="massive" className="mb-12 text-center text-black dark:text-white">
+            PORTFOLIO OVERVIEW
+          </BrutalHeadline>
+          
+          <BrutalGrid cols={3} className="gap-8">
+            <BrutalBox className="text-center bg-white dark:bg-gray-800 border-4 border-black dark:border-white p-8" border>
+              <BrutalHeadline size="huge" className="text-black dark:text-white mb-4">
+                $0.00
+              </BrutalHeadline>
+              <BrutalText variant="brutal" className="text-black dark:text-white">
+                TOTAL VALUE
+              </BrutalText>
+            </BrutalBox>
+            
+            <BrutalBox className="text-center bg-white dark:bg-gray-800 border-4 border-black dark:border-white p-8" border>
+              <BrutalHeadline size="huge" className="text-green-500 mb-4">
+                +0.00%
+              </BrutalHeadline>
+              <BrutalText variant="brutal" className="text-black dark:text-white">
+                24H P&L
+              </BrutalText>
+            </BrutalBox>
+            
+            <BrutalBox className="text-center bg-white dark:bg-gray-800 border-4 border-black dark:border-white p-8" border>
+              <BrutalHeadline size="huge" className="text-black dark:text-white mb-4">
+                0.00%
+              </BrutalHeadline>
+              <BrutalText variant="brutal" className="text-black dark:text-white">
+                AVG APY
+              </BrutalText>
+            </BrutalBox>
+          </BrutalGrid>
+        </BrutalSection>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          <Card>
-            <CardHeader>
-              <CardTitle>DEPOSIT FUNDS</CardTitle>
-              <CardDescription>ADD LIQUIDITY TO VAULT</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full mb-4" size="lg">
-                DEPOSIT ETH
-              </Button>
-              <Button variant="outline" className="w-full" size="lg">
-                CROSS-CHAIN SWAP
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>WITHDRAW FUNDS</CardTitle>
-              <CardDescription>CLAIM YOUR EARNINGS</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full mb-4" size="lg">
-                WITHDRAW ALL
-              </Button>
-              <Button variant="outline" className="w-full" size="lg">
-                PARTIAL WITHDRAW
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>STRATEGY SETTINGS</CardTitle>
-              <CardDescription>MANAGE AI AUTOMATION</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full mb-4" size="lg">
-                AI SETTINGS
-              </Button>
-              <Button variant="outline" className="w-full" size="lg">
-                MANUAL MODE
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </BrutalSection>
-
-      {/* AI Insights */}
-      <BrutalSection className="bg-black text-white border-white">
-        <BrutalHeadline size="huge" className="mb-12 text-white">
-          AI INSIGHTS
-        </BrutalHeadline>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <BrutalBox className="bg-black border-white text-white" border>
-            <BrutalText variant="brutal" size="sm" className="text-white mb-4">
-              STRATEGY RECOMMENDATION
-            </BrutalText>
-            <BrutalText variant="mono" className="text-white mb-6">
-              INCREASE UNISWAP V4 ALLOCATION BY 15% FOR OPTIMAL YIELD CAPTURE. 
-              CURRENT MARKET CONDITIONS FAVOR CONCENTRATED LIQUIDITY POSITIONS.
-            </BrutalText>
-            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-black">
-              EXECUTE STRATEGY
-            </Button>
-          </BrutalBox>
-
-          <BrutalBox className="bg-black border-white text-white" border>
-            <BrutalText variant="brutal" size="sm" className="text-white mb-4">
-              RISK ASSESSMENT
-            </BrutalText>
-            <BrutalText variant="mono" className="text-white mb-6">
-              LOW RISK DETECTED. IMPERMANENT LOSS PROBABILITY: 2.3%. 
-              LIQUIDATION THRESHOLD: SAFE. PROCEED WITH CONFIDENCE.
-            </BrutalText>
-            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-black">
-              VIEW DETAILS
-            </Button>
-          </BrutalBox>
-        </div>
-      </BrutalSection>
-
-      {/* Market Data */}
-      <BrutalSection className="py-16">
-        <BrutalHeadline size="huge" className="mb-12">
-          MARKET DATA
-        </BrutalHeadline>
-        
-        <BrutalGrid cols={6} className="gap-4">
-          <BrutalBox className="col-span-2">
-            <BrutalText variant="brutal" size="sm">ETH/USD</BrutalText>
-            <BrutalHeadline size="huge" className="text-4xl">
-              $2,847
+        <BrutalSection fullWidth className="bg-white dark:bg-black text-black dark:text-white border-black dark:border-white">
+          <div className="max-w-4xl mx-auto text-center">
+            <BrutalHeadline size="huge" className="mb-8 text-black dark:text-white">
+              QUICK ACTIONS
             </BrutalHeadline>
-          </BrutalBox>
-          
-          <BrutalBox className="col-span-2">
-            <BrutalText variant="brutal" size="sm">TVL</BrutalText>
-            <BrutalHeadline size="huge" className="text-4xl">
-              $12.4M
-            </BrutalHeadline>
-          </BrutalBox>
-          
-          <BrutalBox className="col-span-2">
-            <BrutalText variant="brutal" size="sm">VOLUME 24H</BrutalText>
-            <BrutalHeadline size="huge" className="text-4xl">
-              $847K
-            </BrutalHeadline>
-          </BrutalBox>
-        </BrutalGrid>
-      </BrutalSection>
-    </div>
+            
+            <BrutalGrid cols={2} className="gap-8">
+              <BrutalBox className="bg-white dark:bg-black border-black dark:border-white text-black dark:text-white" border>
+                <BrutalHeadline size="lg" className="text-black dark:text-white mb-6">
+                  DEPOSIT FUNDS
+                </BrutalHeadline>
+                <BrutalText variant="mono" className="text-black dark:text-white mb-6">
+                  ADD FUNDS TO START EARNING YIELD
+                </BrutalText>
+                <Button variant="outline" className="border-black dark:border-white text-black dark:text-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black">
+                  DEPOSIT NOW
+                </Button>
+              </BrutalBox>
+              
+              <BrutalBox className="bg-white dark:bg-black border-black dark:border-white text-black dark:text-white" border>
+                <BrutalHeadline size="lg" className="text-black dark:text-white mb-6">
+                  WITHDRAW FUNDS
+                </BrutalHeadline>
+                <BrutalText variant="mono" className="text-black dark:text-white mb-6">
+                  WITHDRAW YOUR EARNINGS ANYTIME
+                </BrutalText>
+                <Button variant="outline" className="border-black dark:border-white text-black dark:text-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black">
+                  WITHDRAW
+                </Button>
+              </BrutalBox>
+            </BrutalGrid>
+          </div>
+        </BrutalSection>
+      </div>
+    </WalletGuard>
   );
 }

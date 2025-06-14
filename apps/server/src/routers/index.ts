@@ -1,5 +1,5 @@
 import {
-  protectedProcedure, publicProcedure,
+  publicProcedure,
   router,
 } from "../lib/trpc";
 import { portfolioRouter } from "./portfolio";
@@ -12,12 +12,6 @@ import { aiRouter } from "./ai";
 export const appRouter = router({
   healthCheck: publicProcedure.query(() => {
     return "OK";
-  }),
-  privateData: protectedProcedure.query(({ ctx }) => {
-    return {
-      message: "This is private",
-      user: ctx.session.user,
-    };
   }),
   auth: authRouter,
   health: healthRouter,

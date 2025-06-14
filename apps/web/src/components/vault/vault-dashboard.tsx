@@ -18,8 +18,12 @@ import {
     Shield,
     ArrowUpRight,
     ArrowDownLeft,
-    Zap
+    Zap,
+    TrendingDown,
+    DollarSign
 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { bt } from "@/lib/theme-utils";
 
 export function VaultDashboard() {
     const [depositAmount, setDepositAmount] = useState("");
@@ -99,158 +103,247 @@ export function VaultDashboard() {
     };
 
     return (
-        <div className="max-w-6xl mx-auto space-y-6">
-            <div className="grid md:grid-cols-3 gap-6">
-                <Card>
+        <div className={cn("space-y-8", bt.page)}>
+            {/* Overview Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card className={cn("border-4", bt.border, bt.section)}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Value Locked</CardTitle>
-                        <Coins className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className={cn("text-sm font-medium", bt.heading)}>
+                            Total Deposited
+                        </CardTitle>
+                        <DollarSign className={cn("h-4 w-4", bt.muted)} />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">
-                            ${vaultData.totalValueLocked.toLocaleString()}
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                            +2.1% from last month
+                        <div className={cn("text-2xl font-bold", bt.heading)}>$0.00</div>
+                        <p className={cn("text-xs", bt.muted)}>
+                            +0% from last month
                         </p>
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className={cn("border-4", bt.border, bt.section)}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Current APY</CardTitle>
-                        <TrendingUp className="h-4 w-4 text-green-600" />
+                        <CardTitle className={cn("text-sm font-medium", bt.heading)}>
+                            Current APY
+                        </CardTitle>
+                        <TrendingUp className={cn("h-4 w-4", bt.muted)} />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-green-600">
-                            {vaultData.currentApy}%
-                        </div>
-                        <p className="text-xs text-muted-foreground">
+                        <div className={cn("text-2xl font-bold", bt.heading)}>0.00%</div>
+                        <p className={cn("text-xs", bt.muted)}>
                             AI-optimized yield
                         </p>
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className={cn("border-4", bt.border, bt.section)}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Your Position</CardTitle>
-                        <Target className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className={cn("text-sm font-medium", bt.heading)}>
+                            Total Earned
+                        </CardTitle>
+                        <Target className={cn("h-4 w-4", bt.muted)} />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">
-                            ${vaultData.userShares.toLocaleString()}
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                            {(vaultData.userShares / vaultData.sharePrice).toFixed(2)} shares
+                        <div className={cn("text-2xl font-bold", bt.heading)}>$0.00</div>
+                        <p className={cn("text-xs", bt.muted)}>
+                            Lifetime earnings
+                        </p>
+                    </CardContent>
+                </Card>
+
+                <Card className={cn("border-4", bt.border, bt.section)}>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className={cn("text-sm font-medium", bt.heading)}>
+                            Risk Score
+                        </CardTitle>
+                        <Shield className={cn("h-4 w-4", bt.muted)} />
+                    </CardHeader>
+                    <CardContent>
+                        <div className={cn("text-2xl font-bold text-green-600", bt.heading)}>Low</div>
+                        <p className={cn("text-xs", bt.muted)}>
+                            AI risk assessment
                         </p>
                     </CardContent>
                 </Card>
             </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Zap className="h-5 w-5" />
-                        Vault Operations
-                    </CardTitle>
-                    <CardDescription>
-                        Deposit assets to earn optimized yield or withdraw your position
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Tabs defaultValue="deposit" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="deposit" className="flex items-center gap-2">
-                                <ArrowUpRight className="h-4 w-4" />
-                                Deposit
-                            </TabsTrigger>
-                            <TabsTrigger value="withdraw" className="flex items-center gap-2">
-                                <ArrowDownLeft className="h-4 w-4" />
-                                Withdraw
-                            </TabsTrigger>
-                        </TabsList>
-
-                        <TabsContent value="deposit" className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="deposit-amount">Amount (USDC)</Label>
-                                <Input
-                                    id="deposit-amount"
-                                    type="number"
-                                    placeholder="0.00"
-                                    value={depositAmount}
-                                    onChange={(e) => setDepositAmount(e.target.value)}
-                                />
-                            </div>
-                            <Button
-                                onClick={handleDeposit}
-                                className="w-full"
-                                disabled={!isConnected}
+            {/* Main Actions */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className={cn("border-4", bt.border, bt.section)}>
+                    <CardHeader>
+                        <CardTitle className={cn("text-xl font-black", bt.heading)}>
+                            DEPOSIT FUNDS
+                        </CardTitle>
+                        <CardDescription className={bt.muted}>
+                            Add funds to start earning AI-optimized yields
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <label className={cn("text-sm font-medium", bt.heading)}>
+                                Amount (ETH)
+                            </label>
+                            <input 
+                                type="number" 
+                                placeholder="0.0" 
+                                className={cn(
+                                    "w-full p-3 border-4 rounded-none font-mono text-lg",
+                                    bt.border,
+                                    bt.section,
+                                    bt.heading,
+                                    "focus:outline-none focus:ring-2 focus:ring-offset-2"
+                                )}
+                            />
+                        </div>
+                        <Button 
+                            className={cn(
+                                "w-full h-12 text-lg font-black border-4",
+                                bt.border,
+                                "bg-black dark:bg-white text-white dark:text-black",
+                                "hover:bg-gray-800 dark:hover:bg-gray-200"
+                            )}
+                        >
+                            DEPOSIT ETH
+                        </Button>
+                        <div className="grid grid-cols-2 gap-2">
+                            <Button 
+                                variant="outline" 
+                                className={cn(
+                                    "border-4",
+                                    bt.border,
+                                    bt.section,
+                                    bt.heading,
+                                    "hover:bg-gray-100 dark:hover:bg-gray-800"
+                                )}
                             >
-                                {!isConnected ? "Connect Wallet" : "Deposit to Vault"}
+                                MAX
                             </Button>
-                            <p className="text-sm text-muted-foreground">
-                                Deposits are automatically optimized across multiple strategies
-                            </p>
-                        </TabsContent>
-
-                        <TabsContent value="withdraw" className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="withdraw-amount">Shares to Withdraw</Label>
-                                <Input
-                                    id="withdraw-amount"
-                                    type="number"
-                                    placeholder="0.00"
-                                    value={withdrawAmount}
-                                    onChange={(e) => setWithdrawAmount(e.target.value)}
-                                />
-                            </div>
-                            <Button
-                                onClick={handleWithdraw}
+                            <Button 
                                 variant="outline"
-                                className="w-full"
-                                disabled={!isConnected}
+                                className={cn(
+                                    "border-4",
+                                    bt.border,
+                                    bt.section,
+                                    bt.heading,
+                                    "hover:bg-gray-100 dark:hover:bg-gray-800"
+                                )}
                             >
-                                {!isConnected ? "Connect Wallet" : "Withdraw from Vault"}
+                                BRIDGE
                             </Button>
-                            <p className="text-sm text-muted-foreground">
-                                Withdrawals are processed immediately with current share price
-                            </p>
-                        </TabsContent>
-                    </Tabs>
-                </CardContent>
-            </Card>
+                        </div>
+                    </CardContent>
+                </Card>
 
-            <Card>
+                <Card className={cn("border-4", bt.border, bt.section)}>
+                    <CardHeader>
+                        <CardTitle className={cn("text-xl font-black", bt.heading)}>
+                            WITHDRAW FUNDS
+                        </CardTitle>
+                        <CardDescription className={bt.muted}>
+                            Withdraw your deposits and earnings
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <label className={cn("text-sm font-medium", bt.heading)}>
+                                Amount (Vault Shares)
+                            </label>
+                            <input 
+                                type="number" 
+                                placeholder="0.0" 
+                                className={cn(
+                                    "w-full p-3 border-4 rounded-none font-mono text-lg",
+                                    bt.border,
+                                    bt.section,
+                                    bt.heading,
+                                    "focus:outline-none focus:ring-2 focus:ring-offset-2"
+                                )}
+                            />
+                        </div>
+                        <Button 
+                            variant="outline"
+                            className={cn(
+                                "w-full h-12 text-lg font-black border-4",
+                                bt.border,
+                                bt.section,
+                                bt.heading,
+                                "hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black"
+                            )}
+                        >
+                            WITHDRAW
+                        </Button>
+                        <div className="grid grid-cols-2 gap-2">
+                            <Button 
+                                variant="outline" 
+                                className={cn(
+                                    "border-4",
+                                    bt.border,
+                                    bt.section,
+                                    bt.heading,
+                                    "hover:bg-gray-100 dark:hover:bg-gray-800"
+                                )}
+                            >
+                                25%
+                            </Button>
+                            <Button 
+                                variant="outline"
+                                className={cn(
+                                    "border-4",
+                                    bt.border,
+                                    bt.section,
+                                    bt.heading,
+                                    "hover:bg-gray-100 dark:hover:bg-gray-800"
+                                )}
+                            >
+                                100%
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* AI Strategy Status */}
+            <Card className={cn("border-4", bt.border, bt.section)}>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Shield className="h-5 w-5" />
-                        Active Strategies
+                    <CardTitle className={cn("text-xl font-black flex items-center gap-2", bt.heading)}>
+                        <Zap className="h-5 w-5" />
+                        AI STRATEGY STATUS
                     </CardTitle>
-                    <CardDescription>
-                        AI-managed allocation across different yield opportunities
+                    <CardDescription className={bt.muted}>
+                        Current AI optimization and performance metrics
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <div className="space-y-4">
-                        {vaultData.strategies.map((strategy, index) => (
-                            <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-2">
-                                        <h4 className="font-medium">{strategy.name}</h4>
-                                        <Badge variant={strategy.status === "active" ? "default" : "secondary"}>
-                                            {strategy.status}
-                                        </Badge>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground">
-                                        {strategy.allocation}% allocation • {strategy.apy}% APY
-                                    </p>
-                                </div>
-                                <div className="text-right">
-                                    <Progress value={strategy.allocation} className="w-20 mb-1" />
-                                    <p className="text-sm text-muted-foreground">{strategy.allocation}%</p>
-                                </div>
+                <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className={cn("p-4 border-2", bt.border, bt.sectionAlt)}>
+                            <div className={cn("text-sm font-medium", bt.heading)}>Strategy Active</div>
+                            <div className="flex items-center gap-2 mt-2">
+                                <Badge variant="outline" className={cn("border-green-500 text-green-500", bt.section)}>
+                                    OPTIMIZING
+                                </Badge>
                             </div>
-                        ))}
+                        </div>
+                        
+                        <div className={cn("p-4 border-2", bt.border, bt.sectionAlt)}>
+                            <div className={cn("text-sm font-medium", bt.heading)}>Next Rebalance</div>
+                            <div className={cn("text-lg font-mono", bt.heading)}>2h 34m</div>
+                        </div>
+                        
+                        <div className={cn("p-4 border-2", bt.border, bt.sectionAlt)}>
+                            <div className={cn("text-sm font-medium", bt.heading)}>Confidence Score</div>
+                            <div className="flex items-center gap-2 mt-1">
+                                <Progress value={87} className="flex-1" />
+                                <span className={cn("text-sm font-mono", bt.heading)}>87%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={cn("p-4 border-2", bt.border, bt.sectionAlt)}>
+                        <div className={cn("text-sm font-medium mb-2", bt.heading)}>Latest AI Insight</div>
+                        <p className={cn("font-mono text-sm", bt.body)}>
+                            "Market volatility detected. Adjusting liquidity concentration to minimize impermanent loss. 
+                            Expected yield improvement: +2.3% over next 24h."
+                        </p>
                     </div>
                 </CardContent>
             </Card>
