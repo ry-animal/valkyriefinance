@@ -300,8 +300,8 @@ contract ValkyrieToken is ERC20, ERC20Votes, ERC20Permit, Ownable, ReentrancyGua
         
         if (block.timestamp > lastRewardTime && totalStaked != 0) {
             uint256 timeElapsed = block.timestamp - lastRewardTime;
-            uint256 reward = (timeElapsed * rewardRate * 1e12) / (365 days * 10000);
-            _accRewardPerShare += reward / totalStaked;
+            uint256 reward = (totalStaked * rewardRate * timeElapsed) / (365 days * 10000);
+            _accRewardPerShare += (reward * 1e12) / totalStaked;
         }
         
         if (userStake.amount > 0) {

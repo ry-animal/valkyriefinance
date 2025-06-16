@@ -15,8 +15,8 @@ contract ValkyrieTokenTest is Test {
     uint256 public constant INITIAL_SUPPLY = 1_000_000 * 1e18;
     uint256 public constant STAKE_AMOUNT = 1000 * 1e18;
     
-    event Staked(address indexed user, uint256 amount);
-    event Unstaked(address indexed user, uint256 amount);
+    event Staked(address indexed user, uint256 amount, uint256 tier, uint256 unlockTime);
+    event Unstaked(address indexed user, uint256 amount, uint256 penalty);
     event RewardClaimed(address indexed user, uint256 reward);
     event RewardRateUpdated(uint256 newRate);
     
@@ -81,10 +81,11 @@ contract ValkyrieTokenTest is Test {
     
     function test_StakeTokens() public {
         uint256 initialBalance = token.balanceOf(user1);
+        uint256 expectedUnlockTime = block.timestamp + (3 * 30 days); // Tier 1 = 3 months
         
         vm.prank(user1);
         vm.expectEmit(true, false, false, true);
-        emit Staked(user1, STAKE_AMOUNT);
+        emit Staked(user1, STAKE_AMOUNT, 1, expectedUnlockTime);
         token.stakeWithTier(STAKE_AMOUNT, 1);
         
         assertEq(token.balanceOf(user1), initialBalance - STAKE_AMOUNT);
@@ -123,13 +124,14 @@ contract ValkyrieTokenTest is Test {
         
         uint256 balanceBeforeUnstake = token.balanceOf(user1);
         
-        // Then unstake
+        // Then unstake (will have penalty since before unlock time)
         vm.prank(user1);
         vm.expectEmit(true, false, false, true);
-        emit Unstaked(user1, STAKE_AMOUNT / 2);
+        emit Unstaked(user1, STAKE_AMOUNT / 2, (STAKE_AMOUNT / 2) * 1000 / 10000); // 10% penalty for tier 1 (from setStakingTier)
         token.unstakeWithPenalty(STAKE_AMOUNT / 2);
         
-        assertEq(token.balanceOf(user1), balanceBeforeUnstake + STAKE_AMOUNT / 2);
+        uint256 penalty = (STAKE_AMOUNT / 2) * 1000 / 10000; // 10% penalty for tier 1
+        assertEq(token.balanceOf(user1), balanceBeforeUnstake + (STAKE_AMOUNT / 2) - penalty);
         assertEq(token.stakedBalance(user1), STAKE_AMOUNT / 2);
         assertEq(token.totalStaked(), STAKE_AMOUNT / 2);
     }
@@ -230,8 +232,10 @@ contract ValkyrieTokenTest is Test {
         
         uint256 votesAfterStaking = token.getVotes(user1);
         
-        // Voting power should decrease after staking (tokens moved from balance)
-        assertEq(votesAfterStaking, votesBeforeStaking - STAKE_AMOUNT);
+        // Voting power should remain the same with tier 1 (1x governance multiplier)
+        // votesAfterStaking = (balanceOf - stakedAmount) + (stakedAmount * govMultiplier)
+        // With 1x multiplier: (99000 + 1000) = 100000 = votesBeforeStaking
+        assertEq(votesAfterStaking, votesBeforeStaking);
     }
     
     // ===== Fuzz Tests =====
@@ -250,7 +254,9 @@ contract ValkyrieTokenTest is Test {
         token.unstakeWithPenalty(amount);
         
         assertEq(token.stakedBalance(user1), 0);
-        assertEq(token.balanceOf(user1), initialBalance);
+        // Account for 10% penalty on early withdrawal (tier 1 = 1000 basis points = 10%)
+        uint256 penalty = (amount * 1000) / 10000;
+        assertEq(token.balanceOf(user1), initialBalance - penalty);
         
         vm.stopPrank();
     }
