@@ -24,6 +24,7 @@ Valkyrie Finance is a next-generation DeFi platform that combines AI-driven yiel
 - **⚡ Production Ready**: Comprehensive CI/CD pipeline with 150+ automated tests
 - **🛡️ Type Safety**: 100% TypeScript coverage with strict mode enforcement
 - **🚀 Modern Stack**: Next.js 15, Wagmi v2, Foundry, and cutting-edge Web3 tools
+- **🎨 Brutalist Design**: Modern dark/light theme system with simple toggle
 
 ---
 
@@ -34,6 +35,7 @@ Valkyrie Finance is a next-generation DeFi platform that combines AI-driven yiel
 - **Framework**: Next.js 15 with App Router and Turbopack
 - **Language**: TypeScript (strict mode, 100% coverage)
 - **Styling**: Tailwind CSS + Shadcn UI components + tailwindcss-animate
+- **Theme System**: Next-themes with default dark mode and simple light/dark toggle
 - **Web3**: Wagmi v2 + Viem + Reown AppKit (WalletConnect v2)
 - **State Management**: Zustand + TanStack Query
 - **Testing**: Vitest + React Testing Library (23 tests passing)
@@ -43,7 +45,7 @@ Valkyrie Finance is a next-generation DeFi platform that combines AI-driven yiel
 
 - **API**: tRPC with end-to-end type safety
 - **Database**: PostgreSQL with Drizzle ORM
-- **Authentication**: Better-auth integration
+- **Authentication**: Wallet-based authentication (Better-auth removed)
 - **Runtime**: Node.js with Bun package manager
 - **Deployment**: Vercel with automatic deployments
 
@@ -80,19 +82,20 @@ valkyriefinance/
 │   │   │   │   ├── vault/               # Vault demo page
 │   │   │   │   ├── dashboard/           # Analytics dashboard
 │   │   │   │   ├── ai/                  # AI features demo
-│   │   │   │   ├── stores/              # State management demo
-│   │   │   │   └── login/               # Authentication
+│   │   │   │   └── stores/              # State management demo
 │   │   │   ├── components/      # Reusable UI components
 │   │   │   │   ├── ui/                  # Shadcn UI components
 │   │   │   │   ├── wallet/              # Wallet-related components
 │   │   │   │   ├── vault/               # Vault interface components
 │   │   │   │   ├── brutalist/           # Brutalist design components
+│   │   │   │   ├── mode-toggle.tsx      # Simple theme toggle button
+│   │   │   │   ├── theme-provider.tsx   # Theme system provider
 │   │   │   │   └── examples/            # Demo components
 │   │   │   ├── hooks/           # Custom React hooks
 │   │   │   │   ├── use-valkyrie-vault.ts    # Vault operations
 │   │   │   │   └── use-valkyrie-token.ts    # Token operations
 │   │   │   ├── lib/             # Utilities and configurations
-│   │   │   │   ├── wagmi-config.ts      # Reown AppKit setup
+│   │   │   │   ├── wagmi-config.ts      # Reown AppKit setup (SSR-safe)
 │   │   │   │   └── env.ts               # Environment validation
 │   │   │   ├── stores/          # Zustand state stores
 │   │   │   │   └── __tests__/           # Store unit tests
@@ -126,7 +129,8 @@ valkyriefinance/
 │       └── package.json
 ├── documentation/               # Project documentation
 │   ├── PRD.md                  # Product Requirements Document
-│   └── MIGRATION_SUMMARY.md    # Migration and development summary
+│   ├── MIGRATION_SUMMARY.md    # Migration and development summary
+│   └── NEXT_STEPS_SUMMARY.md   # Next development phases
 ├── scripts/
 │   └── prepare-npm-deploy.js   # Deployment preparation script
 ├── turbo.json                  # Monorepo configuration
@@ -165,7 +169,7 @@ cp apps/web/.env.example apps/web/.env.local
 cp apps/server/.env.example apps/server/.env.local
 
 # Configure your environment variables:
-# - NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID (get from https://cloud.reown.com)
+# - NEXT_PUBLIC_REOWN_PROJECT_ID (get from https://cloud.reown.com)
 # - Database connection strings
 # - API keys and secrets
 
@@ -225,7 +229,15 @@ bun run prepare:deploy   # Prepare for npm-based deployment
 - **Reown AppKit**: Modern wallet connection with support for 300+ wallets
 - **Multi-chain**: Ethereum, Arbitrum, Optimism, Polygon, Sepolia
 - **Type-safe**: Full TypeScript integration with Wagmi v2
-- **SSR Compatible**: Proper hydration handling for Next.js
+- **SSR Compatible**: Proper hydration handling for Next.js with client-side mounting
+
+#### Theme System
+
+- **Default Dark Mode**: Platform starts in dark mode by default
+- **Simple Toggle**: Single button switches between light and dark themes
+- **No System Theme**: Removed system preference option for simplicity
+- **Brutalist Design**: Consistent styling across all components
+- **SSR Safe**: Proper theme hydration without flash of unstyled content
 
 #### Vault System
 
@@ -237,7 +249,7 @@ bun run prepare:deploy   # Prepare for npm-based deployment
 #### User Interface
 
 - **Responsive Design**: Mobile-first approach with excellent UX
-- **Dark/Light Mode**: Automatic theme switching
+- **Dark/Light Mode**: Simple theme switching with default dark mode
 - **Component Library**: Shadcn UI with custom brutalist components
 - **Animations**: Smooth transitions with tailwindcss-animate
 
@@ -303,20 +315,19 @@ bun run test                 # Run API tests
 #### Web App (`apps/web/.env.local`)
 
 ```env
-NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_reown_project_id
+NEXT_PUBLIC_REOWN_PROJECT_ID=1a91f40c774bfe7c56b13d36dc0fe7a6
 NEXT_PUBLIC_SERVER_URL=http://localhost:3000
 NEXT_PUBLIC_DEFAULT_CHAIN=1
 NEXT_PUBLIC_ENABLE_TESTNETS=true
 NEXT_PUBLIC_ENABLE_AI_CHAT=true
 NEXT_PUBLIC_ENABLE_WEB3=true
+NEXT_PUBLIC_ALCHEMY_API_KEY=your_alchemy_api_key_optional
 ```
 
 #### Server (`apps/server/.env.local`)
 
 ```env
 DATABASE_URL=postgresql://user:password@localhost:5432/valkyrie
-BETTER_AUTH_SECRET=your_secret_key
-BETTER_AUTH_URL=http://localhost:3000
 GOOGLE_AI_API_KEY=your_google_ai_api_key
 ```
 
@@ -328,6 +339,7 @@ The project uses Reown AppKit (formerly WalletConnect) for wallet connections:
 - **Wallet Support**: 300+ wallets including MetaMask, Coinbase, Rainbow, etc.
 - **Features**: Account management, network switching, transaction signing
 - **SSR Safe**: Proper hydration handling for server-side rendering
+- **Fallback RPCs**: Public RPC endpoints when Alchemy API key is not provided
 
 ---
 
@@ -344,6 +356,23 @@ The project uses Reown AppKit (formerly WalletConnect) for wallet connections:
 - [x] Type-safe API with tRPC
 - [x] Comprehensive CI/CD pipeline
 - [x] Production-ready build system
+
+#### ✅ Theme System
+
+- [x] Default dark mode on application start
+- [x] Simple toggle button (no dropdown menu)
+- [x] No system theme option for simplicity
+- [x] Brutalist design consistency
+- [x] SSR-safe theme switching
+- [x] Smooth transitions and animations
+
+#### ✅ Wallet Integration
+
+- [x] Wallet-based authentication (no passwords)
+- [x] SSR-safe wagmi configuration
+- [x] Client-side mounting for Web3 components
+- [x] Fallback RPC endpoints for reliability
+- [x] Proper error handling and loading states
 
 #### ✅ Vault System
 
@@ -422,15 +451,11 @@ The project is configured for deployment on Vercel with automatic handling of wo
 # Database
 DATABASE_URL=your_production_database_url
 
-# Authentication
-BETTER_AUTH_SECRET=your_production_auth_secret
-BETTER_AUTH_URL=https://your-domain.vercel.app
-
 # AI Services
 GOOGLE_AI_API_KEY=your_google_ai_api_key
 
 # Web3 (Optional)
-NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_walletconnect_project_id
+NEXT_PUBLIC_REOWN_PROJECT_ID=1a91f40c774bfe7c56b13d36dc0fe7a6
 NEXT_PUBLIC_ALCHEMY_API_KEY=your_alchemy_api_key
 ```
 
@@ -523,18 +548,19 @@ We welcome contributions! Please follow these guidelines:
 
 ## 📚 Documentation
 
-### Quick Links
+### Core Documentation
 
-- **[API Documentation](apps/server/README.md)** - tRPC endpoint reference
-- **[Smart Contract Docs](packages/contracts/README.md)** - Contract architecture
-- **[Component Library](apps/web/src/components/README.md)** - UI component guide
-- **[Migration Summary](documentation/MIGRATION_SUMMARY.md)** - Development history
+- **[Project Status](documentation/PROJECT_STATUS.md)** - Current status, milestones, and capabilities
+- **[Technical Guide](documentation/TECHNICAL_GUIDE.md)** - Complete technical architecture
+- **[Deployment Guide](documentation/DEPLOYMENT_GUIDE.md)** - Deployment and operations
+- **[Product Requirements](documentation/PRD.md)** - Feature specifications and roadmap
 
-### Guides
+### Package Documentation
 
-- **[Wallet Integration](docs/WALLET_INTEGRATION.md)** - Reown AppKit setup
-- **[Deployment Guide](docs/DEPLOYMENT.md)** - Production deployment
-- **[Testing Strategy](docs/TESTING.md)** - Comprehensive testing approach
+- **[Server API](apps/server/README.md)** - tRPC backend API documentation
+- **[Web Application](apps/web/README.md)** - Frontend development guide
+- **[Smart Contracts](packages/contracts/README.md)** - Contract architecture and testing
+- **[Common Package](packages/common/README.md)** - Shared utilities and types
 
 ---
 

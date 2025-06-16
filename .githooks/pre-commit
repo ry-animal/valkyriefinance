@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# Pre-commit hook for Valkryie Finance
+# Reminds developers to update documentation when relevant changes are made
+
+echo "🔍 Checking for changes that may require documentation updates..."
+
+# Get list of changed files
+changed_files=$(git diff --cached --name-only)
+
+# Check for changes that should trigger documentation updates
+needs_doc_update=false
+update_suggestions=""
+
+# Check for smart contract changes
+if echo "$changed_files" | grep -q "packages/contracts/"; then
+    needs_doc_update=true
+    update_suggestions="$update_suggestions\n  📋 Smart contract changes detected - consider updating TECHNICAL_GUIDE.md"
+fi
+
+# Check for API/backend changes
+if echo "$changed_files" | grep -q "apps/server/"; then
+    needs_doc_update=true
+    update_suggestions="$update_suggestions\n  🔧 Backend changes detected - consider updating TECHNICAL_GUIDE.md"
+fi
+
+# Check for deployment/config changes
+if echo "$changed_files" | grep -E "\.(env|config|json|yaml|yml)$"; then
+    needs_doc_update=true
+    update_suggestions="$update_suggestions\n  ⚙️  Configuration changes detected - consider updating DEPLOYMENT_GUIDE.md"
+fi
+
+# Check for package.json changes
+if echo "$changed_files" | grep -q "package.json"; then
+    needs_doc_update=true
+    update_suggestions="$update_suggestions\n  📦 Dependencies changed - consider updating DEPLOYMENT_GUIDE.md"
+fi
+
+# Check for frontend architecture changes
+if echo "$changed_files" | grep -E "(apps/web/src/lib|apps/web/src/stores|apps/web/src/hooks)"; then
+    needs_doc_update=true
+    update_suggestions="$update_suggestions\n  🏗️  Frontend architecture changes - consider updating TECHNICAL_GUIDE.md"
+fi
+
+# Check for major feature additions
+if echo "$changed_files" | grep -E "(components|pages|routers)" | wc -l | awk '{if($1 > 3) print "major"}' | grep -q "major"; then
+    needs_doc_update=true
+    update_suggestions="$update_suggestions\n  ✨ Major feature changes detected - consider updating PROJECT_STATUS.md"
+fi
+
+# Display reminder if documentation updates might be needed
+if [ "$needs_doc_update" = true ]; then
+    echo ""
+    echo "📚 DOCUMENTATION UPDATE REMINDER"
+    echo "=================================="
+    echo "Your changes may require documentation updates:"
+    echo -e "$update_suggestions"
+    echo ""
+    echo "📁 Documentation files to consider updating:"
+    echo "   • documentation/PROJECT_STATUS.md    - for feature completions/status changes"
+    echo "   • documentation/TECHNICAL_GUIDE.md   - for architecture/implementation changes"
+    echo "   • documentation/DEPLOYMENT_GUIDE.md  - for setup/deployment procedure changes"
+    echo "   • documentation/PRD.md               - for requirement changes"
+    echo ""
+    echo "💡 Quick check: Have you updated the relevant documentation? (y/N)"
+    read -r response
+    
+    if [[ ! "$response" =~ ^[Yy]$ ]]; then
+        echo ""
+        echo "⚠️  Consider updating documentation before committing."
+        echo "   Run 'git add documentation/' after making updates."
+        echo ""
+        echo "Continue with commit anyway? (y/N)"
+        read -r continue_anyway
+        
+        if [[ ! "$continue_anyway" =~ ^[Yy]$ ]]; then
+            echo "❌ Commit cancelled. Update documentation and try again."
+            exit 1
+        fi
+    fi
+fi
+
+echo "✅ Pre-commit checks complete!"
+exit 0 
