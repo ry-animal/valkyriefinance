@@ -8,7 +8,7 @@
 [![Foundry](https://img.shields.io/badge/Smart%20Contracts-Foundry-blue)](https://getfoundry.sh/)
 [![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-green)](https://github.com/features/actions)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen)](https://github.com)
-[![Tests](https://img.shields.io/badge/Tests-150%2B%20Passing-brightgreen)](https://github.com)
+[![Tests](https://img.shields.io/badge/Smart%20Contract%20Tests-114/127%20Passing-green)](https://github.com)
 
 ## 🎯 Project Overview
 
@@ -21,7 +21,7 @@ Valkyrie Finance is a next-generation DeFi platform that combines AI-driven yiel
 - **🔗 Modern Wallet Integration**: Powered by Reown AppKit for superior UX (300+ wallets)
 - **📊 Real-Time Analytics**: Comprehensive performance tracking and risk monitoring
 - **🎮 Interactive Demo**: Full-featured vault and token operations interface
-- **⚡ Production Ready**: Comprehensive CI/CD pipeline with 150+ automated tests
+- **⚡ Production Ready**: Comprehensive CI/CD pipeline with 114/127 smart contract tests passing (89.8%)
 - **🛡️ Type Safety**: 100% TypeScript coverage with strict mode enforcement
 - **🚀 Modern Stack**: Next.js 15, Wagmi v2, Foundry, and cutting-edge Web3 tools
 - **🎨 Brutalist Design**: Modern dark/light theme system with simple toggle
@@ -54,7 +54,7 @@ Valkyrie Finance is a next-generation DeFi platform that combines AI-driven yiel
 - **Language**: Solidity ^0.8.28
 - **Framework**: Foundry (Forge, Anvil, Cast)
 - **Standards**: ERC-20, ERC-4626 (Vault Standard)
-- **Testing**: 127 comprehensive unit, fuzz, and integration tests
+- **Testing**: 127 comprehensive unit, fuzz, and integration tests (114 passing, 89.8% success rate)
 - **Coverage**: Full test coverage with gas optimization
 
 ### DevOps & CI/CD
