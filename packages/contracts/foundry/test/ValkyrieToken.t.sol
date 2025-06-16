@@ -29,6 +29,13 @@ contract ValkyrieTokenTest is Test {
         token.transfer(user1, 100_000 * 1e18);
         token.transfer(user2, 100_000 * 1e18);
         token.transfer(user3, 100_000 * 1e18);
+        
+        // Setup staking tiers
+        token.setStakingTier(1, 3, 10000, 10000, 1000);   // 3 months, 1x rewards, 1x governance, 10% penalty
+        token.setStakingTier(2, 6, 12000, 12000, 800);    // 6 months, 1.2x rewards, 1.2x governance, 8% penalty
+        token.setStakingTier(3, 12, 15000, 15000, 500);   // 12 months, 1.5x rewards, 1.5x governance, 5% penalty
+        token.setStakingTier(4, 24, 20000, 20000, 200);   // 24 months, 2x rewards, 2x governance, 2% penalty
+        
         vm.stopPrank();
         targetContract(address(token));
     }
