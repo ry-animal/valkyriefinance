@@ -109,6 +109,16 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
     uint256 public constant MAX_ALLOCATION = 10000; // 100% in basis points
     uint256 public constant EMERGENCY_WITHDRAW_DELAY = 24 hours;
     
+    // Inflation attack protection constants
+    uint256 private constant DEAD_SHARES = 1000; // 1000 shares permanently locked
+    uint256 private constant MIN_SHARES = 1e3;   // Minimum shares to mint (1000 wei)
+    address private constant DEAD_ADDRESS = 0x000000000000000000000000000000000000dEaD;
+    
+    // Enhanced tracking for protocol metrics
+    uint256 public totalProtocolFees;
+    uint256 public lastRebalanceTime;
+    uint256 public managementFee = 50;   // 0.5% annual management fee in basis points
+    
     // Events
     event StrategyAdded(uint256 indexed strategyId, address strategyAddress, bytes32 name);
     event StrategyUpdated(uint256 indexed strategyId, uint256 allocation, bool isActive);
@@ -120,6 +130,9 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
     event RandomnessRequested(bytes32 indexed requestId, uint256 timestamp);
     event RandomnessReceived(bytes32 indexed requestId, uint256 randomness);
     event RiskThresholdBreached(uint256 riskScore, uint256 threshold);
+    event InflationAttackPrevented(address indexed depositor, uint256 assets, uint256 shares);
+    event ProtocolFeesAccrued(uint256 performanceFee, uint256 managementFee);
+    event VaultRebalanced(uint256 totalAssets, uint256 newYield);
     
     // Errors
     error VaultPaused();
@@ -145,6 +158,13 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
     modifier onlyRebalancer() {
         if (!authorizedRebalancers[msg.sender] && msg.sender != owner() && msg.sender != aiController) {
             revert UnauthorizedRebalancer();
+        }
+        _;
+    }
+    
+    modifier inflationProtection(uint256 assets) {
+        if (totalSupply() == 0) {
+            require(assets >= MIN_SHARES, "Initial deposit too small");
         }
         _;
     }
@@ -194,6 +214,12 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
         // vrfConfig.coordinator = VRFCoordinatorV2Interface(vrfCoordinator_);
         // vrfConfig.callbackGasLimit = 100000;
         // vrfConfig.requestConfirmations = 3;
+        
+        // Mint dead shares to prevent inflation attacks
+        // This ensures totalSupply() is never zero after initialization
+        _mint(DEAD_ADDRESS, DEAD_SHARES);
+        
+        lastRebalanceTime = block.timestamp;
     }
     
     /**
@@ -540,12 +566,21 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
     /**
      * @dev Override deposit to include AI risk checks
      */
-    function deposit(uint256 assets, address receiver) public override notPaused notEmergency returns (uint256) {
+    function deposit(uint256 assets, address receiver) public override notPaused notEmergency returns (uint256 shares) {
         // Check if deposit would exceed risk thresholds
         uint256 newTotalAssets = totalAssets() + assets;
         if (newTotalAssets > maxTotalAssets) revert InsufficientAssets();
         
-        return super.deposit(assets, receiver);
+        // Calculate shares using the parent implementation
+        shares = super.deposit(assets, receiver);
+        
+        // Check if this could be an inflation attack attempt
+        if (totalSupply() <= DEAD_SHARES + MIN_SHARES && shares < MIN_SHARES) {
+            emit InflationAttackPrevented(receiver, assets, shares);
+            revert("Deposit amount too small for vault security");
+        }
+        
+        return shares;
     }
 
     /**
@@ -600,5 +635,31 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
             callbackGasLimit: callbackGasLimit,
             requestConfirmations: requestConfirmations
         });
+    }
+
+    /**
+     * @notice Get effective total supply for calculations
+     * @dev Excludes dead shares from total supply calculations
+     */
+    function effectiveTotalSupply() public view returns (uint256) {
+        uint256 total = totalSupply();
+        return total > DEAD_SHARES ? total - DEAD_SHARES : 0;
+    }
+    
+    /**
+     * @notice Enhanced preview functions that account for fees
+     * @dev Override to include management and performance fees in calculations
+     */
+    function previewDeposit(uint256 assets) public view override returns (uint256) {
+        uint256 baseShares = super.previewDeposit(assets);
+        
+        // Account for management fees in share calculation
+        uint256 managementFeeAssets = _calculateManagementFees();
+        if (managementFeeAssets > 0) {
+            uint256 totalAssets = totalAssets() + managementFeeAssets;
+            baseShares = assets * totalSupply() / totalAssets;
+        }
+        
+        return baseShares;
     }
 } 

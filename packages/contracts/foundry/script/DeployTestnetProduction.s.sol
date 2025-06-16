@@ -54,40 +54,46 @@ contract DeployTestnetProduction is Script {
         
         vm.startBroadcast(deployerPrivateKey);
         
-        // 1. Deploy ValkyrieToken with governance features
-        console.log("\n1. Deploying ValkyrieToken...");
+        // 1. Deploy ValkyrieToken with proper tokenomics
+        console.log("\n1. Deploying ValkyrieToken with production tokenomics...");
         ValkyrieToken token = new ValkyrieToken(
             "Valkyrie Token",
             "VLK",
-            1000000 * 1e18, // 1M tokens for testnet
+            1000000000 * 1e18, // 1B tokens total supply (production-like)
             deployer
         );
         deployedToken = address(token);
         console.log("ValkyrieToken deployed at:", deployedToken);
         
-        // Configure token for testnet
-        console.log("Configuring ValkyrieToken for testnet...");
+        // Configure token for testnet with production-like distribution
+        console.log("Implementing tokenomics distribution...");
         
-        // Set a reasonable reward rate for staking (5% APY for testnet)
-        token.setRewardRate(500); // 5% in basis points
+        // Token Allocation according to review recommendations:
+        uint256 totalSupply = 1000000000 * 1e18; // 1B tokens
+        uint256 communityAllocation = (totalSupply * 45) / 100;     // 45% - Community & Ecosystem
+        uint256 teamAllocation = (totalSupply * 20) / 100;          // 20% - Team & Future Hires  
+        uint256 investorAllocation = (totalSupply * 15) / 100;      // 15% - Strategic Investors
+        uint256 treasuryAllocation = (totalSupply * 10) / 100;      // 10% - DAO Treasury
+        uint256 liquidityAllocation = (totalSupply * 10) / 100;     // 10% - Liquidity & Market Making
         
-        // Distribute tokens for testing purposes
-        uint256 testAmount = 10000 * 1e18; // 10K tokens per test account
+        // For testnet: distribute to test accounts with proper ratios
+        address[5] memory testAccounts = [
+            address(0x1234567890123456789012345678901234567890),
+            address(0x2234567890123456789012345678901234567890), 
+            address(0x3234567890123456789012345678901234567890),
+            address(0x4234567890123456789012345678901234567890),
+            address(0x5234567890123456789012345678901234567890)
+        ];
         
-        // Create test accounts for comprehensive testing
-        address[] memory testAccounts = new address[](5);
-        testAccounts[0] = 0x70997970C51812dc3A010C7d01b50e0d17dc79C8; // Test account 1
-        testAccounts[1] = 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC; // Test account 2  
-        testAccounts[2] = 0x90F79bf6EB2c4f870365E785982E1f101E93b906; // Test account 3
-        testAccounts[3] = 0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65; // Test account 4
-        testAccounts[4] = 0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc; // Test account 5
-        
+        // Distribute community allocation (scaled down for testnet)
+        uint256 testCommunityAmount = 100000 * 1e18; // 100K per test account
         for (uint i = 0; i < testAccounts.length; i++) {
-            if (token.balanceOf(deployer) >= testAmount) {
-                token.transfer(testAccounts[i], testAmount);
-                console.log("Distributed", testAmount / 1e18, "VLK to test account:", testAccounts[i]);
-            }
+            token.transfer(testAccounts[i], testCommunityAmount);
+            console.log("Transferred", testCommunityAmount / 1e18, "VLK to test account", i + 1);
         }
+        
+        // Set a production-ready reward rate (3% APY for testnet)
+        token.setRewardRate(300); // 3% in basis points
         
         // Reserve tokens for vault rewards and incentives
         uint256 vaultReserve = 100000 * 1e18; // 100K tokens for vault
