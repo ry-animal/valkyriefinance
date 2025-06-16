@@ -51,9 +51,10 @@ function UserMenuClient() {
 
   if (!isConnected) {
     return (
-      <Button 
-        variant="outline" 
+      <Button
+        variant="outline"
         onClick={handleConnect}
+        data-testid="connect-button"
         className={cn(
           "border-4 border-black dark:border-white",
           "bg-white dark:bg-black text-black dark:text-white",
@@ -71,7 +72,7 @@ function UserMenuClient() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
+        <Button
           variant="outline"
           className={cn(
             "border-4 border-black dark:border-white",
@@ -83,7 +84,7 @@ function UserMenuClient() {
           {truncatedAddress}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent 
+      <DropdownMenuContent
         className={cn(
           "border-4",
           bt.border,

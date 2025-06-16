@@ -25,6 +25,12 @@ export default defineConfig({
     
     /* Take screenshot on failure */
     screenshot: 'only-on-failure',
+    
+    /* Increase timeout for actions to handle slower navigation */
+    actionTimeout: 10000,
+    
+    /* Wait for navigation to complete */
+    navigationTimeout: 15000,
   },
 
   /* Configure projects for major browsers */

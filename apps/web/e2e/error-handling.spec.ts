@@ -54,21 +54,29 @@ test.describe('Error Handling', () => {
     await page.goto('/');
     await expect(page.locator('text=THE MOST AGGRESSIVE YIELD OPTIMIZATION PLATFORM')).toBeVisible();
     
-    // Navigate to dashboard
-    await page.click('nav >> text=DASHBOARD');
-    await expect(page).toHaveURL('/dashboard');
+    // Navigate to dashboard with proper wait
+    await Promise.all([
+      page.waitForURL('/dashboard'),
+      page.click('nav >> text=DASHBOARD')
+    ]);
     await expect(page.locator('text=VALKYRIE').first()).toBeVisible();
     
-    // Navigate to vault
-    await page.click('nav >> text=VAULT');
-    await expect(page).toHaveURL('/vault');
+    // Navigate to vault with proper wait
+    await Promise.all([
+      page.waitForURL('/vault'),
+      page.click('nav >> text=VAULT')
+    ]);
     
-    // Navigate to AI chat
-    await page.click('nav >> text=AI CHAT');
-    await expect(page).toHaveURL('/ai');
+    // Navigate to AI chat with proper wait
+    await Promise.all([
+      page.waitForURL('/ai'),
+      page.click('nav >> text=AI CHAT')
+    ]);
     
-    // Navigate back home
-    await page.click('nav >> text=HOME');
-    await expect(page).toHaveURL('/');
+    // Navigate back home with proper wait
+    await Promise.all([
+      page.waitForURL('/'),
+      page.click('nav >> text=HOME')
+    ]);
   });
 }); 

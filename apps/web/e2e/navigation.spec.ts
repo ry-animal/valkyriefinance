@@ -7,14 +7,18 @@ test.describe('Navigation', () => {
     // Should load home page with brutalist design - check for unique text from hero
     await expect(page.locator('text=THE MOST AGGRESSIVE YIELD OPTIMIZATION PLATFORM')).toBeVisible();
     
-    // Navigate to dashboard
-    await page.click('nav >> text=DASHBOARD');
-    await expect(page).toHaveURL('/dashboard');
+    // Navigate to dashboard with proper wait
+    await Promise.all([
+      page.waitForURL('/dashboard'),
+      page.click('nav >> text=DASHBOARD')
+    ]);
     await expect(page.locator('text=VALKYRIE').first()).toBeVisible();
     
-    // Navigate back to home
-    await page.click('nav >> text=HOME');
-    await expect(page).toHaveURL('/');
+    // Navigate back to home with proper wait
+    await Promise.all([
+      page.waitForURL('/'),
+      page.click('nav >> text=HOME')
+    ]);
   });
 
   test('should not have broken links to removed routes', async ({ page }) => {
@@ -30,6 +34,9 @@ test.describe('Navigation', () => {
   test('should show correct navigation items', async ({ page }) => {
     await page.goto('/');
     
+    // Wait for page to fully load
+    await expect(page.locator('text=THE MOST AGGRESSIVE YIELD OPTIMIZATION PLATFORM')).toBeVisible();
+    
     // Should have the VALKYRIE logo link (use simpler selector)
     await expect(page.locator('header >> text=VALKYRIE')).toBeVisible();
     
@@ -39,8 +46,8 @@ test.describe('Navigation', () => {
     await expect(page.locator('nav >> text=VAULT')).toBeVisible();
     await expect(page.locator('nav >> text=AI CHAT')).toBeVisible();
     
-    // Should have wallet connect button (use test id)
-    await expect(page.locator('[data-testid="connect-button"]').first()).toBeVisible();
+    // Should have wallet connect button (use test id) - wait for it to be visible
+    await expect(page.locator('[data-testid="connect-button"]').first()).toBeVisible({ timeout: 10000 });
   });
 
   test('should handle mobile navigation', async ({ page }) => {
