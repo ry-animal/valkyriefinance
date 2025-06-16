@@ -183,9 +183,9 @@ export function VaultDashboard() {
                             <label className={cn("text-sm font-medium", bt.heading)}>
                                 Amount (ETH)
                             </label>
-                            <input 
-                                type="number" 
-                                placeholder="0.0" 
+                            <input
+                                type="number"
+                                placeholder="0.0"
                                 className={cn(
                                     "w-full p-3 border-4 rounded-none font-mono text-lg",
                                     bt.border,
@@ -195,7 +195,7 @@ export function VaultDashboard() {
                                 )}
                             />
                         </div>
-                        <Button 
+                        <Button
                             className={cn(
                                 "w-full h-12 text-lg font-black border-4",
                                 bt.border,
@@ -206,8 +206,8 @@ export function VaultDashboard() {
                             DEPOSIT ETH
                         </Button>
                         <div className="grid grid-cols-2 gap-2">
-                            <Button 
-                                variant="outline" 
+                            <Button
+                                variant="outline"
                                 className={cn(
                                     "border-4",
                                     bt.border,
@@ -218,7 +218,7 @@ export function VaultDashboard() {
                             >
                                 MAX
                             </Button>
-                            <Button 
+                            <Button
                                 variant="outline"
                                 className={cn(
                                     "border-4",
@@ -248,9 +248,9 @@ export function VaultDashboard() {
                             <label className={cn("text-sm font-medium", bt.heading)}>
                                 Amount (Vault Shares)
                             </label>
-                            <input 
-                                type="number" 
-                                placeholder="0.0" 
+                            <input
+                                type="number"
+                                placeholder="0.0"
                                 className={cn(
                                     "w-full p-3 border-4 rounded-none font-mono text-lg",
                                     bt.border,
@@ -260,7 +260,7 @@ export function VaultDashboard() {
                                 )}
                             />
                         </div>
-                        <Button 
+                        <Button
                             variant="outline"
                             className={cn(
                                 "w-full h-12 text-lg font-black border-4",
@@ -273,8 +273,8 @@ export function VaultDashboard() {
                             WITHDRAW
                         </Button>
                         <div className="grid grid-cols-2 gap-2">
-                            <Button 
-                                variant="outline" 
+                            <Button
+                                variant="outline"
                                 className={cn(
                                     "border-4",
                                     bt.border,
@@ -285,7 +285,7 @@ export function VaultDashboard() {
                             >
                                 25%
                             </Button>
-                            <Button 
+                            <Button
                                 variant="outline"
                                 className={cn(
                                     "border-4",
@@ -323,12 +323,12 @@ export function VaultDashboard() {
                                 </Badge>
                             </div>
                         </div>
-                        
+
                         <div className={cn("p-4 border-2", bt.border, bt.sectionAlt)}>
                             <div className={cn("text-sm font-medium", bt.heading)}>Next Rebalance</div>
                             <div className={cn("text-lg font-mono", bt.heading)}>2h 34m</div>
                         </div>
-                        
+
                         <div className={cn("p-4 border-2", bt.border, bt.sectionAlt)}>
                             <div className={cn("text-sm font-medium", bt.heading)}>Confidence Score</div>
                             <div className="flex items-center gap-2 mt-1">
@@ -341,8 +341,8 @@ export function VaultDashboard() {
                     <div className={cn("p-4 border-2", bt.border, bt.sectionAlt)}>
                         <div className={cn("text-sm font-medium mb-2", bt.heading)}>Latest AI Insight</div>
                         <p className={cn("font-mono text-sm", bt.body)}>
-                            "Market volatility detected. Adjusting liquidity concentration to minimize impermanent loss. 
-                            Expected yield improvement: +2.3% over next 24h."
+                            &ldquo;Market volatility detected. Adjusting liquidity concentration to minimize impermanent loss.
+                            Expected yield improvement: +2.3% over next 24h.&rdquo;
                         </p>
                     </div>
                 </CardContent>
