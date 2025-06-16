@@ -82,6 +82,33 @@ forge script script/DeployTestnetProduction.s.sol \
 - [ ] Risk assessment algorithms
 - [ ] Automated rebalancing triggers
 
+**Enhanced Tokenomics Testing**:
+
+- [ ] Tiered staking mechanism (4 tiers: 3M, 6M, 12M, 24M)
+- [ ] Early withdrawal penalty calculation and distribution
+- [ ] Governance power multiplier validation
+- [ ] Staking reward calculation with tier multipliers
+- [ ] Real yield distribution from protocol fees
+- [ ] Penalty pool redistribution to long-term stakers
+
+**ERC-4626 Security Validation**:
+
+- [ ] Inflation attack prevention testing
+- [ ] Dead shares mechanism verification
+- [ ] Minimum deposit enforcement
+- [ ] Fee calculation accuracy in preview functions
+- [ ] Share price manipulation resistance
+- [ ] Edge case deposit/withdrawal scenarios
+
+**Governance System Testing**:
+
+- [ ] Multi-category proposal creation (staking, vault, emergency)
+- [ ] Category-specific quorum and threshold validation
+- [ ] Timelock delay enforcement per category
+- [ ] Emergency proposal fast-track process
+- [ ] Voting power calculation with staking multipliers
+- [ ] Proposal spam prevention mechanisms
+
 **Cross-Chain Preparation**:
 
 - [ ] Cross-chain message handling (mock)

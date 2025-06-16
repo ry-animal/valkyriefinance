@@ -57,9 +57,7 @@ contract TenderlyIntegrationTest is Test {
             "vVLK-TEST",
             owner,
             feeRecipient,
-            address(priceOracle),
-            address(0), // VRF disabled for testing
-            address(0)  // CCIP disabled for testing
+            address(priceOracle)
         );
         console.log("Tenderly Test: Vault deployed at", address(vault));
         

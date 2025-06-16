@@ -103,9 +103,7 @@ contract ValkyrieAIIntegrationTest is Test {
             "vAI-USDC",
             owner,
             feeRecipient,
-            address(priceOracle),
-            mockVRFCoordinator,
-            mockCCIPRouter
+            address(priceOracle)
         );
         
         // Deploy automation system
@@ -469,13 +467,13 @@ contract ValkyrieAIIntegrationTest is Test {
         
         // Mock CCIP router behavior
         vm.mockCall(
-            mockCCIPRouter,
+            ,
             abi.encodeWithSignature("getFee(uint64,(bytes,bytes,(address,uint256)[],bytes,address))"),
             abi.encode(0.01 ether)
         );
         
         vm.mockCall(
-            mockCCIPRouter,
+            ,
             abi.encodeWithSignature("ccipSend(uint64,(bytes,bytes,(address,uint256)[],bytes,address))"),
             abi.encode(bytes32("messageId"))
         );
@@ -508,7 +506,7 @@ contract ValkyrieAIIntegrationTest is Test {
         
         // Mock VRF coordinator
         vm.mockCall(
-            mockVRFCoordinator,
+            address(0)
             abi.encodeWithSignature("requestRandomWords(bytes32,uint64,uint16,uint32,uint32)"),
             abi.encode(bytes32("requestId"))
         );

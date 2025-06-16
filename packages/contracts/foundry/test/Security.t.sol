@@ -64,9 +64,7 @@ contract SecurityTest is Test {
             "tVLK",
             owner,
             feeRecipient,
-            address(priceOracle),
-            address(0), // VRF Coordinator (disabled for testing)
-            address(0)  // CCIP Router (disabled for testing)
+            address(priceOracle)
         );
         
         // Transfer tokens to test accounts from owner's supply
@@ -169,13 +167,13 @@ contract SecurityTest is Test {
     function test_TokenStakeZeroAmount() public {
         vm.prank(user);
         vm.expectRevert(ValkyrieToken.ZeroAmount.selector);
-        token.stake(0);
+        token.stakeWithTier(0, 1);
     }
     
     function test_TokenStakeInsufficientBalance() public {
         vm.prank(user);
         vm.expectRevert(ValkyrieToken.InsufficientBalance.selector);
-        token.stake(200_000 * 1e18); // More than user has
+        token.stakeWithTier(200_000 * 1e18, 1); // More than user has
     }
     
     function test_VaultDepositBelowMinimum() public {
@@ -239,7 +237,7 @@ contract SecurityTest is Test {
         uint256 userBalance = token.balanceOf(user);
         
         vm.prank(user);
-        token.stake(userBalance);
+        token.stakeWithTier(userBalance, 1);
         
         assertEq(token.stakedBalance(user), userBalance);
         assertEq(token.balanceOf(user), 0);
@@ -298,7 +296,7 @@ contract SecurityTest is Test {
         token.setRewardRate(10000); // 100%
         
         vm.prank(user);
-        token.stake(50_000 * 1e18); // Large stake
+        token.stakeWithTier(50_000 * 1e18, 1); // Large stake
         
         // Fast forward many years
         vm.warp(block.timestamp + 365 days * 10);

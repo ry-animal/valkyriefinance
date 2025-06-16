@@ -78,16 +78,14 @@ contract VaultSimpleTest is Test {
         // Deploy price oracle
         priceOracle = new ValkyriePriceOracle();
         
-        // Deploy vault with all 8 required parameters
+        // Deploy vault with all required parameters
         vault = new ValkyrieVault(
             asset,
             "Valkyrie Vault",
             "vVLK",
             owner,
             feeRecipient,
-            address(priceOracle),
-            mockVRFCoordinator,
-            mockCCIPRouter
+            address(priceOracle)
         );
         
         vm.stopPrank();

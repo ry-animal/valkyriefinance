@@ -158,9 +158,7 @@ contract DeployAIVault is Script {
             VAULT_SYMBOL,
             deploymentAddresses.owner,
             deploymentAddresses.feeRecipient,
-            deploymentAddresses.priceOracle,
-            networkConfig.vrfCoordinator,
-            networkConfig.ccipRouter
+            deploymentAddresses.priceOracle
         );
         deploymentAddresses.vault = address(vault);
         console.log("ValkyrieVault deployed at:", address(vault));

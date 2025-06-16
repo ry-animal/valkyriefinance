@@ -20,9 +20,7 @@ contract VRFIntegrationTest is Test {
             "TVLT",
             address(this),
             address(this),
-            address(0), // price oracle
-            address(mockVRF),
-            address(0)  // ccip router
+            address(0)
         );
         // Set VRF config for test: keyHash is mockVRF address
         vault.setVRFConfig(bytes32(uint256(uint160(address(mockVRF)))), 1, 100000, 1);

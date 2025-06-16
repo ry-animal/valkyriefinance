@@ -40,9 +40,7 @@ contract GasOptimizationTest is Test {
             "gVLK",
             owner,
             feeRecipient,
-            address(priceOracle),
-            address(0), // VRF Coordinator (disabled for testing)
-            address(0)  // CCIP Router (disabled for testing)
+            address(priceOracle)
         );
         
         // Setup users with tokens (using startPrank for efficiency)
@@ -93,7 +91,7 @@ contract GasOptimizationTest is Test {
     function test_GasTokenStake() public {
         vm.prank(user1);
         uint256 gasStart = gasleft();
-        token.stake(TEST_AMOUNT);
+        token.stakeWithTier(TEST_AMOUNT, 1);
         uint256 gasUsed = gasStart - gasleft();
         
         console.log("Gas used for token staking:", gasUsed);
@@ -102,10 +100,10 @@ contract GasOptimizationTest is Test {
     
     function test_GasTokenUnstake() public {
         vm.startPrank(user1);
-        token.stake(TEST_AMOUNT);
+        token.stakeWithTier(TEST_AMOUNT, 1);
         
         uint256 gasStart = gasleft();
-        token.unstake(TEST_AMOUNT);
+        token.unstakeWithPenalty(TEST_AMOUNT);
         uint256 gasUsed = gasStart - gasleft();
         vm.stopPrank();
         
@@ -115,7 +113,7 @@ contract GasOptimizationTest is Test {
     
     function test_GasTokenClaimRewards() public {
         vm.prank(user1);
-        token.stake(TEST_AMOUNT);
+        token.stakeWithTier(TEST_AMOUNT, 1);
         vm.warp(block.timestamp + 365 days);
         // Raised threshold to 120k: claimRewards updates storage, transfers, emits event
         uint256 gasStart = gasleft();
@@ -271,7 +269,7 @@ contract GasOptimizationTest is Test {
         
         // 5 sequential stakes
         for (uint i = 0; i < 5; i++) {
-            token.stake(TEST_AMOUNT / 5);
+            token.stakeWithTier(TEST_AMOUNT / 5, 1);
         }
         
         uint256 gasUsed = gasStart - gasleft();
@@ -298,7 +296,7 @@ contract GasOptimizationTest is Test {
         vault.deposit(TEST_AMOUNT, user1);
         
         // 3. Stake some tokens separately
-        token.stake(TEST_AMOUNT);
+        token.stakeWithTier(TEST_AMOUNT, 1);
         
         // 4. Wait and claim rewards
         vm.warp(block.timestamp + 30 days);

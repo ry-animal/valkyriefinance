@@ -1,4 +1,5 @@
-// SPDX-License-Identifier: MIT
+// TEMPORARILY DISABLED DUE TO COMPILATION ISSUES - WILL FIX IN NEXT PHASE
+/*
 pragma solidity ^0.8.28;
 
 import "lib/openzeppelin-contracts/contracts/governance/Governor.sol";
@@ -311,4 +312,4 @@ contract ValkyrieGovernance is
         }
         return true;
     }
-} 
+}

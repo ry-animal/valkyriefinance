@@ -17,7 +17,7 @@ contract ValkyrieTokenHandler is Test {
         if (amount == 0) return;
 
         vm.prank(msg.sender);
-        token.stake(amount);
+        token.stakeWithTier(amount, 1);
     }
 
     function unstake(uint256 amount) public {
@@ -25,7 +25,7 @@ contract ValkyrieTokenHandler is Test {
         if (amount == 0) return;
         
         vm.prank(msg.sender);
-        token.unstake(amount);
+        token.unstakeWithPenalty(amount);
     }
 
     function claimRewards() public {

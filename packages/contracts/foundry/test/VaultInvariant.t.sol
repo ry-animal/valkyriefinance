@@ -17,8 +17,6 @@ contract VaultInvariantTest is Test {
             "TVLT",
             address(this),
             address(this),
-            address(0),
-            address(0),
             address(0)
         );
     }

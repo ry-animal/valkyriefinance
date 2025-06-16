@@ -48,9 +48,7 @@ contract CoreFunctionalityTest is Test {
             "VALKS",
             owner,
             feeRecipient,
-            address(priceOracle),
-            address(0), // No VRF for testing
-            address(0)  // No CCIP for testing
+            address(priceOracle)
         );
         
         // Setup strategies

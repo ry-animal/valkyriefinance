@@ -202,7 +202,7 @@ contract ValkyrieToken is ERC20, ERC20Votes, ERC20Permit, Ownable, ReentrancyGua
      * @param account Account to check rewards for
      * @return Pending reward amount in token units
      */
-    function pendingRewards(address account) external view returns (uint256) {
+    function getPendingRewards(address account) external view returns (uint256) {
         // Cache totalStaked to avoid multiple reads
         uint256 _totalStaked = totalStaked;
         if (_totalStaked == 0) return 0;

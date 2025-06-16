@@ -185,19 +185,16 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
         string memory symbol_,
         address owner_,
         address feeRecipient_,
-        address priceOracle_,
-        address /* vrfCoordinator_ */,
-        address /* ccipRouter_ */
+        address priceOracle_
     ) 
         ERC4626(asset_)
         ERC20(name_, symbol_)
         Ownable(owner_)
-        // VRFConsumerBaseV2(vrfCoordinator_)
-        // CCIPReceiver(ccipRouter_)
     {
         feeRecipient = feeRecipient_;
         priceOracle = ValkyriePriceOracle(priceOracle_);
         lastRebalance = block.timestamp;
+        lastRebalanceTime = block.timestamp;
         maxTotalAssets = type(uint256).max;
         
         // Initialize AI configuration
@@ -210,16 +207,9 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
             emergencyPauseEnabled: true
         });
         
-        // Initialize VRF configuration (simplified for testing)
-        // vrfConfig.coordinator = VRFCoordinatorV2Interface(vrfCoordinator_);
-        // vrfConfig.callbackGasLimit = 100000;
-        // vrfConfig.requestConfirmations = 3;
-        
         // Mint dead shares to prevent inflation attacks
         // This ensures totalSupply() is never zero after initialization
         _mint(DEAD_ADDRESS, DEAD_SHARES);
-        
-        lastRebalanceTime = block.timestamp;
     }
     
     /**
@@ -488,14 +478,14 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
      * @return totalShares Total vault shares outstanding
      * @return sharePrice Current price per share in underlying asset units
      * @return totalRiskScore Weighted average risk score across all strategies
-     * @return lastRebalanceTime Timestamp of the last rebalancing operation
+     * @return lastRebalanceTimestamp Timestamp of the last rebalancing operation
      */
     function getVaultMetrics() external view returns (
         uint256 totalVaultAssets,
         uint256 totalShares,
         uint256 sharePrice,
         uint256 totalRiskScore,
-        uint256 lastRebalanceTime
+        uint256 lastRebalanceTimestamp
     ) {
         totalVaultAssets = totalAssets();
         totalShares = totalSupply();
@@ -512,7 +502,7 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
             }
         }
         
-        lastRebalanceTime = lastRebalance;
+        lastRebalanceTimestamp = lastRebalance;
     }
 
     /**
@@ -656,10 +646,22 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
         // Account for management fees in share calculation
         uint256 managementFeeAssets = _calculateManagementFees();
         if (managementFeeAssets > 0) {
-            uint256 totalAssets = totalAssets() + managementFeeAssets;
-            baseShares = assets * totalSupply() / totalAssets;
+            uint256 vaultTotalAssets = totalAssets() + managementFeeAssets;
+            baseShares = assets * totalSupply() / vaultTotalAssets;
         }
         
         return baseShares;
+    }
+
+    /**
+     * @dev Calculate management fees based on time elapsed
+     * @return Management fee in underlying asset terms
+     */
+    function _calculateManagementFees() internal view returns (uint256) {
+        if (lastRebalanceTime == 0) return 0;
+        
+        uint256 timeElapsed = block.timestamp - lastRebalanceTime;
+        uint256 annualFee = (totalAssets() * managementFee) / 10000; // managementFee in basis points
+        return (annualFee * timeElapsed) / 365 days;
     }
 } 

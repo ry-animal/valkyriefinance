@@ -47,9 +47,7 @@ contract DeploySimple is Script {
             "VALKS",
             deployer,                    // owner
             deployer,                    // feeRecipient  
-            address(priceOracle),        // priceOracle
-            address(0),                  // vrfCoordinator (disabled)
-            address(0)                   // ccipRouter (disabled)
+            address(priceOracle)         // priceOracle
         );
         console.log("ValkyrieVault deployed at:", address(vault));
         

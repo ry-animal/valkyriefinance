@@ -78,7 +78,7 @@ contract ValkyrieTokenTest is Test {
         vm.prank(user1);
         vm.expectEmit(true, false, false, true);
         emit Staked(user1, STAKE_AMOUNT);
-        token.stake(STAKE_AMOUNT);
+        token.stakeWithTier(STAKE_AMOUNT, 1);
         
         assertEq(token.balanceOf(user1), initialBalance - STAKE_AMOUNT);
         assertEq(token.stakedBalance(user1), STAKE_AMOUNT);
@@ -87,10 +87,10 @@ contract ValkyrieTokenTest is Test {
     
     function test_StakeMultipleUsers() public {
         vm.prank(user1);
-        token.stake(STAKE_AMOUNT);
+        token.stakeWithTier(STAKE_AMOUNT, 1);
         
         vm.prank(user2);
-        token.stake(STAKE_AMOUNT * 2);
+        token.stakeWithTier(STAKE_AMOUNT * 2, 1);
         
         assertEq(token.stakedBalance(user1), STAKE_AMOUNT);
         assertEq(token.stakedBalance(user2), STAKE_AMOUNT * 2);
@@ -100,19 +100,19 @@ contract ValkyrieTokenTest is Test {
     function test_FailStakeZeroAmount() public {
         vm.prank(user1);
         vm.expectRevert(ValkyrieToken.ZeroAmount.selector);
-        token.stake(0);
+        token.stakeWithTier(0, 1);
     }
     
     function test_FailStakeInsufficientBalance() public {
         vm.prank(user1);
         vm.expectRevert(ValkyrieToken.InsufficientBalance.selector);
-        token.stake(200_000 * 1e18); // More than user1 has
+        token.stakeWithTier(200_000 * 1e18, 1); // More than user1 has
     }
     
     function test_UnstakeTokens() public {
         // First stake
         vm.prank(user1);
-        token.stake(STAKE_AMOUNT);
+        token.stakeWithTier(STAKE_AMOUNT, 1);
         
         uint256 balanceBeforeUnstake = token.balanceOf(user1);
         
@@ -120,7 +120,7 @@ contract ValkyrieTokenTest is Test {
         vm.prank(user1);
         vm.expectEmit(true, false, false, true);
         emit Unstaked(user1, STAKE_AMOUNT / 2);
-        token.unstake(STAKE_AMOUNT / 2);
+        token.unstakeWithPenalty(STAKE_AMOUNT / 2);
         
         assertEq(token.balanceOf(user1), balanceBeforeUnstake + STAKE_AMOUNT / 2);
         assertEq(token.stakedBalance(user1), STAKE_AMOUNT / 2);
@@ -129,18 +129,18 @@ contract ValkyrieTokenTest is Test {
     
     function test_FailUnstakeInsufficientStaked() public {
         vm.prank(user1);
-        token.stake(STAKE_AMOUNT);
+        token.stakeWithTier(STAKE_AMOUNT, 1);
         
         vm.prank(user1);
         vm.expectRevert(ValkyrieToken.InsufficientStakedAmount.selector);
-        token.unstake(STAKE_AMOUNT * 2); // More than staked
+        token.unstakeWithPenalty(STAKE_AMOUNT * 2); // More than staked
     }
     
     // ===== Rewards Tests =====
     
     function test_RewardsAccrual() public {
         vm.prank(user1);
-        token.stake(STAKE_AMOUNT);
+        token.stakeWithTier(STAKE_AMOUNT, 1);
         
         // Fast forward 1 year (365 days)
         vm.warp(block.timestamp + 365 days);
@@ -156,7 +156,7 @@ contract ValkyrieTokenTest is Test {
     
     function test_ClaimRewards() public {
         vm.prank(user1);
-        token.stake(STAKE_AMOUNT);
+        token.stakeWithTier(STAKE_AMOUNT, 1);
         
         // Fast forward 6 months
         vm.warp(block.timestamp + 182 days);
@@ -219,7 +219,7 @@ contract ValkyrieTokenTest is Test {
         uint256 votesBeforeStaking = token.getVotes(user1);
         
         vm.prank(user1);
-        token.stake(STAKE_AMOUNT);
+        token.stakeWithTier(STAKE_AMOUNT, 1);
         
         uint256 votesAfterStaking = token.getVotes(user1);
         
@@ -235,12 +235,12 @@ contract ValkyrieTokenTest is Test {
         vm.startPrank(user1);
         
         uint256 initialBalance = token.balanceOf(user1);
-        token.stake(amount);
+        token.stakeWithTier(amount, 1);
         
         assertEq(token.stakedBalance(user1), amount);
         assertEq(token.balanceOf(user1), initialBalance - amount);
         
-        token.unstake(amount);
+        token.unstakeWithPenalty(amount);
         
         assertEq(token.stakedBalance(user1), 0);
         assertEq(token.balanceOf(user1), initialBalance);
@@ -265,7 +265,7 @@ contract ValkyrieTokenTest is Test {
         uint256 initialBalance = token.balanceOf(user1);
         
         // 1. Stake tokens
-        token.stake(STAKE_AMOUNT);
+        token.stakeWithTier(STAKE_AMOUNT, 1);
         
         // 2. Wait for rewards to accrue
         vm.warp(block.timestamp + 100 days);
@@ -275,7 +275,7 @@ contract ValkyrieTokenTest is Test {
         token.claimRewards();
         
         // 4. Unstake all tokens
-        token.unstake(STAKE_AMOUNT);
+        token.unstakeWithPenalty(STAKE_AMOUNT);
         
         // Final balance should be initial + rewards
         assertEq(token.balanceOf(user1), initialBalance + pendingRewards);
@@ -288,7 +288,7 @@ contract ValkyrieTokenTest is Test {
         vm.startPrank(user1);
         
         // First cycle
-        token.stake(STAKE_AMOUNT);
+        token.stakeWithTier(STAKE_AMOUNT, 1);
         vm.warp(block.timestamp + 50 days);
         uint256 rewards1 = token.pendingRewards(user1);
         if (rewards1 > 0) {
@@ -296,7 +296,7 @@ contract ValkyrieTokenTest is Test {
         }
         
         // Second cycle - stake more
-        token.stake(STAKE_AMOUNT);
+        token.stakeWithTier(STAKE_AMOUNT, 1);
         vm.warp(block.timestamp + 50 days);
         uint256 rewards2 = token.pendingRewards(user1);
         if (rewards2 > 0) {
@@ -319,14 +319,14 @@ contract ValkyrieTokenTest is Test {
     function test_StakeAfterRewardsAccrued() public {
         // User1 stakes first
         vm.prank(user1);
-        token.stake(STAKE_AMOUNT);
+        token.stakeWithTier(STAKE_AMOUNT, 1);
         
         // Time passes
         vm.warp(block.timestamp + 100 days);
         
         // User2 stakes - should not get retroactive rewards
         vm.prank(user2);
-        token.stake(STAKE_AMOUNT);
+        token.stakeWithTier(STAKE_AMOUNT, 1);
         
         uint256 user1Rewards = token.pendingRewards(user1);
         uint256 user2Rewards = token.pendingRewards(user2);

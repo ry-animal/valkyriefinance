@@ -96,7 +96,7 @@ contract DeployTestnetProduction is Script {
         token.setRewardRate(300); // 3% in basis points
         
         // Reserve tokens for vault rewards and incentives
-        uint256 vaultReserve = 100000 * 1e18; // 100K tokens for vault
+        uint256 vaultTokenReserve = 100000 * 1e18; // 100K tokens for vault
         // These will be transferred to vault after deployment
         
         // 2. Deploy Price Oracle with real Chainlink feeds
@@ -113,9 +113,7 @@ contract DeployTestnetProduction is Script {
             "vUSDC",
             deployer,                    // owner
             deployer,                    // feeRecipient
-            deployedOracle,              // priceOracle
-            address(0),                  // vrfCoordinator (will add later)
-            address(0)                   // ccipRouter (will add later)
+            deployedOracle               // priceOracle
         );
         deployedVault = address(vault);
         console.log("ValkyrieVault deployed at:", deployedVault);
@@ -157,10 +155,9 @@ contract DeployTestnetProduction is Script {
         console.log("\n5. Setting up token-vault integration...");
         
         // Transfer tokens to vault for rewards and incentives
-        uint256 vaultReserve = 100000 * 1e18; // 100K tokens for vault
-        if (token.balanceOf(deployer) >= vaultReserve) {
-            token.transfer(deployedVault, vaultReserve);
-            console.log("Transferred", vaultReserve / 1e18, "VLK to vault for rewards");
+        if (token.balanceOf(deployer) >= vaultTokenReserve) {
+            token.transfer(deployedVault, vaultTokenReserve);
+            console.log("Transferred", vaultTokenReserve / 1e18, "VLK to vault for rewards");
         }
         
         // Set up initial permissions and configurations

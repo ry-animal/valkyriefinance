@@ -59,9 +59,7 @@ contract SimpleAIVaultTest is Test {
             "vAI-USDC",
             owner,
             feeRecipient,
-            address(priceOracle),
-            mockVRFCoordinator,
-            mockCCIPRouter
+            address(priceOracle)
         );
         
         vm.stopPrank();

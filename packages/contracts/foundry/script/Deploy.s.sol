@@ -60,9 +60,7 @@ contract Deploy is Script {
             config.vaultSymbol,
             config.owner,
             config.feeRecipient,
-            address(priceOracle),
-            address(0), // VRF Coordinator (disabled for testing)
-            address(0)  // CCIP Router (disabled for testing)
+            address(priceOracle)
         );
         console.log("ValkyrieVault deployed at:", address(vault));
         
@@ -207,9 +205,7 @@ contract DeployWithMockAsset is Script {
             "vUSDC",
             deployer,
             deployer,
-            address(priceOracle),
-            address(0), // VRF Coordinator (disabled for testing)
-            address(0)  // CCIP Router (disabled for testing)
+            address(priceOracle)
         );
         console.log("ValkyrieVault deployed at:", address(vault));
         

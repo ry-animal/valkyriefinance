@@ -86,9 +86,7 @@ contract DeployTenderly is Script {
             config.vaultSymbol,
             config.owner,
             config.feeRecipient,
-            deployedPriceOracle,
-            address(0), // VRF disabled for Virtual TestNet
-            address(0)  // CCIP disabled for Virtual TestNet
+            deployedPriceOracle
         ));
         console.log("ValkyrieVault deployed at:", deployedVault);
     }
