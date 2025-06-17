@@ -40,6 +40,15 @@ export const CONTRACT_ADDRESSES = {
     governance: '0x0000000000000000000000000000000000000000' as `0x${string}`,
     valkyrieStrategy: '0x...' as `0x${string}`,
   },
+  // Base Sepolia Testnet (84532)
+  84532: {
+    valkyrieToken: '0x0000000000000000000000000000000000000000' as `0x${string}`,
+    valkyrieVault: '0x0000000000000000000000000000000000000000' as `0x${string}`,
+    uniswapV4PoolManager: '0x0000000000000000000000000000000000000000' as `0x${string}`,
+    governance: '0x0000000000000000000000000000000000000000' as `0x${string}`,
+    valkyrieStrategy: '0x0000000000000000000000000000000000000000' as `0x${string}`,
+    mockUSDC: '0x0000000000000000000000000000000000000000' as `0x${string}`,
+  },
   // Local Anvil Network (31337)
   31337: {
     valkyrieToken: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512' as `0x${string}`,
@@ -77,4 +86,5 @@ export const DEPLOYMENT_BLOCKS = {
   10: 110_000_000, // Optimism  
   137: 50_000_000, // Polygon
   11155111: 5_000_000, // Sepolia
+  84532: 1_000_000, // Base Sepolia
 } as const 

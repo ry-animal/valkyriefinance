@@ -28,7 +28,270 @@ const portfolioDataSchema = z.object({
   chainDistribution: z.record(z.string(), z.string()),
 });
 
+// AI Engine Integration Configuration
+const AI_ENGINE_URL = "http://localhost:8080";
+
+// AI Engine helper functions
+async function callAIEngine(endpoint: string, data?: any) {
+  try {
+    const url = `${AI_ENGINE_URL}${endpoint}`;
+    
+    // Determine method based on endpoint, not just data presence
+    const isPostEndpoint = endpoint.includes('/api/optimize-portfolio') || 
+                          endpoint.includes('/api/risk-metrics') || 
+                          endpoint.includes('/api/market-analysis');
+    
+    const options: RequestInit = {
+      method: isPostEndpoint ? 'POST' : 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    };
+    
+    if (data && isPostEndpoint) {
+      options.body = JSON.stringify(data);
+    }
+    
+    console.log(`Making AI Engine call to: ${url} (${options.method})`);
+    if (data && isPostEndpoint) console.log('Request payload:', JSON.stringify(data, null, 2));
+    
+    const response = await fetch(url, options);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`AI Engine error: ${response.status} ${response.statusText}`, errorText);
+      throw new Error(`AI Engine error: ${response.status} ${response.statusText}`);
+    }
+    
+    const result = await response.json();
+    console.log(`AI Engine response from ${endpoint}:`, result);
+    return result;
+  } catch (error) {
+    console.error(`AI Engine call failed for ${endpoint}:`, error);
+    if (error instanceof Error) {
+        throw new Error(`Failed to call AI Engine: ${error.message}`);
+    }
+    throw new Error('An unknown error occurred when calling the AI engine.');
+  }
+}
+
+function convertPortfolioToAIEngineFormat(portfolioData: z.infer<typeof portfolioDataSchema>) {
+  return {
+    id: `portfolio-${Date.now()}`,
+    total_value: parseFloat(portfolioData.totalValue),
+    positions: portfolioData.assets.map(asset => ({
+      token: asset.symbol,
+      amount: parseFloat(asset.balance),
+      value: parseFloat(asset.valueUsd),
+      weight: asset.percentage / 100,
+      yield_apy: 0, // Default value, can be enhanced with actual APY data
+    })),
+    last_updated: new Date().toISOString(),
+  };
+}
+
 export const aiRouter = router({
+  // Enhanced portfolio optimization using AI Engine
+  optimizePortfolioAdvanced: publicProcedure
+    .input(portfolioDataSchema)
+    .mutation(async ({ input }) => {
+      try {
+        // Convert portfolio format
+        const aiEnginePortfolio = convertPortfolioToAIEngineFormat(input);
+        
+        // Get optimization from AI Engine
+        const optimization = await callAIEngine('/api/optimize-portfolio', aiEnginePortfolio);
+        
+        // Get risk metrics from AI Engine
+        const riskMetrics = await callAIEngine('/api/risk-metrics', aiEnginePortfolio);
+        
+        // Get market analysis for portfolio tokens
+        const marketAnalysis = await callAIEngine('/api/market-analysis', {
+          tokens: input.assets.map(asset => asset.symbol),
+          timeframe: '1d'
+        });
+        
+        return {
+          optimization: {
+            portfolioId: optimization.portfolio_id,
+            confidence: optimization.confidence,
+            expectedReturn: optimization.expected_return,
+            risk: optimization.risk,
+            actions: optimization.actions,
+            reasoning: optimization.reasoning,
+            timestamp: optimization.timestamp,
+          },
+          riskMetrics: {
+            var95: riskMetrics.var_95,
+            var99: riskMetrics.var_99,
+            volatility: riskMetrics.volatility,
+            sharpeRatio: riskMetrics.sharpe_ratio,
+            maxDrawdown: riskMetrics.max_drawdown,
+            beta: riskMetrics.beta,
+          },
+          marketAnalysis: {
+            tokenAnalysis: marketAnalysis.token_analysis,
+            sentiment: marketAnalysis.sentiment,
+            timestamp: marketAnalysis.timestamp,
+          },
+          recommendations: (optimization.actions || []).map((action: any) => 
+            `${action.type.toUpperCase()}: ${action.token} - Target weight ${(action.target_weight * 100).toFixed(1)}%`
+          ),
+        };
+      } catch (error) {
+        console.error("Advanced portfolio optimization error:", error);
+        if (error instanceof Error) {
+          throw new Error(`Failed to perform advanced portfolio optimization: ${error.message}`);
+        }
+        throw new Error("Failed to perform advanced portfolio optimization due to an unknown error.");
+      }
+    }),
+
+  // Get real-time market indicators from AI Engine
+  getMarketIndicators: publicProcedure
+    .query(async () => {
+      try {
+        const indicators = await callAIEngine('/api/market-indicators');
+        
+        return {
+          fearGreedIndex: indicators.fear_greed_index,
+          totalMarketCap: indicators.total_market_cap,
+          btcDominance: indicators.btc_dominance,
+          ethDominance: indicators.eth_dominance,
+          defiTVL: indicators.defi_tvl,
+          volatility: indicators.volatility,
+          timestamp: indicators.timestamp,
+          interpretation: {
+            fearGreed: indicators.fear_greed_index > 75 ? 'Extreme Greed' :
+                      indicators.fear_greed_index > 55 ? 'Greed' :
+                      indicators.fear_greed_index > 45 ? 'Neutral' :
+                      indicators.fear_greed_index > 25 ? 'Fear' : 'Extreme Fear',
+            marketCondition: indicators.volatility > 0.4 ? 'High Volatility' :
+                           indicators.volatility > 0.25 ? 'Moderate Volatility' : 'Low Volatility',
+            recommendation: indicators.fear_greed_index < 30 ? 'Consider buying opportunities' :
+                           indicators.fear_greed_index > 70 ? 'Consider taking profits' : 'Hold and monitor',
+          }
+        };
+      } catch (error) {
+        console.error("Market indicators error:", error);
+        if (error instanceof Error) {
+          throw new Error(`Failed to fetch market indicators: ${error.message}`);
+        }
+        throw new Error("Failed to fetch market indicators due to an unknown error.");
+      }
+    }),
+
+  // Enhanced risk assessment using AI Engine
+  assessPortfolioRisk: publicProcedure
+    .input(portfolioDataSchema)
+    .mutation(async ({ input }) => {
+      try {
+        const aiEnginePortfolio = convertPortfolioToAIEngineFormat(input);
+        const riskMetrics = await callAIEngine('/api/risk-metrics', aiEnginePortfolio);
+        
+        // Generate risk assessment interpretation
+        const riskLevel = riskMetrics.volatility > 0.3 ? 'High' :
+                         riskMetrics.volatility > 0.15 ? 'Medium' : 'Low';
+        
+        const warnings = [];
+        if (riskMetrics.max_drawdown > 0.5) {
+          warnings.push('High maximum drawdown detected - consider diversification');
+        }
+        if (riskMetrics.sharpe_ratio < 0.5) {
+          warnings.push('Low risk-adjusted returns - review portfolio allocation');
+        }
+        if (riskMetrics.beta > 1.2) {
+          warnings.push('High market correlation - consider uncorrelated assets');
+        }
+        
+        return {
+          riskMetrics: {
+            var95: riskMetrics.var_95,
+            var99: riskMetrics.var_99,
+            volatility: riskMetrics.volatility,
+            sharpeRatio: riskMetrics.sharpe_ratio,
+            maxDrawdown: riskMetrics.max_drawdown,
+            beta: riskMetrics.beta,
+          },
+          riskLevel,
+          riskScore: Math.round(riskMetrics.volatility * 10), // Convert to 1-10 scale
+          warnings,
+          recommendations: [
+            riskLevel === 'High' ? 'Consider reducing position sizes' : 'Maintain current risk levels',
+            riskMetrics.sharpe_ratio < 1 ? 'Look for higher yield opportunities' : 'Good risk-adjusted performance',
+            'Monitor correlation with major market movements',
+            'Set stop-loss levels for volatile positions'
+          ],
+          timestamp: riskMetrics.timestamp,
+        };
+      } catch (error) {
+        console.error("Portfolio risk assessment error:", error);
+        if (error instanceof Error) {
+          throw new Error(`Failed to assess portfolio risk: ${error.message}`);
+        }
+        throw new Error("Failed to assess portfolio risk due to an unknown error.");
+      }
+    }),
+
+  // Get comprehensive market analysis for specific tokens
+  getTokenAnalysis: publicProcedure
+    .input(z.object({
+      tokens: z.array(z.string()).min(1).max(10),
+      timeframe: z.enum(['1h', '4h', '1d', '1w']).default('1d'),
+    }))
+    .mutation(async ({ input }) => {
+      try {
+        const analysis = await callAIEngine('/api/market-analysis', {
+          tokens: input.tokens,
+          timeframe: input.timeframe
+        });
+        
+        return {
+          tokenAnalysis: analysis.token_analysis.map((token: any) => ({
+            ...token,
+            recommendation: token.trend === 'bullish' ? 'BUY' : 
+                          token.trend === 'bearish' ? 'SELL' : 'HOLD',
+            strength: Math.abs(token.change_24h) > 0.05 ? 'Strong' : 'Weak',
+          })),
+          sentiment: analysis.sentiment,
+          overallTrend: analysis.token_analysis.filter((t: any) => t.trend === 'bullish').length > 
+                       analysis.token_analysis.filter((t: any) => t.trend === 'bearish').length ? 
+                       'Bullish' : 'Bearish',
+          timestamp: analysis.timestamp,
+        };
+      } catch (error) {
+        console.error("Token analysis error:", error);
+        if (error instanceof Error) {
+            throw new Error(`Failed to get token analysis: ${error.message}`);
+        }
+        throw new Error("Failed to get token analysis due to an unknown error.");
+      }
+    }),
+
+  // Check AI Engine health status
+  getAIEngineStatus: publicProcedure
+    .query(async () => {
+      try {
+        const health = await callAIEngine('/health');
+        return {
+          status: health.status,
+          services: health.services,
+          timestamp: health.timestamp,
+          isHealthy: health.status === 'healthy',
+        };
+      } catch (error) {
+        console.error("AI Engine health check error:", error);
+        return {
+          status: 'unhealthy',
+          services: [],
+          timestamp: new Date().toISOString(),
+          isHealthy: false,
+          error: error.message,
+        };
+      }
+    }),
+
   // Enhanced chat with DeFi context
   chat: publicProcedure
     .input(
@@ -88,7 +351,10 @@ export const aiRouter = router({
         };
       } catch (error) {
         console.error("AI chat error:", error);
-        throw new Error("Failed to generate AI response");
+        if (error instanceof Error) {
+            throw new Error(`Failed to generate AI response: ${error.message}`);
+        }
+        throw new Error("Failed to generate AI response due to an unknown error.");
       }
     }),
 
@@ -132,9 +398,13 @@ export const aiRouter = router({
             "Set up automated rebalancing alerts"
           ]
         };
-      } catch (error) {
+      } catch (error: unknown) {
         console.error("Vault analysis error:", error);
-        throw new Error("Failed to analyze vault strategy");
+        let errorMessage = "Failed to analyze vault strategy due to an unknown error.";
+        if (error instanceof Error) {
+          errorMessage = `Failed to analyze vault strategy: ${error.message}`;
+        }
+        throw new Error(errorMessage);
       }
     }),
 

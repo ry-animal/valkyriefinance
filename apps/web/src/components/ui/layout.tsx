@@ -7,12 +7,12 @@ interface BrutalGridProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const BrutalGrid = React.forwardRef<HTMLDivElement, BrutalGridProps>(
   ({ className, columns = "brutal", children, ...props }, ref) => {
-    const gridClass = typeof columns === "number" 
-      ? `grid-cols-${columns}` 
-      : columns === "brutal" 
-        ? "grid-cols-brutal" 
+    const gridClass = typeof columns === "number"
+      ? `grid-cols-${columns}`
+      : columns === "brutal"
+        ? "grid-cols-brutal"
         : "grid-cols-brutal-auto"
-    
+
     return (
       <div
         ref={ref}
@@ -41,7 +41,7 @@ const BrutalSection = React.forwardRef<HTMLElement, BrutalSectionProps>(
       inverted: "bg-black text-white",
       bordered: "bg-white text-black border-b-4 border-black"
     }
-    
+
     return (
       <section
         ref={ref}
@@ -67,16 +67,16 @@ interface BrutalHeadlineProps extends React.HTMLAttributes<HTMLHeadingElement> {
 const BrutalHeadline = React.forwardRef<HTMLHeadingElement, BrutalHeadlineProps>(
   ({ className, level = 1, size = "massive", children, ...props }, ref) => {
     const Comp = `h${level}` as keyof JSX.IntrinsicElements
-    
+
     const sizeClasses = {
       mega: "text-mega",
-      giant: "text-giant", 
+      giant: "text-giant",
       massive: "text-massive",
       huge: "text-huge",
       large: "text-6xl",
       medium: "text-4xl"
     }
-    
+
     return React.createElement(
       Comp,
       {
@@ -107,7 +107,7 @@ const BrutalBox = React.forwardRef<HTMLDivElement, BrutalBoxProps>(
       hover: "bg-white text-black shadow-brutal hover:shadow-brutal-lg hover:-translate-x-1 hover:-translate-y-1 transition-all duration-100",
       inverted: "bg-black text-white"
     }
-    
+
     return (
       <div
         ref={ref}
@@ -138,16 +138,16 @@ const BrutalText = React.forwardRef<HTMLParagraphElement, BrutalTextProps>(
       brutal: "font-brutal font-black uppercase",
       normal: "font-sans"
     }
-    
+
     const sizeClasses = {
       xs: "text-xs",
-      sm: "text-sm", 
+      sm: "text-sm",
       base: "text-base",
       lg: "text-lg",
       xl: "text-xl",
       "2xl": "text-2xl"
     }
-    
+
     return (
       <p
         ref={ref}
@@ -165,10 +165,30 @@ const BrutalText = React.forwardRef<HTMLParagraphElement, BrutalTextProps>(
 )
 BrutalText.displayName = "BrutalText"
 
-export { 
-  BrutalGrid, 
-  BrutalSection, 
-  BrutalHeadline, 
-  BrutalBox, 
-  BrutalText 
+interface PageHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  title: string;
+  description?: string;
+}
+
+const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
+  ({ className, title, description, ...props }, ref) => {
+    return (
+      <div ref={ref} className={cn("mb-8", className)} {...props}>
+        <h1 className="text-4xl font-bold tracking-tight">{title}</h1>
+        {description && (
+          <p className="mt-2 text-lg text-muted-foreground">{description}</p>
+        )}
+      </div>
+    );
+  }
+);
+PageHeader.displayName = "PageHeader";
+
+export {
+  BrutalGrid,
+  BrutalSection,
+  BrutalHeadline,
+  BrutalBox,
+  BrutalText,
+  PageHeader
 }

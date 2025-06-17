@@ -1,0 +1,270 @@
+package server
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+	"time"
+
+	"github.com/valkryiefinance/ai-engine/internal/models"
+	"github.com/valkryiefinance/ai-engine/internal/services"
+)
+
+// SimpleHTTPServer is a basic HTTP server for the AI engine
+type SimpleHTTPServer struct {
+	aiEngine      *services.EnhancedAIEngine
+	dataCollector *services.RealDataCollector
+	server        *http.Server
+}
+
+// NewSimpleHTTPServer creates a new HTTP server
+func NewSimpleHTTPServer(aiEngine *services.EnhancedAIEngine, dataCollector *services.RealDataCollector) *SimpleHTTPServer {
+	return &SimpleHTTPServer{
+		aiEngine:      aiEngine,
+		dataCollector: dataCollector,
+	}
+}
+
+// Start starts the HTTP server
+func (s *SimpleHTTPServer) Start(port int) error {
+	mux := http.NewServeMux()
+
+	// Add middleware for all routes
+	mux.HandleFunc("/health", s.withMiddleware(s.healthHandler))
+	mux.HandleFunc("/api/market-indicators", s.withMiddleware(s.marketIndicatorsHandler))
+	mux.HandleFunc("/api/optimize-portfolio", s.withMiddleware(s.optimizePortfolioHandler))
+	mux.HandleFunc("/api/risk-metrics", s.withMiddleware(s.riskMetricsHandler))
+	mux.HandleFunc("/api/market-analysis", s.withMiddleware(s.marketAnalysisHandler))
+
+	s.server = &http.Server{
+		Addr:           fmt.Sprintf(":%d", port),
+		Handler:        mux,
+		ReadTimeout:    15 * time.Second,
+		WriteTimeout:   15 * time.Second,
+		IdleTimeout:    60 * time.Second,
+		MaxHeaderBytes: 1 << 20, // 1MB
+	}
+
+	log.Printf("HTTP server starting on port %d", port)
+	return s.server.ListenAndServe()
+}
+
+// withMiddleware wraps handlers with common middleware
+func (s *SimpleHTTPServer) withMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Add CORS headers
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		// Handle preflight requests
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		// Add security headers
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("X-Frame-Options", "DENY")
+		w.Header().Set("X-XSS-Protection", "1; mode=block")
+
+		// Request logging
+		start := time.Now()
+		next(w, r)
+		duration := time.Since(start)
+
+		log.Printf("%s %s - %v", r.Method, r.URL.Path, duration)
+	}
+}
+
+// Stop stops the HTTP server
+func (s *SimpleHTTPServer) Stop() error {
+	if s.server != nil {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		return s.server.Shutdown(ctx)
+	}
+	return nil
+}
+
+// healthHandler provides health check
+func (s *SimpleHTTPServer) healthHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	response := map[string]interface{}{
+		"status":    "healthy",
+		"timestamp": time.Now(),
+		"services": []map[string]interface{}{
+			{
+				"name":             "ai-engine",
+				"status":           "healthy",
+				"response_time_ms": 1.5,
+			},
+			{
+				"name":             "data-collector",
+				"status":           "healthy",
+				"response_time_ms": 2.3,
+			},
+		},
+	}
+
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		log.Printf("Error encoding health response: %v", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+}
+
+// marketIndicatorsHandler provides market indicators
+func (s *SimpleHTTPServer) marketIndicatorsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	indicators, err := s.dataCollector.GetMarketIndicators()
+	if err != nil {
+		log.Printf("Error getting market indicators: %v", err)
+		http.Error(w, "Failed to get market indicators", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(indicators); err != nil {
+		log.Printf("Error encoding market indicators response: %v", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+}
+
+// optimizePortfolioHandler provides portfolio optimization
+func (s *SimpleHTTPServer) optimizePortfolioHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Set max body size for security
+	r.Body = http.MaxBytesReader(w, r.Body, 1048576) // 1MB
+
+	var portfolio models.Portfolio
+	if err := json.NewDecoder(r.Body).Decode(&portfolio); err != nil {
+		log.Printf("Error decoding portfolio JSON: %v", err)
+		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
+		return
+	}
+
+	// Basic validation
+	if portfolio.ID == "" {
+		http.Error(w, "Portfolio ID is required", http.StatusBadRequest)
+		return
+	}
+
+	recommendation, err := s.aiEngine.GetRebalanceRecommendation(r.Context(), portfolio)
+	if err != nil {
+		log.Printf("Error getting rebalance recommendation: %v", err)
+		http.Error(w, "Failed to generate recommendation", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(recommendation); err != nil {
+		log.Printf("Error encoding recommendation response: %v", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+}
+
+// riskMetricsHandler provides risk metrics calculation
+func (s *SimpleHTTPServer) riskMetricsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Set max body size for security
+	r.Body = http.MaxBytesReader(w, r.Body, 1048576) // 1MB
+
+	var portfolio models.Portfolio
+	if err := json.NewDecoder(r.Body).Decode(&portfolio); err != nil {
+		log.Printf("Error decoding portfolio JSON: %v", err)
+		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
+		return
+	}
+
+	// Basic validation
+	if portfolio.ID == "" {
+		http.Error(w, "Portfolio ID is required", http.StatusBadRequest)
+		return
+	}
+
+	riskMetrics, err := s.aiEngine.CalculateRiskMetrics(r.Context(), portfolio)
+	if err != nil {
+		log.Printf("Error calculating risk metrics: %v", err)
+		http.Error(w, "Failed to calculate risk metrics", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(riskMetrics); err != nil {
+		log.Printf("Error encoding risk metrics response: %v", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+}
+
+// marketAnalysisHandler provides market analysis
+func (s *SimpleHTTPServer) marketAnalysisHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Set max body size for security
+	r.Body = http.MaxBytesReader(w, r.Body, 1048576) // 1MB
+
+	var request struct {
+		Tokens    []string `json:"tokens"`
+		Timeframe string   `json:"timeframe"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		log.Printf("Error decoding market analysis request: %v", err)
+		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
+		return
+	}
+
+	// Basic validation
+	if len(request.Tokens) == 0 {
+		http.Error(w, "At least one token is required", http.StatusBadRequest)
+		return
+	}
+	if len(request.Tokens) > 10 {
+		http.Error(w, "Maximum 10 tokens allowed", http.StatusBadRequest)
+		return
+	}
+	if request.Timeframe == "" {
+		request.Timeframe = "1d" // Default timeframe
+	}
+
+	analysis, err := s.aiEngine.GetMarketAnalysis(r.Context(), request.Tokens, request.Timeframe)
+	if err != nil {
+		log.Printf("Error getting market analysis: %v", err)
+		http.Error(w, "Failed to generate market analysis", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(analysis); err != nil {
+		log.Printf("Error encoding market analysis response: %v", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+}

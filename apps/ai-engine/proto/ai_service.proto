@@ -1,0 +1,191 @@
+syntax = "proto3";
+
+package ai_service;
+
+option go_package = "ai-engine/proto";
+
+import "google/protobuf/timestamp.proto";
+
+// AI Service for DeFi portfolio optimization and market analysis
+service AIService {
+  // Portfolio optimization and rebalancing
+  rpc GetRebalanceRecommendation(PortfolioRequest) returns (RebalanceResponse);
+  rpc CalculateRiskMetrics(PortfolioRequest) returns (RiskMetricsResponse);
+  rpc OptimizePortfolio(OptimizeRequest) returns (OptimizeResponse);
+  
+  // Market analysis and predictions
+  rpc GetMarketAnalysis(MarketAnalysisRequest) returns (MarketAnalysisResponse);
+  rpc PredictYields(YieldPredictionRequest) returns (YieldPredictionResponse);
+  rpc GetMarketIndicators(MarketIndicatorsRequest) returns (MarketIndicatorsResponse);
+  
+  // Real-time data streaming
+  rpc StreamPriceData(PriceStreamRequest) returns (stream PriceDataResponse);
+  rpc StreamRecommendations(RecommendationStreamRequest) returns (stream RecommendationResponse);
+  
+  // Health and monitoring
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+// Request messages
+message PortfolioRequest {
+  string portfolio_id = 1;
+  repeated Position positions = 2;
+  double total_value = 3;
+}
+
+message Position {
+  string token = 1;
+  double amount = 2;
+  double value = 3;
+  double weight = 4;
+}
+
+message OptimizeRequest {
+  string portfolio_id = 1;
+  repeated Position current_positions = 2;
+  double risk_tolerance = 3; // 0-1 scale
+  double target_return = 4;
+  repeated string allowed_tokens = 5;
+}
+
+message MarketAnalysisRequest {
+  repeated string tokens = 1;
+  string timeframe = 2; // "1h", "24h", "7d", "30d"
+}
+
+message YieldPredictionRequest {
+  repeated string protocols = 1;
+  repeated string tokens = 2;
+  string prediction_period = 3; // "1d", "7d", "30d"
+}
+
+message MarketIndicatorsRequest {
+  // Empty for now, returns all indicators
+}
+
+message PriceStreamRequest {
+  repeated string tokens = 1;
+  int32 update_interval_ms = 2;
+}
+
+message RecommendationStreamRequest {
+  string portfolio_id = 1;
+  int32 update_interval_ms = 2;
+}
+
+message HealthCheckRequest {
+  // Empty
+}
+
+// Response messages
+message RebalanceResponse {
+  string portfolio_id = 1;
+  google.protobuf.Timestamp timestamp = 2;
+  double confidence = 3;
+  double expected_return = 4;
+  double risk = 5;
+  repeated RebalanceAction actions = 6;
+  string reasoning = 7;
+}
+
+message RebalanceAction {
+  string type = 1; // "buy", "sell", "rebalance"
+  string token = 2;
+  double amount = 3;
+  double target_weight = 4;
+  int32 priority = 5;
+}
+
+message RiskMetricsResponse {
+  string portfolio_id = 1;
+  double var_95 = 2;
+  double var_99 = 3;
+  double volatility = 4;
+  double sharpe_ratio = 5;
+  double max_drawdown = 6;
+  double beta = 7;
+  google.protobuf.Timestamp timestamp = 8;
+}
+
+message OptimizeResponse {
+  repeated Position optimized_positions = 1;
+  double expected_return = 2;
+  double expected_risk = 3;
+  double improvement_score = 4;
+  string reasoning = 5;
+}
+
+message MarketAnalysisResponse {
+  repeated TokenAnalysis token_analysis = 1;
+  MarketSentiment sentiment = 2;
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+message TokenAnalysis {
+  string token = 1;
+  double price = 2;
+  double volume_24h = 3;
+  double change_24h = 4;
+  double volatility = 5;
+  double support_level = 6;
+  double resistance_level = 7;
+  string trend = 8; // "bullish", "bearish", "neutral"
+}
+
+message MarketSentiment {
+  double fear_greed_index = 1;
+  double bullish_sentiment = 2;
+  double bearish_sentiment = 3;
+  double neutral_sentiment = 4;
+}
+
+message YieldPredictionResponse {
+  repeated YieldPrediction predictions = 1;
+  google.protobuf.Timestamp timestamp = 2;
+}
+
+message YieldPrediction {
+  string protocol = 1;
+  string token = 2;
+  double current_apy = 3;
+  double predicted_apy = 4;
+  double confidence = 5;
+  string timeframe = 6;
+}
+
+message MarketIndicatorsResponse {
+  double fear_greed_index = 1;
+  double total_market_cap = 2;
+  double btc_dominance = 3;
+  double eth_dominance = 4;
+  double defi_tvl = 5;
+  double volatility = 6;
+  google.protobuf.Timestamp timestamp = 7;
+}
+
+message PriceDataResponse {
+  string symbol = 1;
+  double price = 2;
+  double volume_24h = 3;
+  double change_24h = 4;
+  google.protobuf.Timestamp timestamp = 5;
+}
+
+message RecommendationResponse {
+  string portfolio_id = 1;
+  repeated RebalanceAction recommendations = 2;
+  double confidence = 3;
+  google.protobuf.Timestamp timestamp = 4;
+}
+
+message HealthCheckResponse {
+  string status = 1;
+  google.protobuf.Timestamp timestamp = 2;
+  repeated ServiceStatus services = 3;
+}
+
+message ServiceStatus {
+  string name = 1;
+  string status = 2;
+  double response_time_ms = 3;
+} 

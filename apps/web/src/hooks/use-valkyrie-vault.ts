@@ -1,7 +1,8 @@
 import { useAccount, useChainId, useReadContract, useWriteContract } from 'wagmi'
 import { formatUnits, parseUnits, formatEther } from 'viem'
-import { ERC4626_VAULT_ABI, getContractAddress } from '@valkyrie/contracts'
+import { ERC4626_VAULT_ABI, VALKYRIE_TOKEN_ABI, getContractAddress } from '@valkryie/contracts'
 import { useWeb3Store } from '@/stores/web3-store'
+import { toast } from 'sonner'
 
 // Vault information
 export function useVaultInfo() {
@@ -155,7 +156,127 @@ export function useVaultPreviewRedeem(shares: string) {
   })
 }
 
-// Vault operations
+// Asset allowance and approval
+export function useAssetAllowance() {
+  const { address } = useAccount()
+  const chainId = useChainId()
+  const vaultAddress = getContractAddress(chainId, 'valkyrieVault')
+
+  // Get the asset address from the vault
+  const { data: assetAddress } = useReadContract({
+    address: vaultAddress,
+    abi: ERC4626_VAULT_ABI,
+    functionName: 'asset',
+  })
+
+  // Check allowance
+  const { data: allowance, refetch: refetchAllowance } = useReadContract({
+    address: assetAddress,
+    abi: VALKYRIE_TOKEN_ABI,
+    functionName: 'allowance',
+    args: address && vaultAddress ? [address, vaultAddress] : undefined,
+    query: { enabled: !!address && !!vaultAddress && !!assetAddress },
+  })
+
+  return {
+    allowance: allowance || BigInt(0),
+    assetAddress,
+    formattedAllowance: allowance ? formatEther(allowance) : '0.0',
+    refetchAllowance,
+  }
+}
+
+// Asset approval
+export function useAssetApproval() {
+  const { address } = useAccount()
+  const chainId = useChainId()
+  const vaultAddress = getContractAddress(chainId, 'valkyrieVault')
+  const { writeContractAsync, isPending, error } = useWriteContract()
+  const { addTransaction } = useWeb3Store()
+
+  // Get the asset address from the vault
+  const { data: assetAddress } = useReadContract({
+    address: vaultAddress,
+    abi: ERC4626_VAULT_ABI,
+    functionName: 'asset',
+  })
+
+  const approve = async (amount: string) => {
+    if (!assetAddress || !vaultAddress || !address) {
+      throw new Error('Wallet not connected or contract not found')
+    }
+
+    const amountWei = parseUnits(amount, 18)
+    
+    try {
+      const hash = await writeContractAsync({
+        address: assetAddress,
+        abi: VALKYRIE_TOKEN_ABI,
+        functionName: 'approve',
+        args: [vaultAddress, amountWei],
+      })
+
+      addTransaction({
+        hash,
+        type: 'approve',
+        status: 'pending',
+        chainId,
+        amount: formatUnits(amountWei, 18),
+        token: 'Asset Token',
+      })
+
+      toast.success('Approval transaction submitted')
+      return hash
+    } catch (error) {
+      console.error('Asset approval failed:', error)
+      toast.error('Approval failed')
+      throw error
+    }
+  }
+
+  const approveMax = async () => {
+    if (!assetAddress || !vaultAddress || !address) {
+      throw new Error('Wallet not connected or contract not found')
+    }
+
+    const maxAmount = BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')
+    
+    try {
+      const hash = await writeContractAsync({
+        address: assetAddress,
+        abi: VALKYRIE_TOKEN_ABI,
+        functionName: 'approve',
+        args: [vaultAddress, maxAmount],
+      })
+
+      addTransaction({
+        hash,
+        type: 'approve',
+        status: 'pending',
+        chainId,
+        amount: 'MAX',
+        token: 'Asset Token',
+      })
+
+      toast.success('Max approval transaction submitted')
+      return hash
+    } catch (error) {
+      console.error('Max approval failed:', error)
+      toast.error('Max approval failed')
+      throw error
+    }
+  }
+
+  return {
+    approve,
+    approveMax,
+    isPending,
+    error,
+    assetAddress,
+  }
+}
+
+// Enhanced vault operations with better error handling
 export function useVaultOperations() {
   const { address } = useAccount()
   const chainId = useChainId()
@@ -164,12 +285,16 @@ export function useVaultOperations() {
   const { addTransaction } = useWeb3Store()
 
   const deposit = async (assets: string, receiver?: `0x${string}`) => {
-    if (!vaultAddress || !address) throw new Error('Wallet not connected')
+    if (!vaultAddress || !address) {
+      throw new Error('Wallet not connected')
+    }
 
     const assetsWei = parseUnits(assets, 18)
     const receiverAddress = receiver || address
     
     try {
+      toast.loading('Submitting deposit transaction...')
+      
       const hash = await writeContractAsync({
         address: vaultAddress,
         abi: ERC4626_VAULT_ABI,
@@ -186,9 +311,48 @@ export function useVaultOperations() {
         token: 'Vault Assets',
       })
 
+      toast.success('Deposit transaction submitted')
       return hash
     } catch (error) {
       console.error('Vault deposit failed:', error)
+      toast.error('Deposit failed')
+      throw error
+    }
+  }
+
+  const withdraw = async (assets: string, receiver?: `0x${string}`, owner?: `0x${string}`) => {
+    if (!vaultAddress || !address) {
+      throw new Error('Wallet not connected')
+    }
+
+    const assetsWei = parseUnits(assets, 18)
+    const receiverAddress = receiver || address
+    const ownerAddress = owner || address
+    
+    try {
+      toast.loading('Submitting withdraw transaction...')
+      
+      const hash = await writeContractAsync({
+        address: vaultAddress,
+        abi: ERC4626_VAULT_ABI,
+        functionName: 'withdraw',
+        args: [assetsWei, receiverAddress, ownerAddress],
+      })
+
+      addTransaction({
+        hash,
+        type: 'vault_withdraw',
+        status: 'pending',
+        chainId,
+        amount: formatUnits(assetsWei, 18),
+        token: 'Vault Assets',
+      })
+
+      toast.success('Withdraw transaction submitted')
+      return hash
+    } catch (error) {
+      console.error('Vault withdraw failed:', error)
+      toast.error('Withdraw failed')
       throw error
     }
   }
@@ -219,37 +383,6 @@ export function useVaultOperations() {
       return hash
     } catch (error) {
       console.error('Vault mint failed:', error)
-      throw error
-    }
-  }
-
-  const withdraw = async (assets: string, receiver?: `0x${string}`, owner?: `0x${string}`) => {
-    if (!vaultAddress || !address) throw new Error('Wallet not connected')
-
-    const assetsWei = parseUnits(assets, 18)
-    const receiverAddress = receiver || address
-    const ownerAddress = owner || address
-    
-    try {
-      const hash = await writeContractAsync({
-        address: vaultAddress,
-        abi: ERC4626_VAULT_ABI,
-        functionName: 'withdraw',
-        args: [assetsWei, receiverAddress, ownerAddress],
-      })
-
-      addTransaction({
-        hash,
-        type: 'vault_withdraw',
-        status: 'pending',
-        chainId,
-        amount: formatUnits(assetsWei, 18),
-        token: 'Vault Assets',
-      })
-
-      return hash
-    } catch (error) {
-      console.error('Vault withdraw failed:', error)
       throw error
     }
   }
@@ -287,8 +420,8 @@ export function useVaultOperations() {
 
   return {
     deposit,
-    mint,
     withdraw,
+    mint,
     redeem,
     isPending,
     error,

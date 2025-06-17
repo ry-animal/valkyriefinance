@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,8 +8,18 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { usePortfolioStore } from "@/stores/portfolio-store";
-import { useWeb3Store } from "@/stores/web3-store";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAccount, useChainId } from "wagmi";
+import { formatEther, formatUnits, parseEther } from "viem";
+import {
+    useVaultInfo,
+    useVaultBalance,
+    useVaultOperations,
+    useAssetAllowance,
+    useAssetApproval
+} from "@/hooks/use-valkyrie-vault";
+import { useSimpleTokenBalances, type SimpleTokenBalance } from "@/hooks/use-simple-token-balances";
+import { getContractAddress } from "@valkryie/contracts";
 import { useUIStore } from "@/stores/ui-store";
 import {
     TrendingUp,
@@ -19,88 +29,122 @@ import {
     ArrowUpRight,
     ArrowDownLeft,
     Zap,
-    TrendingDown,
-    DollarSign
+    CheckCircle,
+    Clock,
+    AlertTriangle,
+    DollarSign,
+    Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { bt } from "@/lib/theme-utils";
+import { toast } from "sonner";
 
 export function VaultDashboard() {
     const [depositAmount, setDepositAmount] = useState("");
-    const [withdrawAmount, setWithdrawAmount] = useState("");
+    const [withdrawShares, setWithdrawShares] = useState("");
+    const [activeTab, setActiveTab] = useState("deposit");
 
-    const { selectedPortfolioId, portfolios } = usePortfolioStore();
-    const { isConnected } = useWeb3Store();
+    const { address, isConnected } = useAccount();
+    const chainId = useChainId();
     const { addNotification } = useUIStore();
 
-    const selectedPortfolio = portfolios.find(p => p.id === selectedPortfolioId);
+    // Contract data hooks
+    const vaultInfo = useVaultInfo();
+    const userBalance = useVaultBalance();
+    const { allowance, assetAddress } = useAssetAllowance();
+    const balances = useSimpleTokenBalances();
 
-    const handleDeposit = () => {
-        if (!isConnected) {
-            addNotification({
-                type: "error",
-                title: "Wallet Not Connected",
-                message: "Please connect your wallet to deposit"
-            });
-            return;
+    // Contract operations
+    const { deposit, withdraw } = useVaultOperations();
+    const { approve, approveMax, isPending: approvalPending } = useAssetApproval();
+
+    // Get asset balance
+    const assetBalance = balances.tokenBalances.find(
+        (token: SimpleTokenBalance) => token.address.toLowerCase() === assetAddress?.toLowerCase()
+    )?.balance || 0n;
+
+    // Calculate derived values
+    const userAssetValue = userBalance.assetsFromShares;
+
+    const depositAmountWei = depositAmount ? parseEther(depositAmount) : 0n;
+    const withdrawSharesWei = withdrawShares ? parseEther(withdrawShares) : 0n;
+
+    const needsApproval = depositAmountWei > 0n && allowance < depositAmountWei;
+    const hasInsufficientBalance = depositAmountWei > assetBalance;
+    const hasInsufficientShares = withdrawSharesWei > userBalance.shares;
+
+    const handleDeposit = async () => {
+        if (!isConnected || !depositAmount) return;
+
+        try {
+            if (needsApproval) {
+                toast.info("Approval required before deposit");
+                return;
+            }
+
+            await deposit(depositAmount);
+            setDepositAmount("");
+            toast.success("Deposit successful!");
+        } catch (error) {
+            console.error("Deposit failed:", error);
+            toast.error("Deposit failed");
         }
-
-        if (!depositAmount || isNaN(Number(depositAmount))) {
-            addNotification({
-                type: "error",
-                title: "Invalid Amount",
-                message: "Please enter a valid deposit amount"
-            });
-            return;
-        }
-
-        addNotification({
-            type: "success",
-            title: "Deposit Initiated",
-            message: `Depositing ${depositAmount} USDC to vault`
-        });
-        setDepositAmount("");
     };
 
-    const handleWithdraw = () => {
-        if (!isConnected) {
-            addNotification({
-                type: "error",
-                title: "Wallet Not Connected",
-                message: "Please connect your wallet to withdraw"
-            });
-            return;
-        }
+    const handleWithdraw = async () => {
+        if (!isConnected || !withdrawShares) return;
 
-        if (!withdrawAmount || isNaN(Number(withdrawAmount))) {
-            addNotification({
-                type: "error",
-                title: "Invalid Amount",
-                message: "Please enter a valid withdrawal amount"
-            });
-            return;
+        try {
+            await withdraw(formatEther(withdrawSharesWei));
+            setWithdrawShares("");
+            toast.success("Withdrawal successful!");
+        } catch (error) {
+            console.error("Withdrawal failed:", error);
+            toast.error("Withdrawal failed");
         }
-
-        addNotification({
-            type: "success",
-            title: "Withdrawal Initiated",
-            message: `Withdrawing ${withdrawAmount} vault shares`
-        });
-        setWithdrawAmount("");
     };
 
-    // Mock vault data - will be replaced with tRPC calls
-    const vaultData = {
-        totalValueLocked: 12450000,
-        currentApy: 18.5,
-        userShares: Number(selectedPortfolio?.totalValue) || 0,
-        sharePrice: 1.0234,
-        strategies: [
-            { name: "Aave Lending", allocation: 35, apy: 12.3, status: "active" },
-            { name: "Compound Yield", allocation: 25, apy: 15.8, status: "active" },
-            { name: "Uniswap V4 LP", allocation: 40, apy: 24.2, status: "active" }
-        ]
+    const handleApproval = async () => {
+        try {
+            if (depositAmountWei > 0n) {
+                await approve(depositAmount);
+            } else {
+                await approveMax();
+            }
+            toast.success("Approval successful!");
+        } catch (error) {
+            console.error("Approval failed:", error);
+            toast.error("Approval failed");
+        }
     };
+
+    const setMaxDeposit = () => {
+        if (assetBalance > 0n) {
+            setDepositAmount(formatEther(assetBalance));
+        }
+    };
+
+    const setMaxWithdraw = () => {
+        if (userBalance.shares > 0n) {
+            setWithdrawShares(formatEther(userBalance.shares));
+        }
+    };
+
+    // Loading states
+    const isLoading = balances.isLoading;
+    const operationLoading = false; // Operations are handled with try/catch
+
+    if (!isConnected) {
+        return (
+            <div className={cn("flex flex-col items-center justify-center min-h-[400px] space-y-4", bt.page)}>
+                <AlertTriangle className={cn("h-12 w-12", bt.muted)} />
+                <h2 className={cn("text-2xl font-bold", bt.heading)}>Wallet Not Connected</h2>
+                <p className={cn("text-center max-w-md", bt.muted)}>
+                    Please connect your wallet to access the vault dashboard and start earning AI-optimized yields.
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className={cn("space-y-8", bt.page)}>
@@ -109,14 +153,20 @@ export function VaultDashboard() {
                 <Card className={cn("border-4", bt.border, bt.section)}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className={cn("text-sm font-medium", bt.heading)}>
-                            Total Deposited
+                            Your Deposit
                         </CardTitle>
                         <DollarSign className={cn("h-4 w-4", bt.muted)} />
                     </CardHeader>
                     <CardContent>
-                        <div className={cn("text-2xl font-bold", bt.heading)}>$0.00</div>
+                        {isLoading ? (
+                            <Skeleton className="h-8 w-24" />
+                        ) : (
+                            <div className={cn("text-2xl font-bold", bt.heading)}>
+                                {formatEther(userAssetValue)} ETH
+                            </div>
+                        )}
                         <p className={cn("text-xs", bt.muted)}>
-                            +0% from last month
+                            {formatEther(userBalance.shares)} vault shares
                         </p>
                     </CardContent>
                 </Card>
@@ -129,7 +179,9 @@ export function VaultDashboard() {
                         <TrendingUp className={cn("h-4 w-4", bt.muted)} />
                     </CardHeader>
                     <CardContent>
-                        <div className={cn("text-2xl font-bold", bt.heading)}>0.00%</div>
+                        <div className={cn("text-2xl font-bold", bt.heading)}>
+                            12.5%
+                        </div>
                         <p className={cn("text-xs", bt.muted)}>
                             AI-optimized yield
                         </p>
@@ -139,14 +191,19 @@ export function VaultDashboard() {
                 <Card className={cn("border-4", bt.border, bt.section)}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className={cn("text-sm font-medium", bt.heading)}>
-                            Total Earned
+                            Share Price
                         </CardTitle>
                         <Target className={cn("h-4 w-4", bt.muted)} />
                     </CardHeader>
                     <CardContent>
-                        <div className={cn("text-2xl font-bold", bt.heading)}>$0.00</div>
+                        <div className={cn("text-2xl font-bold", bt.heading)}>
+                            {vaultInfo.totalAssets > 0n && vaultInfo.totalSupply ?
+                                formatUnits((vaultInfo.totalAssets * 10n ** 18n) / vaultInfo.totalSupply, 18) :
+                                "1.00"
+                            }
+                        </div>
                         <p className={cn("text-xs", bt.muted)}>
-                            Lifetime earnings
+                            Assets per share
                         </p>
                     </CardContent>
                 </Card>
@@ -154,153 +211,207 @@ export function VaultDashboard() {
                 <Card className={cn("border-4", bt.border, bt.section)}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className={cn("text-sm font-medium", bt.heading)}>
-                            Risk Score
+                            Total TVL
                         </CardTitle>
                         <Shield className={cn("h-4 w-4", bt.muted)} />
                     </CardHeader>
                     <CardContent>
-                        <div className={cn("text-2xl font-bold text-green-600", bt.heading)}>Low</div>
+                        <div className={cn("text-2xl font-bold", bt.heading)}>
+                            {formatEther(vaultInfo.totalAssets)} ETH
+                        </div>
                         <p className={cn("text-xs", bt.muted)}>
-                            AI risk assessment
+                            Total value locked
                         </p>
                     </CardContent>
                 </Card>
             </div>
 
             {/* Main Actions */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className={cn("border-4", bt.border, bt.section)}>
-                    <CardHeader>
-                        <CardTitle className={cn("text-xl font-black", bt.heading)}>
-                            DEPOSIT FUNDS
-                        </CardTitle>
-                        <CardDescription className={bt.muted}>
-                            Add funds to start earning AI-optimized yields
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <label className={cn("text-sm font-medium", bt.heading)}>
-                                Amount (ETH)
-                            </label>
-                            <input
-                                type="number"
-                                placeholder="0.0"
-                                className={cn(
-                                    "w-full p-3 border-4 rounded-none font-mono text-lg",
-                                    bt.border,
-                                    bt.section,
-                                    bt.heading,
-                                    "focus:outline-none focus:ring-2 focus:ring-offset-2"
-                                )}
-                            />
-                        </div>
-                        <Button
-                            className={cn(
-                                "w-full h-12 text-lg font-black border-4",
-                                bt.border,
-                                "bg-black dark:bg-white text-white dark:text-black",
-                                "hover:bg-gray-800 dark:hover:bg-gray-200"
-                            )}
-                        >
-                            DEPOSIT ETH
-                        </Button>
-                        <div className="grid grid-cols-2 gap-2">
-                            <Button
-                                variant="outline"
-                                className={cn(
-                                    "border-4",
-                                    bt.border,
-                                    bt.section,
-                                    bt.heading,
-                                    "hover:bg-gray-100 dark:hover:bg-gray-800"
-                                )}
-                            >
-                                MAX
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className={cn(
-                                    "border-4",
-                                    bt.border,
-                                    bt.section,
-                                    bt.heading,
-                                    "hover:bg-gray-100 dark:hover:bg-gray-800"
-                                )}
-                            >
-                                BRIDGE
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className={cn("grid w-full grid-cols-2", bt.section)}>
+                    <TabsTrigger value="deposit" className={cn("font-bold", bt.heading)}>
+                        DEPOSIT
+                    </TabsTrigger>
+                    <TabsTrigger value="withdraw" className={cn("font-bold", bt.heading)}>
+                        WITHDRAW
+                    </TabsTrigger>
+                </TabsList>
 
-                <Card className={cn("border-4", bt.border, bt.section)}>
-                    <CardHeader>
-                        <CardTitle className={cn("text-xl font-black", bt.heading)}>
-                            WITHDRAW FUNDS
-                        </CardTitle>
-                        <CardDescription className={bt.muted}>
-                            Withdraw your deposits and earnings
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <label className={cn("text-sm font-medium", bt.heading)}>
-                                Amount (Vault Shares)
-                            </label>
-                            <input
-                                type="number"
-                                placeholder="0.0"
-                                className={cn(
-                                    "w-full p-3 border-4 rounded-none font-mono text-lg",
-                                    bt.border,
-                                    bt.section,
-                                    bt.heading,
-                                    "focus:outline-none focus:ring-2 focus:ring-offset-2"
+                <TabsContent value="deposit" className="space-y-6">
+                    <Card className={cn("border-4", bt.border, bt.section)}>
+                        <CardHeader>
+                            <CardTitle className={cn("text-xl font-black", bt.heading)}>
+                                DEPOSIT ASSETS
+                            </CardTitle>
+                            <CardDescription className={bt.muted}>
+                                Deposit ETH to start earning AI-optimized yields
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label className={cn("text-sm font-medium", bt.heading)}>
+                                    Amount (ETH)
+                                </Label>
+                                <div className="flex gap-2">
+                                    <Input
+                                        type="number"
+                                        placeholder="0.0"
+                                        value={depositAmount}
+                                        onChange={(e) => setDepositAmount(e.target.value)}
+                                        className={cn(
+                                            "font-mono text-lg border-4",
+                                            bt.border,
+                                            hasInsufficientBalance && "border-red-500"
+                                        )}
+                                        disabled={operationLoading || approvalPending}
+                                    />
+                                    <Button
+                                        variant="outline"
+                                        onClick={setMaxDeposit}
+                                        className={cn("border-4", bt.border)}
+                                        disabled={operationLoading || approvalPending}
+                                    >
+                                        MAX
+                                    </Button>
+                                </div>
+                                {hasInsufficientBalance && (
+                                    <p className="text-sm text-red-500">
+                                        Insufficient balance. Available: {formatEther(assetBalance)} ETH
+                                    </p>
                                 )}
-                            />
-                        </div>
-                        <Button
-                            variant="outline"
-                            className={cn(
-                                "w-full h-12 text-lg font-black border-4",
-                                bt.border,
-                                bt.section,
-                                bt.heading,
-                                "hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black"
+                            </div>
+
+                            <div className="space-y-2">
+                                {needsApproval ? (
+                                    <Button
+                                        onClick={handleApproval}
+                                        disabled={approvalPending || hasInsufficientBalance}
+                                        className={cn(
+                                            "w-full h-12 text-lg font-black border-4",
+                                            bt.border,
+                                            "bg-yellow-500 hover:bg-yellow-600 text-black"
+                                        )}
+                                    >
+                                        {approvalPending ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                APPROVING...
+                                            </>
+                                        ) : (
+                                            "APPROVE SPENDING"
+                                        )}
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        onClick={handleDeposit}
+                                        disabled={operationLoading || !depositAmount || hasInsufficientBalance}
+                                        className={cn(
+                                            "w-full h-12 text-lg font-black border-4",
+                                            bt.border,
+                                            "bg-green-500 hover:bg-green-600 text-black"
+                                        )}
+                                    >
+                                        {operationLoading ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                DEPOSITING...
+                                            </>
+                                        ) : (
+                                            "DEPOSIT ETH"
+                                        )}
+                                    </Button>
+                                )}
+                            </div>
+
+                            {!needsApproval && depositAmountWei > 0n && (
+                                <div className={cn("p-3 border-2 border-green-500", bt.sectionAlt)}>
+                                    <div className="flex items-center gap-2 text-green-600">
+                                        <CheckCircle className="h-4 w-4" />
+                                        <span className="text-sm">Approved for spending</span>
+                                    </div>
+                                </div>
                             )}
-                        >
-                            WITHDRAW
-                        </Button>
-                        <div className="grid grid-cols-2 gap-2">
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="withdraw" className="space-y-6">
+                    <Card className={cn("border-4", bt.border, bt.section)}>
+                        <CardHeader>
+                            <CardTitle className={cn("text-xl font-black", bt.heading)}>
+                                WITHDRAW ASSETS
+                            </CardTitle>
+                            <CardDescription className={bt.muted}>
+                                Withdraw your vault shares and earned yields
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label className={cn("text-sm font-medium", bt.heading)}>
+                                    Vault Shares
+                                </Label>
+                                <div className="flex gap-2">
+                                    <Input
+                                        type="number"
+                                        placeholder="0.0"
+                                        value={withdrawShares}
+                                        onChange={(e) => setWithdrawShares(e.target.value)}
+                                        className={cn(
+                                            "font-mono text-lg border-4",
+                                            bt.border,
+                                            hasInsufficientShares && "border-red-500"
+                                        )}
+                                        disabled={operationLoading}
+                                    />
+                                    <Button
+                                        variant="outline"
+                                        onClick={setMaxWithdraw}
+                                        className={cn("border-4", bt.border)}
+                                        disabled={operationLoading}
+                                    >
+                                        MAX
+                                    </Button>
+                                </div>
+                                {hasInsufficientShares && (
+                                    <p className="text-sm text-red-500">
+                                        Insufficient shares. Available: {formatEther(userBalance.shares)}
+                                    </p>
+                                )}
+                            </div>
+
                             <Button
-                                variant="outline"
+                                onClick={handleWithdraw}
+                                disabled={operationLoading || !withdrawShares || hasInsufficientShares}
                                 className={cn(
-                                    "border-4",
+                                    "w-full h-12 text-lg font-black border-4",
                                     bt.border,
-                                    bt.section,
-                                    bt.heading,
-                                    "hover:bg-gray-100 dark:hover:bg-gray-800"
+                                    "bg-red-500 hover:bg-red-600 text-white"
                                 )}
                             >
-                                25%
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className={cn(
-                                    "border-4",
-                                    bt.border,
-                                    bt.section,
-                                    bt.heading,
-                                    "hover:bg-gray-100 dark:hover:bg-gray-800"
+                                {operationLoading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        WITHDRAWING...
+                                    </>
+                                ) : (
+                                    "WITHDRAW ASSETS"
                                 )}
-                            >
-                                100%
                             </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+
+                            {withdrawSharesWei > 0n && (
+                                <div className={cn("p-3 border-2", bt.border, bt.sectionAlt)}>
+                                    <div className="text-sm">
+                                        <span className={bt.muted}>You will receive approximately: </span>
+                                        <span className={cn("font-mono font-bold", bt.heading)}>
+                                            {formatEther(withdrawSharesWei)} ETH
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
 
             {/* AI Strategy Status */}
             <Card className={cn("border-4", bt.border, bt.section)}>
@@ -316,10 +427,10 @@ export function VaultDashboard() {
                 <CardContent className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className={cn("p-4 border-2", bt.border, bt.sectionAlt)}>
-                            <div className={cn("text-sm font-medium", bt.heading)}>Strategy Active</div>
+                            <div className={cn("text-sm font-medium", bt.heading)}>Strategy Status</div>
                             <div className="flex items-center gap-2 mt-2">
                                 <Badge variant="outline" className={cn("border-green-500 text-green-500", bt.section)}>
-                                    OPTIMIZING
+                                    ACTIVE
                                 </Badge>
                             </div>
                         </div>

@@ -12,12 +12,13 @@ import NextImage from "next/image";
 export default function Header() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
+
   const links = [
     { to: "/", label: "HOME" },
     { to: "/dashboard", label: "DASHBOARD" },
     { to: "/vault", label: "VAULT" },
     { to: "/ai", label: "AI CHAT" },
+    { to: "/ai-analytics", label: "AI Analytics" },
   ];
 
   return (
@@ -51,7 +52,7 @@ export default function Header() {
             </div>
           </nav>
 
-          <div className="hidden md:flex items-center gap-4">            
+          <div className="hidden md:flex items-center gap-4">
             <ModeToggle />
             <UserMenu />
           </div>

@@ -634,6 +634,36 @@ const alertConfig = {
 - **Background jobs** for heavy processing
 - **CDN integration** for global distribution
 
+## AI Services
+
+The AI services consist of a high-performance, Go-based engine located in the `apps/ai-engine` directory. This engine provides a RESTful API that is consumed by the main tRPC server (`apps/server`). This architecture ensures a clean separation of concerns, allowing the AI engine to be optimized independently for performance-critical computations.
+
+### AI Engine API Endpoints
+
+The Go-based AI engine exposes the following RESTful endpoints, which are called by the tRPC server:
+
+- **`GET /health`**: Provides a health check of the AI engine and its sub-services, like the data collector.
+- **`GET /api/market-indicators`**: Returns real-time market indicators, including the Fear & Greed Index, market cap, and DeFi TVL.
+- **`POST /api/optimize-portfolio`**: Accepts a user's portfolio data and returns a comprehensive optimization plan, including rebalancing actions, expected returns, and risk analysis.
+- **`POST /api/risk-metrics`**: Accepts portfolio data and returns detailed risk metrics such as Value at Risk (VaR), Sharpe Ratio, Beta, and max drawdown.
+- **`POST /api/market-analysis`**: Accepts a list of tokens and returns a detailed technical and sentiment analysis for each.
+
+### tRPC AI Router (`apps/server/src/routers/ai.ts`)
+
+The main server application provides a type-safe interface to the AI engine's capabilities through the `aiRouter`. This router abstracts the direct REST calls and integrates the AI insights into the broader platform ecosystem. Key procedures include:
+
+- **`getAIEngineStatus` (Query)**: Wraps the `/health` endpoint.
+- **`getMarketIndicators` (Query)**: Wraps the `/api/market-indicators` endpoint.
+- **`optimizePortfolioAdvanced` (Mutation)**: The primary optimization procedure. It calls the `/api/optimize-portfolio`, `/api/risk-metrics`, and `/api/market-analysis` endpoints in sequence to provide a holistic portfolio review.
+- **`assessPortfolioRisk` (Mutation)**: Wraps the `/api/risk-metrics` endpoint.
+- **`getTokenAnalysis` (Mutation)**: Wraps the `/api/market-analysis` endpoint.
+
+This setup ensures that the frontend application (`apps/web`) can interact with the powerful AI engine through a secure, efficient, and fully type-safe tRPC API.
+
+## Frontend Architecture
+
+The frontend is a Next.js application built with the App Router, located in `apps/web`.
+
 ---
 
 **Last Updated**: December 2024

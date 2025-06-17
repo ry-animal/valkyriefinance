@@ -1,6 +1,6 @@
 import { createAppKit } from '@reown/appkit/react'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { mainnet, sepolia, arbitrum, optimism, polygon } from '@reown/appkit/networks'
+import { mainnet, sepolia, arbitrum, optimism, polygon, baseSepolia } from '@reown/appkit/networks'
 import { QueryClient } from '@tanstack/react-query'
 import { env } from './env'
 import { http, createConfig } from 'wagmi'
@@ -18,7 +18,7 @@ const metadata = {
 }
 
 // 3. Set the networks
-export const networks = [mainnet, sepolia, arbitrum, optimism, polygon]
+export const networks = [mainnet, sepolia, baseSepolia, arbitrum, optimism, polygon]
 
 // 4. Create Wagmi Adapter
 export const wagmiAdapter = new WagmiAdapter({
@@ -53,7 +53,7 @@ export function getAppKit() {
 function createWagmiConfig() {
   return createConfig({
     chains: env.NEXT_PUBLIC_ENABLE_TESTNETS 
-      ? [mainnet, sepolia, arbitrum, optimism] 
+      ? [mainnet, sepolia, baseSepolia, arbitrum, optimism] 
       : [mainnet, arbitrum, optimism],
     connectors: [
       injected(),
@@ -83,6 +83,7 @@ function createWagmiConfig() {
           ? `https://opt-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
           : 'https://mainnet.optimism.io'
       ),
+      [baseSepolia.id]: http('https://sepolia.base.org'),
     },
   })
 }

@@ -105,3 +105,59 @@ packages/contracts/foundry/lcov.info
 
 # Development Tools
 .wake/
+
+# Go-specific files
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Go workspace file
+go.work
+go.work.sum
+
+# Dependency directories (when vendor is used)
+vendor/
+
+# Go build cache
+.cache/
+.gocache/
+
+# Built Go binaries (executable files without extension in Unix/Linux)
+/ai-engine
+apps/ai-engine/ai-engine
+apps/ai-engine/main
+apps/ai-engine/cmd/main
+apps/ai-engine/bin/
+apps/ai-engine/*.log
+
+# Go module download cache
+GOCACHE/
+GOMODCACHE/
+
+# Air live reload tool
+tmp/
+__debug_bin*
+
+# Delve debugger
+debug
+__debug_bin
+
+# GoLand IDE
+.idea/
+
+# VS Code Go extension
+.vscode/launch.json
+.vscode/settings.json
+
+# Environment variables for Go
+.env.go
+.env.local.go
