@@ -1,26 +1,22 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "../index.css";
-import { cn } from "@/lib/utils";
-import Header from "@/components/header";
-import ProvidersWrapper from "./providers-wrapper";
+import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
+import '../index.css';
+import Header from '@/components/header';
+import { cn } from '@/lib/utils';
+import ProvidersWrapper from './providers-wrapper';
 
-const geistSans = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
+const geistSans = Geist({ subsets: ['latin'], variable: '--font-geist-sans' });
 const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-geist-mono",
+  subsets: ['latin'],
+  variable: '--font-geist-mono',
 });
 
 export const metadata: Metadata = {
-  title: "Valkyrie Finance",
-  description: "AI-Powered DeFi",
+  title: 'Valkyrie Finance',
+  description: 'AI-Powered DeFi',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -28,7 +24,7 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          "min-h-screen bg-white dark:bg-black text-black dark:text-white font-sans antialiased",
+          'min-h-screen bg-white dark:bg-black text-black dark:text-white font-sans antialiased',
           geistSans.variable,
           geistMono.variable
         )}

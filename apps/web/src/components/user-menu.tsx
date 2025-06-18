@@ -1,5 +1,8 @@
-"use client";
+'use client';
 
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useAccount, useDisconnect } from 'wagmi';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,15 +10,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "./ui/button";
-import { Skeleton } from "./ui/skeleton";
-import { useRouter } from "next/navigation";
-import { useAccount, useDisconnect } from "wagmi";
+} from '@/components/ui/dropdown-menu';
+import { bt } from '@/lib/theme-utils';
+import { cn } from '@/lib/utils';
 import { getAppKit } from '@/lib/wagmi-config';
-import { cn } from "@/lib/utils";
-import { bt } from "@/lib/theme-utils";
-import { useEffect, useState } from "react";
+import { Button } from './ui/button';
+import { Skeleton } from './ui/skeleton';
 
 export default function UserMenu() {
   const [mounted, setMounted] = useState(false);
@@ -56,10 +56,10 @@ function UserMenuClient() {
         onClick={handleConnect}
         data-testid="connect-button"
         className={cn(
-          "border-4 border-black dark:border-white",
-          "bg-white dark:bg-black text-black dark:text-white",
-          "hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black",
-          "font-brutal font-black uppercase tracking-widest"
+          'border-4 border-black dark:border-white',
+          'bg-white dark:bg-black text-black dark:text-white',
+          'hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black',
+          'font-brutal font-black uppercase tracking-widest'
         )}
       >
         CONNECT
@@ -75,39 +75,31 @@ function UserMenuClient() {
         <Button
           variant="outline"
           className={cn(
-            "border-4 border-black dark:border-white",
-            "bg-white dark:bg-black text-black dark:text-white",
-            "hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black",
-            "font-mono"
+            'border-4 border-black dark:border-white',
+            'bg-white dark:bg-black text-black dark:text-white',
+            'hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black',
+            'font-mono'
           )}
         >
           {truncatedAddress}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        className={cn(
-          "border-4",
-          bt.border,
-          bt.section
-        )}
-      >
-        <DropdownMenuLabel className={cn("font-brutal font-black", bt.heading)}>
+      <DropdownMenuContent className={cn('border-4', bt.border, bt.section)}>
+        <DropdownMenuLabel className={cn('font-brutal font-black', bt.heading)}>
           WALLET
         </DropdownMenuLabel>
         <DropdownMenuSeparator className={bt.border} />
-        <DropdownMenuItem className={cn("font-mono text-xs", bt.body)}>
-          {address}
-        </DropdownMenuItem>
+        <DropdownMenuItem className={cn('font-mono text-xs', bt.body)}>{address}</DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Button
             variant="destructive"
             className={cn(
-              "w-full border-4 border-red-500 bg-red-500 text-white",
-              "hover:bg-red-600 font-brutal font-black uppercase"
+              'w-full border-4 border-red-500 bg-red-500 text-white',
+              'hover:bg-red-600 font-brutal font-black uppercase'
             )}
             onClick={() => {
               disconnect();
-              router.push("/");
+              router.push('/');
             }}
           >
             DISCONNECT
@@ -116,4 +108,4 @@ function UserMenuClient() {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-} 
+}

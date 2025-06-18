@@ -1,6 +1,6 @@
+import type { Portfolio, PortfolioAsset } from '@valkyrie/common';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import type { Portfolio, PortfolioAsset } from '@valkyrie/common/types';
 
 interface PortfolioState {
   portfolios: Portfolio[];
@@ -40,9 +40,11 @@ export const usePortfolioStore = create<PortfolioStore>()(
             portfolios,
             lastUpdated: new Date(),
             // Auto-select default portfolio if none selected
-            selectedPortfolioId: get().selectedPortfolioId || 
-              portfolios.find(p => p.isDefault)?.id || 
-              portfolios[0]?.id || null,
+            selectedPortfolioId:
+              get().selectedPortfolioId ||
+              portfolios.find((p) => p.isDefault)?.id ||
+              portfolios[0]?.id ||
+              null,
           },
           false,
           'portfolio/setPortfolios'
@@ -61,9 +63,7 @@ export const usePortfolioStore = create<PortfolioStore>()(
       updatePortfolio: (id, updates) =>
         set(
           (state) => ({
-            portfolios: state.portfolios.map((p) =>
-              p.id === id ? { ...p, ...updates } : p
-            ),
+            portfolios: state.portfolios.map((p) => (p.id === id ? { ...p, ...updates } : p)),
             lastUpdated: new Date(),
           }),
           false,
@@ -76,9 +76,10 @@ export const usePortfolioStore = create<PortfolioStore>()(
             const newPortfolios = state.portfolios.filter((p) => p.id !== id);
             return {
               portfolios: newPortfolios,
-              selectedPortfolioId: state.selectedPortfolioId === id 
-                ? newPortfolios[0]?.id || null 
-                : state.selectedPortfolioId,
+              selectedPortfolioId:
+                state.selectedPortfolioId === id
+                  ? newPortfolios[0]?.id || null
+                  : state.selectedPortfolioId,
               lastUpdated: new Date(),
             };
           },
@@ -86,26 +87,14 @@ export const usePortfolioStore = create<PortfolioStore>()(
           'portfolio/removePortfolio'
         ),
 
-      selectPortfolio: (id) =>
-        set(
-          { selectedPortfolioId: id },
-          false,
-          'portfolio/selectPortfolio'
-        ),
+      selectPortfolio: (id) => set({ selectedPortfolioId: id }, false, 'portfolio/selectPortfolio'),
 
-      setLoading: (loading) =>
-        set(
-          { isLoading: loading },
-          false,
-          'portfolio/setLoading'
-        ),
+      setLoading: (loading) => set({ isLoading: loading }, false, 'portfolio/setLoading'),
 
       updatePortfolioAssets: (portfolioId, assets) =>
         set(
           (state) => ({
-            portfolios: state.portfolios.map((p) =>
-              p.id === portfolioId ? { ...p, assets } : p
-            ),
+            portfolios: state.portfolios.map((p) => (p.id === portfolioId ? { ...p, assets } : p)),
             lastUpdated: new Date(),
           }),
           false,
@@ -137,4 +126,4 @@ export const usePortfolioStore = create<PortfolioStore>()(
     }),
     { name: 'portfolio-store' }
   )
-); 
+);

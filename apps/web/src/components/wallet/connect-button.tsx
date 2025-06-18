@@ -1,29 +1,32 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
-import { Wallet } from 'lucide-react'
+import { Wallet } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 export function ConnectButton() {
-    const [mounted, setMounted] = useState(false)
+  const [mounted, setMounted] = useState(false);
 
-    useEffect(() => {
-        setMounted(true)
-    }, [])
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-    if (!mounted) {
-        return (
-            <Button variant="default" className="flex items-center gap-2 font-brutal font-black uppercase tracking-widest shadow-brutal border-4 border-black">
-                <Wallet className="w-5 h-5" />
-                CONNECT
-            </Button>
-        )
-    }
-
-    // Use Reown AppKit's built-in button with custom styling
+  if (!mounted) {
     return (
-        <div className="brutal-wallet-wrapper">
-            <style jsx global>{`
+      <Button
+        variant="default"
+        className="flex items-center gap-2 font-brutal font-black uppercase tracking-widest shadow-brutal border-4 border-black"
+      >
+        <Wallet className="w-5 h-5" />
+        CONNECT
+      </Button>
+    );
+  }
+
+  // Use Reown AppKit's built-in button with custom styling
+  return (
+    <div className="brutal-wallet-wrapper">
+      <style jsx global>{`
                 w3m-button {
                     --w3m-color-mix: #000000;
                     --w3m-color-mix-strength: 100%;
@@ -71,7 +74,7 @@ export function ConnectButton() {
                     box-shadow: 4px 4px 0px 0px #000000 !important;
                 }
             `}</style>
-            <w3m-button />
-        </div>
-    )
-} 
+      <w3m-button />
+    </div>
+  );
+}

@@ -1,5 +1,5 @@
-import { useReadContract, useAccount } from 'wagmi'
-import { formatUnits } from 'viem'
+import { formatUnits } from 'viem';
+import { useAccount, useReadContract } from 'wagmi';
 
 const ERC20_ABI = [
   {
@@ -23,10 +23,10 @@ const ERC20_ABI = [
     stateMutability: 'view',
     type: 'function',
   },
-] as const
+] as const;
 
 export function useTokenBalance(tokenAddress?: `0x${string}`) {
-  const { address } = useAccount()
+  const { address } = useAccount();
 
   const { data: balance } = useReadContract({
     address: tokenAddress,
@@ -34,25 +34,23 @@ export function useTokenBalance(tokenAddress?: `0x${string}`) {
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
     query: { enabled: !!address && !!tokenAddress },
-  })
+  });
 
   const { data: decimals } = useReadContract({
     address: tokenAddress,
     abi: ERC20_ABI,
     functionName: 'decimals',
     query: { enabled: !!tokenAddress },
-  })
+  });
 
   const { data: symbol } = useReadContract({
     address: tokenAddress,
     abi: ERC20_ABI,
     functionName: 'symbol',
     query: { enabled: !!tokenAddress },
-  })
+  });
 
-  const formattedBalance = balance && decimals 
-    ? formatUnits(balance, decimals)
-    : '0'
+  const formattedBalance = balance && decimals ? formatUnits(balance, decimals) : '0';
 
   return {
     balance: balance || BigInt(0),
@@ -60,7 +58,7 @@ export function useTokenBalance(tokenAddress?: `0x${string}`) {
     decimals: decimals || 18,
     symbol: symbol || 'TOKEN',
     isLoading: !balance && !!address && !!tokenAddress,
-  }
+  };
 }
 
 // Multi-chain token addresses
@@ -104,13 +102,13 @@ export const TOKENS_BY_CHAIN = {
     DAI: '0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb' as `0x${string}`,
     CBETH: '0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22' as `0x${string}`,
   },
-} as const
+} as const;
 
 // Legacy export for backwards compatibility
-export const COMMON_TOKENS = TOKENS_BY_CHAIN[1]
+export const COMMON_TOKENS = TOKENS_BY_CHAIN[1];
 
 // Helper function to get token address for current chain
 export function getTokenAddress(chainId: number, symbol: string): `0x${string}` | undefined {
-  const chainTokens = TOKENS_BY_CHAIN[chainId as keyof typeof TOKENS_BY_CHAIN]
-  return chainTokens?.[symbol as keyof typeof chainTokens]
+  const chainTokens = TOKENS_BY_CHAIN[chainId as keyof typeof TOKENS_BY_CHAIN];
+  return chainTokens?.[symbol as keyof typeof chainTokens];
 }

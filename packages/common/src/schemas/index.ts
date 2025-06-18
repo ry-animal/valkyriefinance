@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 // Base Schemas
 export const baseEntitySchema = z.object({
@@ -23,9 +23,9 @@ export const userSchema = z.object({
 
 // Portfolio Schemas
 export const portfolioCreateSchema = z.object({
-  name: z.string().min(1, "Portfolio name is required"),
+  name: z.string().min(1, 'Portfolio name is required'),
   description: z.string().optional(),
-  currency: z.string().default("USD"),
+  currency: z.string().default('USD'),
   isDefault: z.boolean().default(false),
 });
 
@@ -41,7 +41,7 @@ export const portfolioSchema = userOwnedEntitySchema.extend({
 
 export const portfolioAssetCreateSchema = z.object({
   portfolioId: z.string().uuid(),
-  tokenAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid token address"),
+  tokenAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid token address'),
   tokenSymbol: z.string().min(1),
   tokenDecimals: z.number().min(0).max(18),
   chainId: z.number().positive(),
@@ -51,16 +51,19 @@ export const portfolioAssetCreateSchema = z.object({
 
 // Transaction Schemas
 export const transactionTypeSchema = z.enum([
-  'swap', 'deposit', 'withdrawal', 'bridge', 
-  'approve', 'liquidity_add', 'liquidity_remove'
+  'swap',
+  'deposit',
+  'withdrawal',
+  'bridge',
+  'approve',
+  'liquidity_add',
+  'liquidity_remove',
 ]);
 
-export const transactionStatusSchema = z.enum([
-  'pending', 'confirmed', 'failed', 'cancelled'
-]);
+export const transactionStatusSchema = z.enum(['pending', 'confirmed', 'failed', 'cancelled']);
 
 export const transactionCreateSchema = z.object({
-  hash: z.string().regex(/^0x[a-fA-F0-9]{64}$/, "Invalid transaction hash"),
+  hash: z.string().regex(/^0x[a-fA-F0-9]{64}$/, 'Invalid transaction hash'),
   type: transactionTypeSchema,
   status: transactionStatusSchema.default('pending'),
   chainId: z.number().positive(),
@@ -68,24 +71,34 @@ export const transactionCreateSchema = z.object({
   gasUsed: z.string().optional(),
   gasPrice: z.string().optional(),
   value: z.string().optional(),
-  fromAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid from address"),
-  toAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid to address").optional(),
-  tokenAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid token address").optional(),
+  fromAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid from address'),
+  toAddress: z
+    .string()
+    .regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid to address')
+    .optional(),
+  tokenAddress: z
+    .string()
+    .regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid token address')
+    .optional(),
   tokenAmount: z.string().optional(),
   metadata: z.record(z.unknown()).optional(),
 });
 
 // Vault Operation Schemas
 export const vaultOperationTypeSchema = z.enum([
-  'deposit', 'withdrawal', 'rebalance', 'harvest', 'emergency_exit'
+  'deposit',
+  'withdrawal',
+  'rebalance',
+  'harvest',
+  'emergency_exit',
 ]);
 
 export const vaultOperationCreateSchema = z.object({
-  vaultAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid vault address"),
+  vaultAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid vault address'),
   operationType: vaultOperationTypeSchema,
   assetAmount: z.string(),
   shareAmount: z.string(),
-  transactionHash: z.string().regex(/^0x[a-fA-F0-9]{64}$/, "Invalid transaction hash"),
+  transactionHash: z.string().regex(/^0x[a-fA-F0-9]{64}$/, 'Invalid transaction hash'),
   blockNumber: z.number().positive(),
   sharePrice: z.string().optional(),
   gasUsed: z.string().optional(),
@@ -114,7 +127,7 @@ export const chainConfigSchema = z.object({
 });
 
 export const tokenInfoSchema = z.object({
-  address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid token address"),
+  address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid token address'),
   symbol: z.string().min(1),
   name: z.string().min(1),
   decimals: z.number().min(0).max(18),
@@ -164,4 +177,4 @@ export const bridgeSwapSchema = bridgeQuoteSchema.extend({
   fromAddress: z.string(),
 });
 
-export type BridgeSwapInput = z.infer<typeof bridgeSwapSchema>; 
+export type BridgeSwapInput = z.infer<typeof bridgeSwapSchema>;

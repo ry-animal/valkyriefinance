@@ -1,34 +1,45 @@
 {
-  "name": "valkyriefinance",
+  "name": "valkyrie-finance",
+  "version": "1.0.0",
+  "description": "A modern DeFi platform with AI-driven yield optimization",
   "private": true,
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo dev",
-    "dev:apps": "turbo -F web -F server dev",
-    "build": "turbo build",
-    "build:web": "turbo -F web build",
-    "prepare:deploy": "node scripts/prepare-npm-deploy.js",
-    "check-types": "turbo check-types",
-    "test": "turbo test",
-    "test:watch": "turbo test:watch",
-    "lint": "turbo lint",
-    "dev:native": "turbo -F native dev",
-    "dev:web": "turbo -F web dev",
-    "dev:server": "turbo -F server dev",
-    "db:push": "turbo -F server db:push",
-    "db:studio": "turbo -F server db:studio",
-    "db:generate": "turbo -F server db:generate",
-    "db:migrate": "turbo -F server db:migrate"
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "check-types": "turbo run check-types",
+    "clean": "turbo run clean",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint:biome": "biome lint --write .",
+    "lint:biome:check": "biome lint .",
+    "check": "biome check --write .",
+    "check:ci": "biome ci .",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo run build --filter=./packages/* && changeset publish",
+    "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
     "@reown/appkit": "^1.7.9",
     "@reown/appkit-adapter-wagmi": "^1.7.9"
   },
   "devDependencies": {
-    "turbo": "^2.4.2"
+    "@biomejs/biome": "2.0.0",
+    "@changesets/cli": "^2.27.9",
+    "@turbo/gen": "^1.13.4",
+    "turbo": "^1.13.4",
+    "typescript": "^5.4.5"
   },
-  "packageManager": "bun@1.2.15"
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  },
+  "packageManager": "pnpm@8.15.6"
 }

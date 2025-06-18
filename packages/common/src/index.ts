@@ -1,24 +1,22 @@
 // Export all types
-export * from './types';
 
 // Export all schemas
 export * from './schemas';
-
+export * from './types';
 // Export utilities (excluding AppError to avoid conflict)
+// Re-export AppError from utils specifically
 export {
-  logger,
+  AppError,
   createError,
   formatters,
-  validators,
-  isString,
+  isArray,
   isNumber,
   isObject,
-  isArray,
-  sleep,
-  retry,
-  web3Utils,
+  isString,
   type LogContext,
+  logger,
+  retry,
+  sleep,
+  validators,
+  web3Utils,
 } from './utils';
-
-// Re-export AppError from utils specifically
-export { AppError } from './utils'; 

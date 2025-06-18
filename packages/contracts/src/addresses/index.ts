@@ -58,33 +58,38 @@ export const CONTRACT_ADDRESSES = {
     mockUSDC: '0x5FbDB2315678afecb367f032d93F642f64180aa3' as `0x${string}`,
     valkyrieStrategy: '0x...' as `0x${string}`,
   },
-} as const
+} as const;
 
-export type ContractName = 'valkyrieToken' | 'valkyrieVault' | 'uniswapV4PoolManager' | 'governance' | 'valkyrieStrategy'
-export type SupportedChainId = keyof typeof CONTRACT_ADDRESSES
+export type ContractName =
+  | 'valkyrieToken'
+  | 'valkyrieVault'
+  | 'uniswapV4PoolManager'
+  | 'governance'
+  | 'valkyrieStrategy';
+export type SupportedChainId = keyof typeof CONTRACT_ADDRESSES;
 
 // Helper function to get contract address
 export function getContractAddress(
   chainId: number,
   contractName: ContractName
 ): `0x${string}` | undefined {
-  return CONTRACT_ADDRESSES[chainId as SupportedChainId]?.[contractName]
+  return CONTRACT_ADDRESSES[chainId as SupportedChainId]?.[contractName];
 }
 
 // Helper function to check if chain is supported
 export function isSupportedChain(chainId: number): chainId is SupportedChainId {
-  return chainId in CONTRACT_ADDRESSES
+  return chainId in CONTRACT_ADDRESSES;
 }
 
 // Get all supported chain IDs
-export const SUPPORTED_CHAIN_IDS = Object.keys(CONTRACT_ADDRESSES).map(id => parseInt(id))
+export const SUPPORTED_CHAIN_IDS = Object.keys(CONTRACT_ADDRESSES).map((id) => parseInt(id));
 
 // Contract deployment blocks (for event filtering)
 export const DEPLOYMENT_BLOCKS = {
   1: 19_000_000, // Ethereum mainnet
   42161: 170_000_000, // Arbitrum
-  10: 110_000_000, // Optimism  
+  10: 110_000_000, // Optimism
   137: 50_000_000, // Polygon
   11155111: 5_000_000, // Sepolia
   84532: 1_000_000, // Base Sepolia
-} as const 
+} as const;

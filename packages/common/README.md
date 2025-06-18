@@ -68,24 +68,28 @@ import type { VaultDepositInput } from "@valkyrie/common/types";
 
 ### Development
 
-```bash
-# From repository root
-cd packages/common
+### Prerequisites
 
+- Node.js 18+
+- pnpm
+
+### Setup
+
+```bash
 # Install dependencies
-bun install
+pnpm install
 
 # Build the package
-bun run build
+pnpm run build
 
 # Run tests
-bun run test
+pnpm run test
 
 # Type checking
-bun run type-check
+pnpm run type-check
 
 # Linting
-bun run lint
+pnpm run lint
 ```
 
 ## Types
@@ -485,7 +489,10 @@ export function calculateApy(
 ```typescript
 // utils/errors.ts
 export class ValidationError extends Error {
-  constructor(message: string, public field?: string) {
+  constructor(
+    message: string,
+    public field?: string
+  ) {
     super(message);
     this.name = "ValidationError";
   }
@@ -610,24 +617,24 @@ export function getContractAddress(
 
 ```bash
 # Build the package
-bun run build
+pnpm run build
 
 # Watch mode for development
-bun run dev
+pnpm run dev
 
 # Run tests
-bun run test
-bun run test:watch
+pnpm run test
+pnpm run test:watch
 
 # Type checking
-bun run type-check
+pnpm run type-check
 
 # Linting
-bun run lint
-bun run lint:fix
+pnpm run lint
+pnpm run lint:fix
 
 # Clean build artifacts
-bun run clean
+pnpm run clean
 ```
 
 ## Testing

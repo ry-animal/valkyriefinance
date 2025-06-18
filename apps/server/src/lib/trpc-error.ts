@@ -1,11 +1,11 @@
 import { TRPCError } from '@trpc/server';
-import { logger } from '@valkyrie/common/utils';
+import { logger } from '@valkyrie/common';
 
-export type TRPCErrorCode = 
-  | 'UNAUTHORIZED' 
-  | 'FORBIDDEN' 
-  | 'NOT_FOUND' 
-  | 'BAD_REQUEST' 
+export type TRPCErrorCode =
+  | 'UNAUTHORIZED'
+  | 'FORBIDDEN'
+  | 'NOT_FOUND'
+  | 'BAD_REQUEST'
   | 'INTERNAL_SERVER_ERROR'
   | 'CONFLICT'
   | 'TOO_MANY_REQUESTS'
@@ -31,42 +31,32 @@ export const createTRPCError = (
 
 export const handleDatabaseError = (error: unknown, context?: Record<string, any>) => {
   logger.error('Database error occurred', error instanceof Error ? error : undefined, context);
-  
+
   if (error instanceof Error) {
     // PostgreSQL specific error codes
     if ('code' in error) {
       switch (error.code) {
         case '23505': // Unique violation
           return createTRPCError(
-            'CONFLICT', 
+            'CONFLICT',
             'A resource with this information already exists',
             error,
             context
           );
         case '23503': // Foreign key violation
           return createTRPCError(
-            'BAD_REQUEST', 
+            'BAD_REQUEST',
             'Referenced resource does not exist',
             error,
             context
           );
         case '23502': // Not null violation
-          return createTRPCError(
-            'BAD_REQUEST', 
-            'Required information is missing',
-            error,
-            context
-          );
+          return createTRPCError('BAD_REQUEST', 'Required information is missing', error, context);
         case '22001': // String too long
-          return createTRPCError(
-            'BAD_REQUEST', 
-            'Input data is too long',
-            error,
-            context
-          );
+          return createTRPCError('BAD_REQUEST', 'Input data is too long', error, context);
         default:
           return createTRPCError(
-            'INTERNAL_SERVER_ERROR', 
+            'INTERNAL_SERVER_ERROR',
             'Database operation failed',
             error,
             context
@@ -74,9 +64,9 @@ export const handleDatabaseError = (error: unknown, context?: Record<string, any
       }
     }
   }
-  
+
   return createTRPCError(
-    'INTERNAL_SERVER_ERROR', 
+    'INTERNAL_SERVER_ERROR',
     'An unexpected database error occurred',
     error,
     context
@@ -109,4 +99,4 @@ export const handleExternalServiceError = (service: string, cause?: unknown) => 
     `External service (${service}) is currently unavailable`,
     cause
   );
-}; 
+};

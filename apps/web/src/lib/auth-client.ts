@@ -14,15 +14,18 @@ export interface SessionData {
 // Hook to get session data compatible with the user menu
 export function useSession() {
   const { user, isAuthenticated, isLoading } = useAuthStore();
-  
+
   const sessionData: SessionData = {
-    user: user ? {
-      id: user.id,
-      name: user.ensName || `${user.walletAddress.slice(0, 6)}...${user.walletAddress.slice(-4)}`,
-      email: undefined, // Wallet auth doesn't have email
-      image: undefined, // Could add avatar generation based on wallet address
-      walletAddress: user.walletAddress,
-    } : null
+    user: user
+      ? {
+          id: user.id,
+          name:
+            user.ensName || `${user.walletAddress.slice(0, 6)}...${user.walletAddress.slice(-4)}`,
+          email: undefined, // Wallet auth doesn't have email
+          image: undefined, // Could add avatar generation based on wallet address
+          walletAddress: user.walletAddress,
+        }
+      : null,
   };
 
   return {
@@ -35,7 +38,7 @@ export function useSession() {
 export function signOut() {
   const { disconnectWallet } = useAuthStore.getState();
   disconnectWallet();
-  
+
   // Optionally redirect to home page
   if (typeof window !== 'undefined') {
     window.location.href = '/';
@@ -46,4 +49,4 @@ export function signOut() {
 export function signIn(user: WalletUser) {
   const { connectWallet } = useAuthStore.getState();
   connectWallet(user);
-} 
+}

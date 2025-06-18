@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { PageHeader } from '@/components/ui/layout';
-import { MarketIndicators } from './_components/market-indicators';
-import { TokenAnalysis } from './_components/token-analysis';
-import { RiskAssessment } from './_components/risk-assessment';
-import { PortfolioOptimization } from './_components/portfolio-optimization';
 import { ClientWalletGuard } from '@/components/wallet/client-wallet-guard';
+import { MarketIndicators } from './_components/market-indicators';
+import { PortfolioOptimization } from './_components/portfolio-optimization';
+import { RiskAssessment } from './_components/risk-assessment';
+import { TokenAnalysis } from './_components/token-analysis';
 
 // TODO: Create and import these components
 // import { PortfolioOptimization } from './_components/portfolio-optimization';
@@ -38,4 +38,4 @@ export default function AIAnalyticsPage() {
       </div>
     </ClientWalletGuard>
   );
-} 
+}

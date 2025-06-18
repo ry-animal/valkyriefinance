@@ -48,20 +48,16 @@ export interface PortfolioAsset extends BaseEntity {
 }
 
 // Transaction Types
-export type TransactionType = 
-  | 'swap' 
-  | 'deposit' 
-  | 'withdrawal' 
-  | 'bridge' 
-  | 'approve' 
-  | 'liquidity_add' 
+export type TransactionType =
+  | 'swap'
+  | 'deposit'
+  | 'withdrawal'
+  | 'bridge'
+  | 'approve'
+  | 'liquidity_add'
   | 'liquidity_remove';
 
-export type TransactionStatus = 
-  | 'pending' 
-  | 'confirmed' 
-  | 'failed' 
-  | 'cancelled';
+export type TransactionStatus = 'pending' | 'confirmed' | 'failed' | 'cancelled';
 
 export interface Transaction extends UserOwnedEntity {
   hash: string;
@@ -80,11 +76,11 @@ export interface Transaction extends UserOwnedEntity {
 }
 
 // Vault Types
-export type VaultOperationType = 
-  | 'deposit' 
-  | 'withdrawal' 
-  | 'rebalance' 
-  | 'harvest' 
+export type VaultOperationType =
+  | 'deposit'
+  | 'withdrawal'
+  | 'rebalance'
+  | 'harvest'
   | 'emergency_exit';
 
 export interface VaultOperation extends UserOwnedEntity {
@@ -143,4 +139,4 @@ export interface AppError {
   code?: string;
   statusCode?: number;
   validation?: ValidationError[];
-} 
+}

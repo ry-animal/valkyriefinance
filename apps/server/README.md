@@ -44,9 +44,9 @@ apps/server/
 
 ### Prerequisites
 
-- Node.js 18+
-- PostgreSQL database
-- Bun (recommended package manager)
+- Node.js 18+ (recommended: use nvm)
+- PostgreSQL 14+ (or Docker for local development)
+- pnpm (recommended package manager)
 
 ### Installation
 
@@ -55,7 +55,7 @@ apps/server/
 cd apps/server
 
 # Install dependencies (or run from root)
-bun install
+pnpm install
 
 # Set up environment variables
 cp .env.example .env.local
@@ -68,11 +68,11 @@ BETTER_AUTH_URL=http://localhost:3000
 CORS_ORIGIN=http://localhost:3001
 
 # Set up database
-bun run db:push
-bun run db:seed
+pnpm run db:push
+pnpm run db:seed
 
 # Start development server
-bun run dev
+pnpm run dev
 ```
 
 The server will be available at: http://localhost:3000
@@ -133,16 +133,16 @@ const { data: recommendations } = trpc.ai.getRecommendations.useQuery();
 
 ```bash
 # Generate new migration
-bun run db:generate
+pnpm run db:generate
 
 # Apply migrations
-bun run db:migrate
+pnpm run db:migrate
 
 # Push schema changes (development)
-bun run db:push
+pnpm run db:push
 
 # Open database studio
-bun run db:studio
+pnpm run db:studio
 ```
 
 ## Development
@@ -151,26 +151,26 @@ bun run db:studio
 
 ```bash
 # Development server with hot reload
-bun run dev
+pnpm run dev
 
 # Database operations
-bun run db:generate    # Generate migration from schema changes
-bun run db:migrate     # Run pending migrations
-bun run db:push        # Push schema directly to database
-bun run db:seed        # Seed database with sample data
-bun run db:studio      # Open Drizzle Studio
+pnpm run db:generate    # Generate migration from schema changes
+pnpm run db:migrate     # Run pending migrations
+pnpm run db:push        # Push schema directly to database
+pnpm run db:seed        # Seed database with sample data
+pnpm run db:studio      # Open Drizzle Studio
 
 # Testing
-bun run test           # Run unit tests
-bun run test:watch     # Run tests in watch mode
+pnpm run test           # Run unit tests
+pnpm run test:watch     # Run tests in watch mode
 
 # Building
-bun run build          # Build for production
-bun run start          # Start production server
+pnpm run build          # Build for production
+pnpm run start          # Start production server
 
 # Code quality
-bun run lint           # Run ESLint
-bun run type-check     # TypeScript type checking
+pnpm run lint           # Run ESLint
+pnpm run type-check     # TypeScript type checking
 ```
 
 ### Adding New Endpoints
@@ -234,13 +234,13 @@ export const portfolios = pgTable("portfolios", {
 2. **Generate Migration**:
 
 ```bash
-bun run db:generate
+pnpm run db:generate
 ```
 
 3. **Apply Migration**:
 
 ```bash
-bun run db:migrate
+pnpm run db:migrate
 ```
 
 ## Environment Variables
@@ -310,20 +310,20 @@ The server includes health check endpoints:
 
 ```bash
 # Run all tests
-bun run test
+pnpm run test
 
 # Run specific test file
-bun run test auth.test.ts
+pnpm run test auth.test.ts
 
 # Run with coverage
-bun run test --coverage
+pnpm run test --coverage
 ```
 
 ### Integration Tests
 
 ```bash
 # Test with real database
-bun run test:integration
+pnpm run test:integration
 ```
 
 ## API Security
@@ -350,8 +350,8 @@ bun run test:integration
    - Check CORS_ORIGIN matches frontend URL
 
 3. **Type Errors**:
-   - Run `bun run type-check` to identify issues
-   - Ensure shared packages are built: `cd ../../packages/common && bun run build`
+   - Run `pnpm run type-check` to identify issues
+   - Ensure shared packages are built: `cd ../../packages/common && pnpm run build`
 
 ## Related Documentation
 

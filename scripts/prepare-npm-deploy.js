@@ -18,7 +18,7 @@ const contractsPackageJson = JSON.parse(fs.readFileSync('packages/contracts/pack
 
 // Replace workspace dependencies with file paths
 if (webPackageJson.dependencies) {
-  Object.keys(webPackageJson.dependencies).forEach(dep => {
+  Object.keys(webPackageJson.dependencies).forEach((dep) => {
     if (webPackageJson.dependencies[dep] === 'workspace:*') {
       if (dep === '@valkyrie/common') {
         webPackageJson.dependencies[dep] = 'file:../../packages/common';
@@ -33,4 +33,4 @@ if (webPackageJson.dependencies) {
 fs.writeFileSync(webPackageJsonPath, JSON.stringify(webPackageJson, null, 2));
 
 console.log('✅ Prepared package.json for npm deployment');
-console.log('📦 Workspace dependencies converted to file: paths'); 
+console.log('📦 Workspace dependencies converted to file: paths');

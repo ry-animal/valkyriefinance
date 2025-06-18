@@ -22,13 +22,13 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    
+
     /* Take screenshot on failure */
     screenshot: 'only-on-failure',
-    
+
     /* Increase timeout for actions to handle slower navigation */
     actionTimeout: 10000,
-    
+
     /* Wait for navigation to complete */
     navigationTimeout: 15000,
   },
@@ -44,14 +44,16 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: [
     {
-      command: 'cd ../server && NODE_ENV=test DATABASE_URL="postgresql://test:test@localhost:5432/test_db" BETTER_AUTH_SECRET="test-secret-key-for-testing-minimum-32-chars" BETTER_AUTH_URL="http://localhost:3000" CORS_ORIGIN="http://localhost:3001" bun run dev',
+      command:
+        'POSTGRES_URL="postgres://postgres:postgres@localhost:5432/postgres" BETTER_AUTH_SECRET="test-secret" BETTER_AUTH_URL="http://localhost:3000" CORS_ORIGIN="http://localhost:3001" pnpm run dev',
       port: 3000,
-      reuseExistingServer: !process.env.CI,
+      cwd: '../server',
     },
     {
-      command: 'NODE_ENV=test NEXT_PUBLIC_SERVER_URL="http://localhost:3000" NEXT_PUBLIC_DEFAULT_CHAIN="1" NEXT_PUBLIC_ENABLE_TESTNETS="true" NEXT_PUBLIC_ENABLE_AI_CHAT="true" NEXT_PUBLIC_ENABLE_WEB3="false" bun run dev',
+      command:
+        'NEXT_PUBLIC_SERVER_URL="http://localhost:3000" NEXT_PUBLIC_ENABLE_AI_CHAT="true" NEXT_PUBLIC_ENABLE_WEB3="false" pnpm run dev',
       port: 3001,
-      reuseExistingServer: !process.env.CI,
+      cwd: './',
     },
   ],
-}); 
+});

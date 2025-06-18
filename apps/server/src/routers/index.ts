@@ -1,18 +1,15 @@
-import {
-  publicProcedure,
-  router,
-} from "../lib/trpc";
-import { portfolioRouter } from "./portfolio";
-import { vaultRouter } from "./vault";
-import { analyticsRouter } from "./analytics";
-import { healthRouter } from "./health";
-import { authRouter } from "./auth";
-import { aiRouter } from "./ai";
-import { bridgeRouter } from "./bridge";
+import { publicProcedure, router } from '../lib/trpc';
+import { aiRouter } from './ai';
+import { analyticsRouter } from './analytics';
+import { authRouter } from './auth';
+import { bridgeRouter } from './bridge';
+import { healthRouter } from './health';
+import { portfolioRouter } from './portfolio';
+import { vaultRouter } from './vault';
 
 export const appRouter = router({
   healthCheck: publicProcedure.query(() => {
-    return "OK";
+    return 'OK';
   }),
   auth: authRouter,
   health: healthRouter,

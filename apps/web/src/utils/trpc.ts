@@ -2,9 +2,8 @@
 
 import { httpBatchLink } from '@trpc/client';
 import { createTRPCReact } from '@trpc/react-query';
-
-import type { AppRouter } from '../../../server/src/routers';
 import { env } from '@/lib/env';
+import type { AppRouter } from '../../../server/src/routers';
 
 export const trpc = createTRPCReact<AppRouter>();
 
@@ -13,16 +12,15 @@ export const trpc = createTRPCReact<AppRouter>();
 // export type RouterOutputs = inferRouterOutputs<AppRouter>;
 
 export const TrpcClient = trpc.createClient({
-    links: [
-        httpBatchLink({
-            url: `${env.NEXT_PUBLIC_SERVER_URL}/trpc`,
-            fetch(url, options) {
-                return fetch(url, {
-                    ...options,
-                    credentials: 'include',
-                });
-            },
-        }),
-    ],
+  links: [
+    httpBatchLink({
+      url: `${env.NEXT_PUBLIC_SERVER_URL}/trpc`,
+      fetch(url, options) {
+        return fetch(url, {
+          ...options,
+          credentials: 'include',
+        });
+      },
+    }),
+  ],
 });
-

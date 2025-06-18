@@ -7,6 +7,11 @@
     "build": "next build",
     "start": "next start",
     "check-types": "tsc --noEmit",
+    "lint": "biome lint --write .",
+    "lint:check": "biome lint .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "check": "biome check --write .",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
@@ -25,11 +30,11 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^22.10.2",
     "@types/react": "^19",
-    "typescript": "^5",
-    "@types/bun": "^1.2.6",
     "drizzle-kit": "^0.30.5",
-    "@types/pg": "^8.11.11"
+    "@types/pg": "^8.11.11",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
   }
 }

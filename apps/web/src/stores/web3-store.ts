@@ -12,7 +12,18 @@ export interface TokenBalance {
 
 export interface Transaction {
   hash: string;
-  type: 'swap' | 'deposit' | 'withdrawal' | 'bridge' | 'approve' | 'vault_deposit' | 'vault_withdraw' | 'token_stake' | 'token_unstake' | 'token_claim' | 'governance_vote';
+  type:
+    | 'swap'
+    | 'deposit'
+    | 'withdrawal'
+    | 'bridge'
+    | 'approve'
+    | 'vault_deposit'
+    | 'vault_withdraw'
+    | 'token_stake'
+    | 'token_unstake'
+    | 'token_claim'
+    | 'governance_vote';
   status: 'pending' | 'confirmed' | 'failed';
   timestamp: Date;
   amount?: string | bigint;
@@ -26,20 +37,20 @@ interface Web3State {
   isConnected: boolean;
   address: string | null;
   chainId: number | null;
-  
+
   // Balances
   nativeBalance: string | null;
   tokenBalances: TokenBalance[];
-  
+
   // Transactions
   pendingTransactions: Transaction[];
   recentTransactions: Transaction[];
-  
+
   // Loading states
   isConnecting: boolean;
   isBalanceLoading: boolean;
   isTransactionLoading: boolean;
-  
+
   // Network status
   isWrongNetwork: boolean;
   supportedChains: number[];
@@ -51,24 +62,24 @@ interface Web3Actions {
   setAddress: (address: string | null) => void;
   setChainId: (chainId: number | null) => void;
   setConnecting: (connecting: boolean) => void;
-  
+
   // Balance actions
   setNativeBalance: (balance: string | null) => void;
   setTokenBalances: (balances: TokenBalance[]) => void;
   updateTokenBalance: (address: string, balance: string) => void;
   setBalanceLoading: (loading: boolean) => void;
-  
+
   // Transaction actions
   addTransaction: (transaction: Omit<Transaction, 'timestamp'>) => void;
   updateTransaction: (hash: string, updates: Partial<Transaction>) => void;
   removeTransaction: (hash: string) => void;
   clearPendingTransactions: () => void;
   setTransactionLoading: (loading: boolean) => void;
-  
+
   // Network actions
   setWrongNetwork: (wrong: boolean) => void;
   setSupportedChains: (chains: number[]) => void;
-  
+
   // Reset actions
   resetWalletState: () => void;
   disconnect: () => void;
@@ -97,53 +108,30 @@ export const useWeb3Store = create<Web3Store>()(
       ...initialState,
 
       // Connection actions
-      setConnected: (connected) =>
-        set(
-          { isConnected: connected },
-          false,
-          'web3/setConnected'
-        ),
+      setConnected: (connected) => set({ isConnected: connected }, false, 'web3/setConnected'),
 
-      setAddress: (address) =>
-        set(
-          { address },
-          false,
-          'web3/setAddress'
-        ),
+      setAddress: (address) => set({ address }, false, 'web3/setAddress'),
 
       setChainId: (chainId) => {
         const { supportedChains } = get();
         set(
-          { 
+          {
             chainId,
-            isWrongNetwork: chainId ? !supportedChains.includes(chainId) : false
+            isWrongNetwork: chainId ? !supportedChains.includes(chainId) : false,
           },
           false,
           'web3/setChainId'
         );
       },
 
-      setConnecting: (connecting) =>
-        set(
-          { isConnecting: connecting },
-          false,
-          'web3/setConnecting'
-        ),
+      setConnecting: (connecting) => set({ isConnecting: connecting }, false, 'web3/setConnecting'),
 
       // Balance actions
       setNativeBalance: (balance) =>
-        set(
-          { nativeBalance: balance },
-          false,
-          'web3/setNativeBalance'
-        ),
+        set({ nativeBalance: balance }, false, 'web3/setNativeBalance'),
 
       setTokenBalances: (balances) =>
-        set(
-          { tokenBalances: balances },
-          false,
-          'web3/setTokenBalances'
-        ),
+        set({ tokenBalances: balances }, false, 'web3/setTokenBalances'),
 
       updateTokenBalance: (address, balance) =>
         set(
@@ -159,11 +147,7 @@ export const useWeb3Store = create<Web3Store>()(
         ),
 
       setBalanceLoading: (loading) =>
-        set(
-          { isBalanceLoading: loading },
-          false,
-          'web3/setBalanceLoading'
-        ),
+        set({ isBalanceLoading: loading }, false, 'web3/setBalanceLoading'),
 
       // Transaction actions
       addTransaction: (transaction) =>
@@ -181,14 +165,12 @@ export const useWeb3Store = create<Web3Store>()(
       updateTransaction: (hash, updates) =>
         set(
           (state) => {
-            const pendingIndex = state.pendingTransactions.findIndex(
-              (tx) => tx.hash === hash
-            );
-            
+            const pendingIndex = state.pendingTransactions.findIndex((tx) => tx.hash === hash);
+
             if (pendingIndex !== -1) {
               const updatedTx = { ...state.pendingTransactions[pendingIndex], ...updates };
               const newPending = [...state.pendingTransactions];
-              
+
               if (updates.status === 'confirmed' || updates.status === 'failed') {
                 // Move to recent transactions
                 newPending.splice(pendingIndex, 1);
@@ -202,18 +184,16 @@ export const useWeb3Store = create<Web3Store>()(
                 return { pendingTransactions: newPending };
               }
             }
-            
+
             // Also check recent transactions
-            const recentIndex = state.recentTransactions.findIndex(
-              (tx) => tx.hash === hash
-            );
-            
+            const recentIndex = state.recentTransactions.findIndex((tx) => tx.hash === hash);
+
             if (recentIndex !== -1) {
               const newRecent = [...state.recentTransactions];
               newRecent[recentIndex] = { ...newRecent[recentIndex], ...updates };
               return { recentTransactions: newRecent };
             }
-            
+
             return state;
           },
           false,
@@ -223,53 +203,27 @@ export const useWeb3Store = create<Web3Store>()(
       removeTransaction: (hash) =>
         set(
           (state) => ({
-            pendingTransactions: state.pendingTransactions.filter(
-              (tx) => tx.hash !== hash
-            ),
-            recentTransactions: state.recentTransactions.filter(
-              (tx) => tx.hash !== hash
-            ),
+            pendingTransactions: state.pendingTransactions.filter((tx) => tx.hash !== hash),
+            recentTransactions: state.recentTransactions.filter((tx) => tx.hash !== hash),
           }),
           false,
           'web3/removeTransaction'
         ),
 
       clearPendingTransactions: () =>
-        set(
-          { pendingTransactions: [] },
-          false,
-          'web3/clearPendingTransactions'
-        ),
+        set({ pendingTransactions: [] }, false, 'web3/clearPendingTransactions'),
 
       setTransactionLoading: (loading) =>
-        set(
-          { isTransactionLoading: loading },
-          false,
-          'web3/setTransactionLoading'
-        ),
+        set({ isTransactionLoading: loading }, false, 'web3/setTransactionLoading'),
 
       // Network actions
-      setWrongNetwork: (wrong) =>
-        set(
-          { isWrongNetwork: wrong },
-          false,
-          'web3/setWrongNetwork'
-        ),
+      setWrongNetwork: (wrong) => set({ isWrongNetwork: wrong }, false, 'web3/setWrongNetwork'),
 
       setSupportedChains: (chains) =>
-        set(
-          { supportedChains: chains },
-          false,
-          'web3/setSupportedChains'
-        ),
+        set({ supportedChains: chains }, false, 'web3/setSupportedChains'),
 
       // Reset actions
-      resetWalletState: () =>
-        set(
-          initialState,
-          false,
-          'web3/resetWalletState'
-        ),
+      resetWalletState: () => set(initialState, false, 'web3/resetWalletState'),
 
       disconnect: () =>
         set(
@@ -302,4 +256,4 @@ export const useChainId = () => useWeb3Store((state) => state.chainId);
 export const useNativeBalance = () => useWeb3Store((state) => state.nativeBalance);
 export const useTokenBalances = () => useWeb3Store((state) => state.tokenBalances);
 export const usePendingTransactions = () => useWeb3Store((state) => state.pendingTransactions);
-export const useIsWrongNetwork = () => useWeb3Store((state) => state.isWrongNetwork); 
+export const useIsWrongNetwork = () => useWeb3Store((state) => state.isWrongNetwork);

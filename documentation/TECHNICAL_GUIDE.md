@@ -407,35 +407,65 @@ test("user can connect wallet and view portfolio", async ({ page }) => {
 
 #### Development Environment
 
+### Prerequisites
+
+- **Node.js 18+**: Runtime environment
+- **pnpm**: Package manager for monorepo management
+- **PostgreSQL 14+**: Database for application data
+- **Git**: Version control
+
+### Quick Setup
+
 ```bash
+# Clone repository
+git clone <repository-url>
+cd valkryie-finance
+
 # Install dependencies
-bun install
+pnpm install
 
-# Start development servers
-bun dev          # Starts both web and server
-bun dev:web      # Frontend only (port 3001)
-bun dev:server   # Backend only (port 3000)
+# Environment setup
+cp apps/server/.env.example apps/server/.env.local
+cp apps/web/.env.example apps/web/.env.local
 
-# Database operations
-bun db:generate  # Generate migrations
-bun db:migrate   # Apply migrations
-bun db:studio    # Open Drizzle Studio
+# Database setup
+cd apps/server
+pnpm run db:push
+pnpm run db:seed
+
+# Start development
+pnpm run dev
 ```
 
-#### Testing Commands
+### Package Scripts
 
 ```bash
-# Smart contracts
-bun test:contracts           # Run Foundry tests
-bun test:contracts:coverage  # With coverage report
+# Development
+pnpm dev                 # Start all applications
+pnpm dev:web            # Start frontend only
+pnpm dev:server         # Start backend only
 
-# Frontend
-bun test:web                # Run Vitest tests
-bun test:web:ui             # With UI dashboard
-bun test:e2e                # Run Playwright tests
+# Building
+pnpm build              # Build all packages
+pnpm build:web          # Build frontend
+pnpm build:server       # Build backend
 
-# All tests
-bun test                    # Run complete test suite
+# Testing
+pnpm test               # Run all tests
+pnpm test:unit          # Unit tests only
+pnpm test:e2e           # End-to-end tests
+pnpm test:watch         # Tests in watch mode
+
+# Code Quality
+pnpm lint               # Lint all packages
+pnpm type-check         # TypeScript type checking
+pnpm format             # Format code with Prettier
+
+# Database Operations
+pnpm db:generate        # Generate migrations
+pnpm db:migrate         # Apply migrations
+pnpm db:push            # Push schema changes
+pnpm db:studio          # Open database studio
 ```
 
 ### Code Quality

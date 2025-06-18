@@ -98,9 +98,9 @@ packages/contracts/
 
 ### Prerequisites
 
-- [Foundry](https://getfoundry.sh/) installed
-- Node.js 18+ for TypeScript integration
-- Git for dependency management
+- Node.js 18+
+- Foundry
+- pnpm
 
 ### Installation
 
@@ -112,7 +112,7 @@ cd packages/contracts
 forge install
 
 # Install Node.js dependencies (for TypeScript integration)
-bun install
+pnpm install
 
 # Build contracts
 forge build

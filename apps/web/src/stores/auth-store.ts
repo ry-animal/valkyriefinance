@@ -47,12 +47,7 @@ export const useAuthStore = create<AuthStore>()(
           'auth/setUser'
         ),
 
-      setLoading: (loading) =>
-        set(
-          { isLoading: loading },
-          false,
-          'auth/setLoading'
-        ),
+      setLoading: (loading) => set({ isLoading: loading }, false, 'auth/setLoading'),
 
       connectWallet: (user) =>
         set(
@@ -79,12 +74,8 @@ export const useAuthStore = create<AuthStore>()(
         ),
 
       setWalletAddress: (address) =>
-        set(
-          { walletAddress: address },
-          false,
-          'auth/setWalletAddress'
-        ),
+        set({ walletAddress: address }, false, 'auth/setWalletAddress'),
     }),
     { name: 'auth-store' }
   )
-); 
+);

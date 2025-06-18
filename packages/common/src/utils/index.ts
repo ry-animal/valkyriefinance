@@ -7,41 +7,49 @@ export interface LogContext {
 
 export const logger = {
   info: (message: string, context?: LogContext) => {
-    console.log(JSON.stringify({
-      level: 'info',
-      message,
-      timestamp: new Date().toISOString(),
-      ...context,
-    }));
-  },
-  
-  error: (message: string, error?: Error, context?: LogContext) => {
-    console.error(JSON.stringify({
-      level: 'error',
-      message,
-      error: error?.stack || error?.message,
-      timestamp: new Date().toISOString(),
-      ...context,
-    }));
-  },
-  
-  warn: (message: string, context?: LogContext) => {
-    console.warn(JSON.stringify({
-      level: 'warn',
-      message,
-      timestamp: new Date().toISOString(),
-      ...context,
-    }));
-  },
-  
-  debug: (message: string, context?: LogContext) => {
-    if (process.env.NODE_ENV === 'development') {
-      console.debug(JSON.stringify({
-        level: 'debug',
+    console.log(
+      JSON.stringify({
+        level: 'info',
         message,
         timestamp: new Date().toISOString(),
         ...context,
-      }));
+      })
+    );
+  },
+
+  error: (message: string, error?: Error, context?: LogContext) => {
+    console.error(
+      JSON.stringify({
+        level: 'error',
+        message,
+        error: error?.stack || error?.message,
+        timestamp: new Date().toISOString(),
+        ...context,
+      })
+    );
+  },
+
+  warn: (message: string, context?: LogContext) => {
+    console.warn(
+      JSON.stringify({
+        level: 'warn',
+        message,
+        timestamp: new Date().toISOString(),
+        ...context,
+      })
+    );
+  },
+
+  debug: (message: string, context?: LogContext) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.debug(
+        JSON.stringify({
+          level: 'debug',
+          message,
+          timestamp: new Date().toISOString(),
+          ...context,
+        })
+      );
     }
   },
 };
@@ -53,8 +61,8 @@ export class AppError extends Error {
   public validation?: Array<{ field: string; message: string; code?: string }>;
 
   constructor(
-    message: string, 
-    statusCode: number = 500, 
+    message: string,
+    statusCode: number = 500,
     code?: string,
     validation?: Array<{ field: string; message: string; code?: string }>
   ) {
@@ -165,7 +173,7 @@ export const isArray = (value: unknown): value is unknown[] => {
 
 // Async utilities
 export const sleep = (ms: number): Promise<void> => {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
 export const retry = async <T>(
@@ -202,4 +210,4 @@ export const web3Utils = {
   isValidChainId: (chainId: number): boolean => {
     return chainId > 0 && Number.isInteger(chainId);
   },
-}; 
+};

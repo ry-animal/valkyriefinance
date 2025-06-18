@@ -1,17 +1,19 @@
+import { eq } from 'drizzle-orm';
 import { z } from 'zod';
-import { publicProcedure, router } from '../lib/trpc';
-import { createTRPCError } from '../lib/trpc-error';
 import { db } from '../db';
 import { user } from '../db/schema/user';
-import { eq } from 'drizzle-orm';
+import { publicProcedure, router } from '../lib/trpc';
+import { createTRPCError } from '../lib/trpc-error';
 
 export const authRouter = router({
   // Create or get user by wallet address
   connectWallet: publicProcedure
-    .input(z.object({
-      walletAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid wallet address'),
-      ensName: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        walletAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid wallet address'),
+        ensName: z.string().optional(),
+      })
+    )
     .mutation(async ({ input }) => {
       try {
         // Check if user already exists
@@ -26,7 +28,7 @@ export const authRouter = router({
           if (input.ensName) {
             await db
               .update(user)
-              .set({ 
+              .set({
                 ensName: input.ensName,
                 updatedAt: new Date(),
               })
@@ -52,9 +54,11 @@ export const authRouter = router({
 
   // Get user by wallet address
   getUserByWallet: publicProcedure
-    .input(z.object({
-      walletAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid wallet address'),
-    }))
+    .input(
+      z.object({
+        walletAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid wallet address'),
+      })
+    )
     .query(async ({ input }) => {
       try {
         const userData = await db
@@ -68,4 +72,4 @@ export const authRouter = router({
         throw createTRPCError('INTERNAL_SERVER_ERROR', 'Failed to get user');
       }
     }),
-}); 
+});
