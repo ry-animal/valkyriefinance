@@ -1,6 +1,6 @@
 'use client';
 
-import { TrendingUp, Vault } from 'lucide-react';
+import { Vault } from 'lucide-react';
 import { VaultDashboard } from '@/components/vault/vault-dashboard';
 import { ClientWalletGuard } from '@/components/wallet/client-wallet-guard';
 

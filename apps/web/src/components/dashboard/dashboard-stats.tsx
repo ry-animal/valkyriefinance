@@ -1,9 +1,9 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { PortfolioStats } from '@/lib/data-access';
 import { DollarSign, Target, TrendingUp, Wallet } from 'lucide-react';
 import { use } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { PortfolioStats } from '@/lib/data-access';
 
 interface DashboardStatsProps {
   dataPromise: Promise<PortfolioStats>;
@@ -35,9 +35,7 @@ export function DashboardStats({ dataPromise }: DashboardStatsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{data.totalYield}</div>
-          <p className="text-xs text-muted-foreground">
-            Annualized percentage yield
-          </p>
+          <p className="text-xs text-muted-foreground">Annualized percentage yield</p>
         </CardContent>
       </Card>
 
@@ -48,9 +46,7 @@ export function DashboardStats({ dataPromise }: DashboardStatsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{data.activePositions}</div>
-          <p className="text-xs text-muted-foreground">
-            Across all protocols
-          </p>
+          <p className="text-xs text-muted-foreground">Across all protocols</p>
         </CardContent>
       </Card>
 
@@ -61,11 +57,9 @@ export function DashboardStats({ dataPromise }: DashboardStatsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{data.pendingRewards}</div>
-          <p className="text-xs text-muted-foreground">
-            Ready to claim
-          </p>
+          <p className="text-xs text-muted-foreground">Ready to claim</p>
         </CardContent>
       </Card>
     </div>
   );
-} 
+}

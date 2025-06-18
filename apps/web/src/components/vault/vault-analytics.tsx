@@ -1,20 +1,8 @@
 'use client';
 
-import {
-  Activity,
-  BarChart3,
-  Brain,
-  Clock,
-  DollarSign,
-  PieChart,
-  Shield,
-  Target,
-  TrendingDown,
-  TrendingUp,
-  Zap,
-} from 'lucide-react';
+import { Brain, DollarSign, Shield, TrendingDown, TrendingUp, Zap } from 'lucide-react';
 import { useState } from 'react';
-import { formatEther, formatUnits } from 'viem';
+import { formatEther } from 'viem';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -72,7 +60,7 @@ const analyticsData = {
 
 export function VaultAnalytics() {
   const [selectedPeriod, setSelectedPeriod] = useState('monthly');
-  const vaultInfo = useVaultInfo();
+  const _vaultInfo = useVaultInfo();
   const userBalance = useVaultBalance();
 
   const currentPerformance =

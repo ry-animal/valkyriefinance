@@ -1,10 +1,10 @@
+import { LayoutDashboard } from 'lucide-react';
+import { Suspense } from 'react';
 import { DashboardStats } from '@/components/dashboard/dashboard-stats';
 import { DashboardStatsLoading } from '@/components/dashboard/dashboard-stats-loading';
 import { VaultDashboard } from '@/components/vault/vault-dashboard';
 import { ClientWalletGuard } from '@/components/wallet/client-wallet-guard';
 import { getPortfolioStats } from '@/lib/data-access';
-import { LayoutDashboard } from 'lucide-react';
-import { Suspense } from 'react';
 
 // This is now a Server Component (no 'use client')
 export default async function DashboardPage() {

@@ -1,7 +1,7 @@
 'use client';
 
-import { Brain, Sparkles } from 'lucide-react';
-import React, { useState } from 'react';
+import { Brain } from 'lucide-react';
+import { useState } from 'react';
 import { BrutalHeadline, BrutalSection, BrutalText } from '@/components/brutalist/layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

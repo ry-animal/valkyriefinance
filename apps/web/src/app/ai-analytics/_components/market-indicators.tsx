@@ -75,14 +75,23 @@ function IndicatorCard({
 }
 
 function MarketIndicatorsSkeleton() {
+  const skeletonItems = [
+    'fear-greed',
+    'market-cap',
+    'btc-dominance',
+    'eth-dominance',
+    'defi-tvl',
+    'volatility',
+  ];
+
   return (
     <Card>
       <CardHeader>
         <Skeleton className="h-7 w-1/2" />
       </CardHeader>
       <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="p-4 bg-muted/50 rounded-lg flex flex-col items-center gap-2">
+        {skeletonItems.map((item) => (
+          <div key={item} className="p-4 bg-muted/50 rounded-lg flex flex-col items-center gap-2">
             <Skeleton className="h-4 w-2/3" />
             <Skeleton className="h-8 w-1/2" />
             <Skeleton className="h-3 w-1/3" />

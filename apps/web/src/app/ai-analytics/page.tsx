@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { PageHeader } from '@/components/ui/layout';
 import { ClientWalletGuard } from '@/components/wallet/client-wallet-guard';
 import { MarketIndicators } from './_components/market-indicators';

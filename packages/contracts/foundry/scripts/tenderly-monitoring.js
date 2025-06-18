@@ -218,7 +218,7 @@ async function generateAlerts(anomalies, context) {
   const { webhook } = context;
 
   for (const anomaly of anomalies) {
-    const alertPayload = {
+    const _alertPayload = {
       type: 'VAULT_ANOMALY',
       severity: anomaly.severity,
       message: anomaly.message,
@@ -228,7 +228,7 @@ async function generateAlerts(anomalies, context) {
     };
 
     // Send to webhook (Discord, Slack, etc.)
-    if (webhook && webhook.url) {
+    if (webhook?.url) {
       try {
         await fetch(webhook.url, {
           method: 'POST',
@@ -260,7 +260,7 @@ async function generateCriticalAlert(alert, context) {
 
   const { webhook } = context;
 
-  if (webhook && webhook.url) {
+  if (webhook?.url) {
     try {
       await fetch(webhook.url, {
         method: 'POST',

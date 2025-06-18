@@ -1,5 +1,7 @@
 'use client';
 
+import { AlertTriangle, BarChart, Bot, ShieldAlert, TrendingUp, Zap } from 'lucide-react';
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,9 +21,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import type { TokenAnalysis } from '@/types/api';
 import { trpc } from '@/utils/trpc';
-import { AlertTriangle, BarChart, Bot, ShieldAlert, TrendingUp, Zap } from 'lucide-react';
-import { useState } from 'react';
 
 // Mock portfolio data
 const MOCK_PORTFOLIO = {
@@ -139,8 +140,8 @@ function OptimizationResult({ data }: { data: OptimizationData }) {
           </CardHeader>
           <CardContent>
             <ul className="list-disc list-inside space-y-1 text-sm">
-              {data.recommendations.map((rec: string, i: number) => (
-                <li key={i}>{rec}</li>
+              {data.recommendations.map((rec: string) => (
+                <li key={rec.substring(0, 20)}>{rec}</li>
               ))}
             </ul>
           </CardContent>
@@ -208,9 +209,9 @@ function OptimizationResult({ data }: { data: OptimizationData }) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.marketAnalysis.tokenAnalysis.map((token: any) => (
-                  <TableRow key={token.token}>
-                    <TableCell className="font-medium">{token.token}</TableCell>
+                {data.marketAnalysis.tokenAnalysis.map((token: TokenAnalysis) => (
+                  <TableRow key={token.symbol || token.token}>
+                    <TableCell className="font-medium">{token.symbol || token.token}</TableCell>
                     <TableCell>
                       <Badge
                         variant="outline"

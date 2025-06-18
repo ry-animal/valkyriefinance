@@ -47,7 +47,7 @@ export const authRouter = router({
           .returning();
 
         return { user: newUser[0], isNewUser: true };
-      } catch (error) {
+      } catch (_error) {
         throw createTRPCError('INTERNAL_SERVER_ERROR', 'Failed to connect wallet');
       }
     }),
@@ -68,7 +68,7 @@ export const authRouter = router({
           .limit(1);
 
         return userData.length > 0 ? userData[0] : null;
-      } catch (error) {
+      } catch (_error) {
         throw createTRPCError('INTERNAL_SERVER_ERROR', 'Failed to get user');
       }
     }),

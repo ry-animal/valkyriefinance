@@ -1,8 +1,8 @@
-import { useWeb3Store } from '@/stores/web3-store';
 import { ERC4626_VAULT_ABI, getContractAddress, VALKYRIE_TOKEN_ABI } from '@valkyrie/contracts';
 import { toast } from 'sonner';
 import { formatEther, formatUnits, parseUnits } from 'viem';
 import { useAccount, useChainId, useReadContract, useWriteContract } from 'wagmi';
+import { useWeb3Store } from '@/stores/web3-store';
 
 // Vault information
 export function useVaultInfo() {

@@ -107,6 +107,41 @@ export type TransactionType =
   | 'governance_propose'
   | 'cross_chain_swap';
 
+// Transaction metadata types for different transaction types
+export interface VaultTransactionMetadata {
+  vaultAddress: Address;
+  sharesMinted?: bigint;
+  sharesBurned?: bigint;
+  underlyingAsset: Address;
+}
+
+export interface StakeTransactionMetadata {
+  stakingContract: Address;
+  rewardsClaimed?: bigint;
+  lockPeriod?: number;
+}
+
+export interface GovernanceTransactionMetadata {
+  proposalId: bigint;
+  voteChoice?: 'for' | 'against' | 'abstain';
+  proposalDescription?: string;
+}
+
+export interface CrossChainTransactionMetadata {
+  bridgeProvider: string;
+  sourceChainId: number;
+  targetChainId: number;
+  bridgeFee: bigint;
+  estimatedTime: number;
+}
+
+export type TransactionMetadata =
+  | VaultTransactionMetadata
+  | StakeTransactionMetadata
+  | GovernanceTransactionMetadata
+  | CrossChainTransactionMetadata
+  | Record<string, string | number | bigint | boolean>;
+
 export interface PlatformTransaction {
   hash: string;
   type: TransactionType;
@@ -119,5 +154,5 @@ export interface PlatformTransaction {
   gasUsed: bigint;
   gasPrice: bigint;
   status: 'pending' | 'success' | 'failed';
-  metadata?: Record<string, any>;
+  metadata?: TransactionMetadata;
 }

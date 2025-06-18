@@ -10,31 +10,143 @@
       "**/build/**",
       "**/.next/**",
       "**/.turbo/**",
-      "**/.vercel/**",
       "**/coverage/**",
+      "**/.vercel/**",
       "**/*.config.js",
       "**/*.config.mjs",
       "pnpm-lock.yaml",
-      "**/.env*"
+      "**/.env*",
+      "**/playwright-report/**",
+      "**/test-results/**"
     ]
   },
-  "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2, "lineWidth": 100 },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100,
+    "lineEnding": "lf"
+  },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": false,
-      "a11y": { "recommended": true },
-      "complexity": { "recommended": true },
-      "correctness": { "noUnusedVariables": "error", "useExhaustiveDependencies": "warn" },
-      "performance": { "recommended": true },
-      "security": { "recommended": true },
-      "style": { "useConst": "error", "useTemplate": "error" },
-      "suspicious": { "noArrayIndexKey": "warn", "noExplicitAny": "warn" }
+      "a11y": {
+        "recommended": true,
+        "useAltText": "error",
+        "useKeyWithClickEvents": "error",
+        "useKeyWithMouseEvents": "error"
+      },
+      "complexity": {
+        "recommended": true,
+        "noBannedTypes": "error",
+        "noExtraBooleanCast": "error",
+        "noUselessCatch": "error"
+      },
+      "correctness": {
+        "recommended": true,
+        "noUnusedVariables": "error",
+        "useExhaustiveDependencies": "warn",
+        "useHookAtTopLevel": "error",
+        "noChildrenProp": "error",
+        "noConstAssign": "error",
+        "noUnreachable": "error",
+        "useJsxKeyInIterable": "error"
+      },
+      "performance": {
+        "recommended": true,
+        "noDelete": "error",
+        "noAccumulatingSpread": "warn"
+      },
+      "security": {
+        "recommended": true,
+        "noDangerouslySetInnerHtml": "warn",
+        "noGlobalEval": "error"
+      },
+      "style": {
+        "recommended": true,
+        "useConst": "error",
+        "useTemplate": "error",
+        "noNegationElse": "error",
+        "useCollapsedElseIf": "error",
+        "useSingleVarDeclarator": "error",
+        "useNodejsImportProtocol": "error"
+      },
+      "suspicious": {
+        "recommended": true,
+        "noArrayIndexKey": "warn",
+        "noExplicitAny": "warn",
+        "noEmptyBlockStatements": "error",
+        "noGlobalIsFinite": "error",
+        "noGlobalIsNan": "error",
+        "noMisleadingInstantiator": "error",
+        "noThenProperty": "error"
+      }
     }
   },
   "javascript": {
-    "formatter": { "trailingCommas": "es5", "semicolons": "always", "quoteStyle": "single" }
+    "formatter": {
+      "trailingCommas": "es5",
+      "semicolons": "always",
+      "quoteStyle": "single",
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "arrowParentheses": "always"
+    },
+    "globals": ["console", "process", "Buffer"]
   },
-  "json": { "parser": { "allowComments": true }, "formatter": { "enabled": true } },
-  "assist": { "enabled": true, "actions": { "source": { "organizeImports": "on" } } }
+  "json": {
+    "parser": { "allowComments": true, "allowTrailingCommas": true },
+    "formatter": { "enabled": true, "trailingCommas": "none" }
+  },
+  "css": {
+    "parser": { "allowWrongLineComments": true },
+    "formatter": { "enabled": true, "indentStyle": "space", "lineWidth": 80 }
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["apps/web/**/*.{ts,tsx,js,jsx}"],
+      "linter": {
+        "rules": {
+          "a11y": { "recommended": true },
+          "correctness": {
+            "useExhaustiveDependencies": "error",
+            "useHookAtTopLevel": "error"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["apps/server/**/*.{ts,js}"],
+      "linter": {
+        "rules": {
+          "security": { "recommended": true },
+          "performance": { "recommended": true },
+          "suspicious": { "noConsole": "off" }
+        }
+      }
+    },
+    {
+      "includes": ["packages/**/*.{ts,tsx,js,jsx}"],
+      "linter": {
+        "rules": {
+          "style": { "useConst": "error" },
+          "correctness": { "noUnusedVariables": "error" }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.config.{js,ts,mjs}"],
+      "linter": { "enabled": false },
+      "formatter": { "enabled": false }
+    }
+  ]
 }

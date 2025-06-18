@@ -2,7 +2,11 @@
 
 import { createContext, type ReactNode, useContext, useRef } from 'react';
 import { type StoreApi, useStore } from 'zustand';
-import { createPortfolioStore, type Portfolio, type PortfolioStore } from './portfolio-store-factory';
+import {
+  createPortfolioStore,
+  type Portfolio,
+  type PortfolioStore,
+} from './portfolio-store-factory';
 import { createUIStore, type UIStore } from './ui-store-factory';
 
 // Store contexts
@@ -64,12 +68,14 @@ export const usePortfolioStore = <T,>(selector: (store: PortfolioStore) => T): T
 export const useActiveModal = () => useUIStore((state) => state.activeModal);
 export const useNotifications = () => useUIStore((state) => state.notifications);
 export const useIsDarkMode = () => useUIStore((state) => state.isDarkMode);
-export const useSidebarState = () => useUIStore((state) => ({
-  open: state.sidebarOpen,
-  collapsed: state.sidebarCollapsed,
-}));
+export const useSidebarState = () =>
+  useUIStore((state) => ({
+    open: state.sidebarOpen,
+    collapsed: state.sidebarCollapsed,
+  }));
 
 export const usePortfolios = () => usePortfolioStore((state) => state.portfolios);
-export const useSelectedPortfolio = () => usePortfolioStore((state) => 
-  state.portfolios.find((p: Portfolio) => p.id === state.selectedPortfolioId)
-); 
+export const useSelectedPortfolio = () =>
+  usePortfolioStore((state) =>
+    state.portfolios.find((p: Portfolio) => p.id === state.selectedPortfolioId)
+  );

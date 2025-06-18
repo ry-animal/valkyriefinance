@@ -97,7 +97,7 @@ const getDefaultState = (initialData?: Partial<UIState>): UIState => ({
 export const createUIStore = (initialData?: Partial<UIState>) => {
   return createStore<UIStore>()(
     devtools(
-      (set, get) => ({
+      (set, _get) => ({
         ...getDefaultState(initialData),
 
         // Modal actions
@@ -107,7 +107,8 @@ export const createUIStore = (initialData?: Partial<UIState>) => {
         closeModal: () => set({ activeModal: null, modalData: null }, false, 'ui/closeModal'),
 
         // Loading actions
-        setGlobalLoading: (loading) => set({ globalLoading: loading }, false, 'ui/setGlobalLoading'),
+        setGlobalLoading: (loading) =>
+          set({ globalLoading: loading }, false, 'ui/setGlobalLoading'),
 
         setPageLoading: (loading) => set({ pageLoading: loading }, false, 'ui/setPageLoading'),
 
@@ -194,4 +195,4 @@ export const createUIStore = (initialData?: Partial<UIState>) => {
       { name: 'ui-store' }
     )
   );
-}; 
+};

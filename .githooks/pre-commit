@@ -1,84 +1,35 @@
-#!/bin/bash
+#!/bin/sh
+# Biome pre-commit hook
+# Ensures code formatting and linting before commits
 
-# Pre-commit hook for Valkryie Finance
-# Reminds developers to update documentation when relevant changes are made
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
 
-echo "🔍 Checking for changes that may require documentation updates..."
+echo "${YELLOW}Running Biome pre-commit checks...${NC}"
 
-# Get list of changed files
-changed_files=$(git diff --cached --name-only)
+# Get staged files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx|json|jsonc)$')
 
-# Check for changes that should trigger documentation updates
-needs_doc_update=false
-update_suggestions=""
-
-# Check for smart contract changes
-if echo "$changed_files" | grep -q "packages/contracts/"; then
-    needs_doc_update=true
-    update_suggestions="$update_suggestions\n  📋 Smart contract changes detected - consider updating TECHNICAL_GUIDE.md"
+if [ -z "$STAGED_FILES" ]; then
+    echo "${GREEN}No JavaScript/TypeScript files to check.${NC}"
+    exit 0
 fi
 
-# Check for API/backend changes
-if echo "$changed_files" | grep -q "apps/server/"; then
-    needs_doc_update=true
-    update_suggestions="$update_suggestions\n  🔧 Backend changes detected - consider updating TECHNICAL_GUIDE.md"
+# Run Biome check on staged files
+echo "${YELLOW}Checking formatting and linting...${NC}"
+pnpm biome check --write $STAGED_FILES
+
+if [ $? -ne 0 ]; then
+    echo "${RED}❌ Biome check failed! Please fix the issues and try again.${NC}"
+    echo "${YELLOW}You can run: pnpm check${NC}"
+    exit 1
 fi
 
-# Check for deployment/config changes
-if echo "$changed_files" | grep -E "\.(env|config|json|yaml|yml)$"; then
-    needs_doc_update=true
-    update_suggestions="$update_suggestions\n  ⚙️  Configuration changes detected - consider updating DEPLOYMENT_GUIDE.md"
-fi
+# Re-add potentially fixed files
+git add $STAGED_FILES
 
-# Check for package.json changes
-if echo "$changed_files" | grep -q "package.json"; then
-    needs_doc_update=true
-    update_suggestions="$update_suggestions\n  📦 Dependencies changed - consider updating DEPLOYMENT_GUIDE.md"
-fi
-
-# Check for frontend architecture changes
-if echo "$changed_files" | grep -E "(apps/web/src/lib|apps/web/src/stores|apps/web/src/hooks)"; then
-    needs_doc_update=true
-    update_suggestions="$update_suggestions\n  🏗️  Frontend architecture changes - consider updating TECHNICAL_GUIDE.md"
-fi
-
-# Check for major feature additions
-if echo "$changed_files" | grep -E "(components|pages|routers)" | wc -l | awk '{if($1 > 3) print "major"}' | grep -q "major"; then
-    needs_doc_update=true
-    update_suggestions="$update_suggestions\n  ✨ Major feature changes detected - consider updating PROJECT_STATUS.md"
-fi
-
-# Display reminder if documentation updates might be needed
-if [ "$needs_doc_update" = true ]; then
-    echo ""
-    echo "📚 DOCUMENTATION UPDATE REMINDER"
-    echo "=================================="
-    echo "Your changes may require documentation updates:"
-    echo -e "$update_suggestions"
-    echo ""
-    echo "📁 Documentation files to consider updating:"
-    echo "   • documentation/PROJECT_STATUS.md    - for feature completions/status changes"
-    echo "   • documentation/TECHNICAL_GUIDE.md   - for architecture/implementation changes"
-    echo "   • documentation/DEPLOYMENT_GUIDE.md  - for setup/deployment procedure changes"
-    echo "   • documentation/PRD.md               - for requirement changes"
-    echo ""
-    echo "💡 Quick check: Have you updated the relevant documentation? (y/N)"
-    read -r response
-    
-    if [[ ! "$response" =~ ^[Yy]$ ]]; then
-        echo ""
-        echo "⚠️  Consider updating documentation before committing."
-        echo "   Run 'git add documentation/' after making updates."
-        echo ""
-        echo "Continue with commit anyway? (y/N)"
-        read -r continue_anyway
-        
-        if [[ ! "$continue_anyway" =~ ^[Yy]$ ]]; then
-            echo "❌ Commit cancelled. Update documentation and try again."
-            exit 1
-        fi
-    fi
-fi
-
-echo "✅ Pre-commit checks complete!"
-exit 0 
+echo "${GREEN}✅ All checks passed!${NC}"
+exit 0

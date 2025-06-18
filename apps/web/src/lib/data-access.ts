@@ -22,11 +22,11 @@ export interface VaultInfo {
 // Server-side data fetching functions with React.cache for deduplication
 export const getPortfolioStats = cache(async (address?: string): Promise<PortfolioStats> => {
   // Simulate API call - replace with actual blockchain/API calls
-  await new Promise(resolve => setTimeout(resolve, 800));
-  
+  await new Promise((resolve) => setTimeout(resolve, 800));
+
   // In production, this would call your backend API or blockchain
   // Example: const response = await fetch(`${process.env.API_URL}/portfolio/${address}`)
-  
+
   return {
     totalValue: address ? '$127,450.32' : '$0.00',
     totalYield: address ? '24.7%' : '0.0%',
@@ -38,8 +38,8 @@ export const getPortfolioStats = cache(async (address?: string): Promise<Portfol
 
 export const getVaultInfo = cache(async (vaultId: string): Promise<VaultInfo> => {
   // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 600));
-  
+  await new Promise((resolve) => setTimeout(resolve, 600));
+
   return {
     id: vaultId,
     name: 'Valkyrie High Yield Vault',
@@ -53,8 +53,8 @@ export const getVaultInfo = cache(async (vaultId: string): Promise<VaultInfo> =>
 
 export const getActiveVaults = cache(async (): Promise<VaultInfo[]> => {
   // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
   return [
     {
       id: 'vault-1',
@@ -83,15 +83,15 @@ export const getDashboardData = cache(async (userAddress?: string) => {
   // Initiate all requests in parallel
   const portfolioStatsPromise = getPortfolioStats(userAddress);
   const activeVaultsPromise = getActiveVaults();
-  
+
   // Wait for all to complete
   const [portfolioStats, activeVaults] = await Promise.all([
     portfolioStatsPromise,
     activeVaultsPromise,
   ]);
-  
+
   return {
     portfolioStats,
     activeVaults,
   };
-}); 
+});

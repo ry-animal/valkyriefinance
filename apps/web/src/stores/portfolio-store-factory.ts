@@ -52,11 +52,10 @@ const getDefaultState = (initialData?: Partial<PortfolioState>): PortfolioState 
 export const createPortfolioStore = (initialData?: Partial<PortfolioState>) => {
   return createStore<PortfolioStore>()(
     devtools(
-      (set, get) => ({
+      (set, _get) => ({
         ...getDefaultState(initialData),
 
-        setPortfolios: (portfolios) =>
-          set({ portfolios }, false, 'portfolio/setPortfolios'),
+        setPortfolios: (portfolios) => set({ portfolios }, false, 'portfolio/setPortfolios'),
 
         addPortfolio: (portfolio) =>
           set(
@@ -68,9 +67,7 @@ export const createPortfolioStore = (initialData?: Partial<PortfolioState>) => {
         updatePortfolio: (id, updates) =>
           set(
             (state) => ({
-              portfolios: state.portfolios.map((p) =>
-                p.id === id ? { ...p, ...updates } : p
-              ),
+              portfolios: state.portfolios.map((p) => (p.id === id ? { ...p, ...updates } : p)),
             }),
             false,
             'portfolio/updatePortfolio'
@@ -90,16 +87,13 @@ export const createPortfolioStore = (initialData?: Partial<PortfolioState>) => {
         selectPortfolio: (id) =>
           set({ selectedPortfolioId: id }, false, 'portfolio/selectPortfolio'),
 
-        setLoading: (loading) =>
-          set({ isLoading: loading }, false, 'portfolio/setLoading'),
+        setLoading: (loading) => set({ isLoading: loading }, false, 'portfolio/setLoading'),
 
-        setError: (error) =>
-          set({ error }, false, 'portfolio/setError'),
+        setError: (error) => set({ error }, false, 'portfolio/setError'),
 
-        clearError: () =>
-          set({ error: null }, false, 'portfolio/clearError'),
+        clearError: () => set({ error: null }, false, 'portfolio/clearError'),
       }),
       { name: 'portfolio-store' }
     )
   );
-}; 
+};

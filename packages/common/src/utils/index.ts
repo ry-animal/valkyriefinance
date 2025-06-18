@@ -160,7 +160,7 @@ export const isString = (value: unknown): value is string => {
 };
 
 export const isNumber = (value: unknown): value is number => {
-  return typeof value === 'number' && !isNaN(value);
+  return typeof value === 'number' && !Number.isNaN(value);
 };
 
 export const isObject = (value: unknown): value is Record<string, unknown> => {

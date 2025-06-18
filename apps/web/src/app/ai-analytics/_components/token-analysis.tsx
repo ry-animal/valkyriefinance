@@ -1,5 +1,7 @@
 'use client';
 
+import { AlertTriangle, Bot } from 'lucide-react';
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,8 +16,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { trpc } from '@/utils/trpc';
-import { AlertTriangle, Bot } from 'lucide-react';
-import { useState } from 'react';
 
 type TokenAnalysisData = NonNullable<
   Awaited<ReturnType<typeof trpc.ai.getTokenAnalysis.useMutation>>['data']

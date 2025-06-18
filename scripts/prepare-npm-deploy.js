@@ -1,20 +1,22 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const _path = require('node:path');
 
 // Read the root package.json
-const rootPackageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+const _rootPackageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 
 // Read web app package.json
 const webPackageJsonPath = 'apps/web/package.json';
 const webPackageJson = JSON.parse(fs.readFileSync(webPackageJsonPath, 'utf8'));
 
 // Read common package.json
-const commonPackageJson = JSON.parse(fs.readFileSync('packages/common/package.json', 'utf8'));
+const _commonPackageJson = JSON.parse(fs.readFileSync('packages/common/package.json', 'utf8'));
 
 // Read contracts package.json
-const contractsPackageJson = JSON.parse(fs.readFileSync('packages/contracts/package.json', 'utf8'));
+const _contractsPackageJson = JSON.parse(
+  fs.readFileSync('packages/contracts/package.json', 'utf8')
+);
 
 // Replace workspace dependencies with file paths
 if (webPackageJson.dependencies) {

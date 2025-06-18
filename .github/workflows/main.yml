@@ -31,8 +31,47 @@ jobs:
             contracts:
               - 'packages/contracts/**'
 
-  lint-and-typecheck:
+  # Fast Biome checks (formatting and linting)
+  biome-check:
     needs: changes
+    if: ${{ needs.changes.outputs.packages == 'true' || needs.changes.outputs.web == 'true' || needs.changes.outputs.server == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      # Cache Biome binary for faster subsequent runs
+      - name: Cache Biome
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/biome
+          key: ${{ runner.os }}-biome-${{ hashFiles('**/biome.json') }}
+          restore-keys: |
+            ${{ runner.os }}-biome-
+      
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'pnpm'
+          
+      - run: pnpm install --frozen-lockfile
+      
+      # Fast Biome CI check (includes formatting, linting, and import sorting)
+      - name: Biome CI Check
+        run: pnpm run check:ci
+        
+      # Report formatting issues as annotations
+      - name: Check Formatting
+        if: failure()
+        run: |
+          echo "::error::Code formatting issues detected. Run 'pnpm run format' to fix."
+          pnpm run format:check
+
+  lint-and-typecheck:
+    needs: [changes, biome-check]
     if: ${{ needs.changes.outputs.packages == 'true' || needs.changes.outputs.web == 'true' || needs.changes.outputs.server == 'true' }}
     runs-on: ubuntu-latest
     steps:
@@ -51,8 +90,6 @@ jobs:
           cd ../contracts && pnpm run build
       - name: Type check
         run: pnpm run check-types
-      - name: Lint
-        run: pnpm run lint
       - name: Test
         run: pnpm run test
 

@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useDebounce } from 'use-debounce';
-import { parseEther } from 'viem';
 import { useAccount, useSendTransaction } from 'wagmi';
 import { Button } from '@/components/ui/button';
 import {
@@ -58,8 +57,8 @@ const MOCK_TOKENS: Record<string, { address: string; symbol: string }[]> = {
 export function CrossChainSwapForm() {
   const [fromChain, setFromChain] = useState('ARBITRUM');
   const [toChain, setToChain] = useState('BASE_SEPOLIA'); // Target our vault chain
-  const [fromToken, setFromToken] = useState(MOCK_TOKENS['ARBITRUM'][1].address); // Default to USDC on Arbitrum
-  const [toToken, setToToken] = useState('0x45127aA113A3543971253483a1f49553a81b326B'); // Our vault asset on Base Sepolia
+  const [fromToken, setFromToken] = useState(MOCK_TOKENS.ARBITRUM[1].address); // Default to USDC on Arbitrum
+  const [toToken, _setToToken] = useState('0x45127aA113A3543971253483a1f49553a81b326B'); // Our vault asset on Base Sepolia
   const [amount, setAmount] = useState('');
   const [debouncedAmount] = useDebounce(amount, 500);
 

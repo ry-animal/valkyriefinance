@@ -19,7 +19,7 @@ export function useSimpleTokenBalances() {
   const tokenEntries = Object.entries(chainTokens);
 
   // Use individual hooks for each token (simpler but more hooks)
-  const tokenBalances: SimpleTokenBalance[] = tokenEntries.map(([symbol, tokenAddress]) => {
+  const tokenBalances: SimpleTokenBalance[] = tokenEntries.map(([_symbol, tokenAddress]) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const {
       balance,

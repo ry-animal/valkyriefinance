@@ -1,4 +1,4 @@
-import { and, desc, eq, gte } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { aiRecommendations, db, marketData } from '@/db';
 import { publicProcedure, router } from '@/lib/trpc';

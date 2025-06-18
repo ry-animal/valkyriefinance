@@ -1,9 +1,6 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { bt } from '@/lib/theme-utils';
 import { cn } from '@/lib/utils';
 
 interface BrutalGridProps {

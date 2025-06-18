@@ -1,14 +1,14 @@
+import Link from 'next/link';
 import {
-    BrutalBox,
-    BrutalGrid,
-    BrutalHeadline,
-    BrutalSection,
-    BrutalText,
+  BrutalBox,
+  BrutalGrid,
+  BrutalHeadline,
+  BrutalSection,
+  BrutalText,
 } from '@/components/brutalist/layout';
 import Footer from '@/components/footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import Link from 'next/link';
 
 // This is now a Server Component (default in App Router)
 export default function HomePage() {

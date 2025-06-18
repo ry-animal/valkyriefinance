@@ -1,5 +1,7 @@
 import { TRPCError } from '@trpc/server';
+import type { TRPC_ERROR_CODE_KEY } from '@trpc/server/rpc';
 import { logger } from '@valkyrie/common';
+import type { APIErrorContext, TRPCErrorContext } from '../types/api';
 
 export type TRPCErrorCode =
   | 'UNAUTHORIZED'
@@ -11,66 +13,58 @@ export type TRPCErrorCode =
   | 'TOO_MANY_REQUESTS'
   | 'PAYLOAD_TOO_LARGE';
 
+/**
+ * Create a TRPC error with proper logging and context
+ */
 export const createTRPCError = (
-  code: TRPCErrorCode,
+  code: TRPC_ERROR_CODE_KEY,
   message: string,
   cause?: unknown,
-  context?: Record<string, any>
+  context?: TRPCErrorContext
 ) => {
-  logger.error(`tRPC Error [${code}]: ${message}`, cause instanceof Error ? cause : undefined, {
+  const logContext = {
     code,
+    message,
     context,
-  });
+    cause: cause instanceof Error ? cause.message : String(cause),
+  };
+
+  logger.error(
+    `tRPC Error [${code}]: ${message}`,
+    cause instanceof Error ? cause : undefined,
+    logContext
+  );
 
   return new TRPCError({
     code,
     message,
-    cause,
+    cause: cause instanceof Error ? cause : undefined,
   });
 };
 
-export const handleDatabaseError = (error: unknown, context?: Record<string, any>) => {
-  logger.error('Database error occurred', error instanceof Error ? error : undefined, context);
+/**
+ * Handle database errors with context logging
+ */
+export const handleDatabaseError = (error: unknown, context?: APIErrorContext) => {
+  const logContext = { ...context };
+  logger.error('Database error occurred', error instanceof Error ? error : undefined, logContext);
 
   if (error instanceof Error) {
-    // PostgreSQL specific error codes
-    if ('code' in error) {
-      switch (error.code) {
-        case '23505': // Unique violation
-          return createTRPCError(
-            'CONFLICT',
-            'A resource with this information already exists',
-            error,
-            context
-          );
-        case '23503': // Foreign key violation
-          return createTRPCError(
-            'BAD_REQUEST',
-            'Referenced resource does not exist',
-            error,
-            context
-          );
-        case '23502': // Not null violation
-          return createTRPCError('BAD_REQUEST', 'Required information is missing', error, context);
-        case '22001': // String too long
-          return createTRPCError('BAD_REQUEST', 'Input data is too long', error, context);
-        default:
-          return createTRPCError(
-            'INTERNAL_SERVER_ERROR',
-            'Database operation failed',
-            error,
-            context
-          );
-      }
+    if (error.message.includes('UNIQUE constraint')) {
+      const errorContext: TRPCErrorContext = { ...context, errorType: 'unique_constraint' };
+      throw createTRPCError('CONFLICT', 'Resource already exists', error, errorContext);
+    }
+    if (error.message.includes('NOT NULL constraint')) {
+      const errorContext: TRPCErrorContext = { ...context, errorType: 'not_null_constraint' };
+      throw createTRPCError('BAD_REQUEST', 'Missing required field', error, errorContext);
+    }
+    if (error.message.includes('FOREIGN KEY constraint')) {
+      const errorContext: TRPCErrorContext = { ...context, errorType: 'foreign_key_constraint' };
+      throw createTRPCError('BAD_REQUEST', 'Invalid reference', error, errorContext);
     }
   }
 
-  return createTRPCError(
-    'INTERNAL_SERVER_ERROR',
-    'An unexpected database error occurred',
-    error,
-    context
-  );
+  throw createTRPCError('INTERNAL_SERVER_ERROR', 'Database operation failed', error, context);
 };
 
 export const handleAuthError = (message: string = 'Authentication required') => {

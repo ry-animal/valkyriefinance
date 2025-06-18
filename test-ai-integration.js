@@ -1,5 +1,5 @@
 // Test script for AI Engine integration with tRPC
-const testPortfolio = {
+const _testPortfolio = {
   totalValue: '25000.00',
   assets: [
     {

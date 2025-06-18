@@ -1,5 +1,19 @@
 'use client';
 
+import {
+  AlertTriangle,
+  CheckCircle,
+  DollarSign,
+  Loader2,
+  Shield,
+  Target,
+  TrendingUp,
+  Zap,
+} from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { formatEther, formatUnits, parseEther } from 'viem';
+import { useAccount, useChainId } from 'wagmi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,20 +33,6 @@ import {
 import { bt } from '@/lib/theme-utils';
 import { cn } from '@/lib/utils';
 import { useUIStore } from '@/stores/ui-store';
-import {
-  AlertTriangle,
-  CheckCircle,
-  DollarSign,
-  Loader2,
-  Shield,
-  Target,
-  TrendingUp,
-  Zap,
-} from 'lucide-react';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { formatEther, formatUnits, parseEther } from 'viem';
-import { useAccount, useChainId } from 'wagmi';
 
 export function VaultDashboard() {
   const [depositAmount, setDepositAmount] = useState('');
@@ -40,7 +40,7 @@ export function VaultDashboard() {
   const [activeTab, setActiveTab] = useState('deposit');
 
   const { address, isConnected } = useAccount();
-  const chainId = useChainId();
+  const _chainId = useChainId();
   const { addNotification } = useUIStore();
 
   // Contract data hooks

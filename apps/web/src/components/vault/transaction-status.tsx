@@ -2,8 +2,7 @@
 
 import { AlertTriangle, ArrowUpRight, CheckCircle, Clock, ExternalLink } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { formatEther, formatUnits } from 'viem';
-import { useAccount, useChainId, useWaitForTransactionReceipt } from 'wagmi';
+import { useChainId, useWaitForTransactionReceipt } from 'wagmi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

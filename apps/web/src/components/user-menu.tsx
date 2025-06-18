@@ -19,7 +19,7 @@ import { Skeleton } from './ui/skeleton';
 
 export default function UserMenu() {
   const [mounted, setMounted] = useState(false);
-  const router = useRouter();
+  const _router = useRouter();
 
   useEffect(() => {
     setMounted(true);

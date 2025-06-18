@@ -1,8 +1,8 @@
+import NextImage from 'next/image';
+import Link from 'next/link';
 import { HeaderNavigation } from '@/components/header-navigation';
 import { ModeToggle } from '@/components/mode-toggle';
 import UserMenu from '@/components/user-menu';
-import NextImage from 'next/image';
-import Link from 'next/link';
 
 // This is now a Server Component - static parts render on server
 export default function Header() {

@@ -81,7 +81,7 @@ type UIStore = UIState & UIActions;
 
 export const useUIStore = create<UIStore>()(
   devtools(
-    (set, get) => ({
+    (set, _get) => ({
       // State
       activeModal: null,
       modalData: null,
