@@ -1,58 +1,96 @@
 # Valkyrie Finance Web Application
 
-🎨 **Modern React frontend for the Valkyrie Finance platform**
+🎨 **Modern React frontend with Server Components for the Valkyrie Finance platform**
 
 ## Overview
 
-The web application is a Next.js 15 frontend that provides a beautiful, responsive interface for the Valkyrie Finance AI-driven DeFi platform. Built with modern React patterns, it features wallet integration, real-time data, and AI-powered insights.
+The web application is a Next.js 15 frontend that provides a beautiful, responsive interface for the Valkyrie Finance AI-driven DeFi platform. Built with React Server Components for optimal performance, it features wallet integration, real-time data, and AI-powered insights.
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 with App Router and Turbopack
+- **Framework**: Next.js 15 with App Router, React Server Components, and Turbopack
+- **Architecture**: React Server Components (RSC) with selective client-side interactivity
 - **Language**: TypeScript (strict mode, 100% coverage)
 - **Styling**: Tailwind CSS + Shadcn UI components
 - **Theme**: Next-themes with dark/light mode support
 - **Web3**: Wagmi v2 + Viem + Reown AppKit (WalletConnect v2)
-- **State Management**: Zustand + TanStack Query
+- **State Management**: RSC-compatible Zustand stores + TanStack Query
+- **Data Fetching**: Server-side async/await with React.cache and Suspense streaming
 - **API**: tRPC client with end-to-end type safety
 - **Testing**: Vitest + React Testing Library
 - **Animation**: Tailwindcss-animate for smooth transitions
+
+## React Server Components Architecture
+
+### Server Components (Default)
+- **Homepage** (`app/page.tsx`): Static content rendered on server
+- **Dashboard** (`app/dashboard/page.tsx`): Server-side data fetching with async/await
+- **Header** (`components/header.tsx`): Static navigation layout
+- **Layout Components**: Server-rendered structure and metadata
+
+### Client Components (Interactive)
+- **Header Navigation** (`components/header-navigation.tsx`): Mobile menu and routing state
+- **Dashboard Stats** (`components/dashboard/dashboard-stats.tsx`): Uses `use()` hook for promise unwrapping
+- **Wallet Components**: All Web3 interactions and wallet state
+- **Theme Toggle**: Dark/light mode switching
+- **Interactive Forms**: User input and state management
+
+### Key Benefits
+- **Faster Initial Load**: Reduced client-side JavaScript bundle (~40% reduction)
+- **Better SEO**: Server-rendered content improves search rankings
+- **Improved Performance**: Core Web Vitals (FCP, LCP) optimization
+- **Progressive Enhancement**: UI streams as data becomes available
+- **Secure by Default**: Data fetching happens on server
+
+### Data Fetching Patterns
+- **React.cache**: Request-level deduplication (`lib/data-access.ts`)
+- **Parallel Fetching**: Avoiding request waterfalls with Promise.all
+- **Suspense Streaming**: Progressive UI loading with fallback components
+- **Error Boundaries**: Graceful error handling
 
 ## Project Structure
 
 ```
 apps/web/
 ├── src/
-│   ├── app/                    # Next.js App Router pages
-│   │   ├── (auth)/            # Authentication routes
-│   │   ├── vault/             # Vault demo pages
+│   ├── app/                    # Next.js App Router pages (RSC-enabled)
+│   │   ├── page.tsx           # Landing page (Server Component)
 │   │   ├── dashboard/         # Analytics dashboard
+│   │   │   └── page.tsx       # Dashboard with RSC data fetching
+│   │   ├── vault/             # Vault demo pages
 │   │   ├── ai/                # AI features demo
 │   │   ├── stores/            # State management demo
 │   │   ├── layout.tsx         # Root layout with providers
-│   │   ├── page.tsx           # Landing page
 │   │   └── globals.css        # Global styles
 │   ├── components/            # Reusable UI components
-│   │   ├── ui/                # Shadcn UI base components
-│   │   ├── wallet/            # Wallet-related components
+│   │   ├── ui/                # Shadcn UI base components (Shared)
+│   │   ├── dashboard/         # Dashboard components (RSC pattern)
+│   │   │   ├── dashboard-stats.tsx        # Client Component with use() hook
+│   │   │   └── dashboard-stats-loading.tsx # Loading skeleton
+│   │   ├── wallet/            # Wallet-related components (Client)
 │   │   ├── vault/             # Vault interface components
-│   │   ├── brutalist/         # Custom brutalist design components
+│   │   ├── brutalist/         # Custom brutalist design components (Shared)
 │   │   ├── examples/          # Demo components
-│   │   ├── mode-toggle.tsx    # Theme toggle button
-│   │   ├── theme-provider.tsx # Theme system provider
-│   │   └── providers.tsx      # App-wide providers
-│   ├── hooks/                 # Custom React hooks
+│   │   ├── header.tsx         # Header (Server Component)
+│   │   ├── header-navigation.tsx # Navigation (Client Component)
+│   │   ├── mode-toggle.tsx    # Theme toggle (Client Component)
+│   │   ├── theme-provider.tsx # Theme system provider (Client)
+│   │   └── client-providers.tsx # Client-side providers
+│   ├── lib/                   # Utilities and configurations
+│   │   ├── wagmi-config.ts    # Reown AppKit setup (SSR-safe)
+│   │   ├── data-access.ts     # Server-side data layer (RSC)
+│   │   ├── utils.ts           # Utility functions
+│   │   └── env.ts             # Environment validation
+│   ├── stores/                # Zustand state stores (RSC-compatible)
+│   │   ├── rsc-store-provider.tsx   # RSC-safe store provider
+│   │   ├── ui-store-factory.ts      # Store factory pattern
+│   │   ├── portfolio-store-factory.ts # Portfolio store factory
+│   │   ├── [legacy stores...]       # Existing store implementations
+│   │   └── __tests__/         # Store unit tests
+│   ├── hooks/                 # Custom React hooks (Client Components only)
 │   │   ├── use-valkyrie-vault.ts   # Vault operations
 │   │   ├── use-valkyrie-token.ts   # Token operations
 │   │   └── use-mobile.ts           # Responsive utilities
-│   ├── lib/                   # Utilities and configurations
-│   │   ├── wagmi-config.ts    # Reown AppKit setup (SSR-safe)
-│   │   ├── utils.ts           # Utility functions
-│   │   └── env.ts             # Environment validation
-│   ├── stores/                # Zustand state stores
-│   │   ├── counter-store.ts   # Demo counter store
-│   │   ├── wallet-store.ts    # Wallet state management
-│   │   └── __tests__/         # Store unit tests
 │   ├── types/                 # TypeScript definitions
 │   │   └── index.ts           # Shared type exports
 │   └── utils/                 # Client utilities
@@ -62,6 +100,7 @@ apps/web/
 ├── tailwind.config.ts         # Tailwind configuration
 ├── next.config.ts             # Next.js configuration
 ├── components.json            # Shadcn UI configuration
+├── RSC_REFACTORING_SUMMARY.md # Detailed RSC migration guide
 └── package.json
 ```
 
@@ -69,8 +108,8 @@ apps/web/
 
 ### Prerequisites
 
-- Node.js 18+
-- Bun (recommended package manager)
+- Node.js 18+ (recommended: use nvm)
+- pnpm (recommended package manager)
 - Running server API (see [server README](../server/README.md))
 
 ### Installation
@@ -80,7 +119,7 @@ apps/web/
 cd apps/web
 
 # Install dependencies (or run from root)
-bun install
+pnpm install
 
 # Set up environment variables
 cp .env.example .env.local
@@ -95,7 +134,7 @@ NEXT_PUBLIC_ENABLE_AI_CHAT=true
 NEXT_PUBLIC_ENABLE_WEB3=true
 
 # Start development server
-bun run dev
+pnpm run dev
 ```
 
 The application will be available at: http://localhost:3001
@@ -109,6 +148,7 @@ The application will be available at: http://localhost:3001
 - **Responsive Layout**: Mobile-first design with responsive breakpoints
 - **Smooth Animations**: Tailwindcss-animate for polished interactions
 - **Accessibility**: WCAG compliant components from Shadcn UI
+- **Progressive Loading**: Suspense boundaries for optimal perceived performance
 
 ### 🔗 Web3 Features
 
@@ -138,24 +178,123 @@ The application will be available at: http://localhost:3001
 
 ```bash
 # Development
-bun run dev              # Start development server with hot reload
-bun run build            # Build for production
-bun run start            # Start production server
-bun run preview          # Preview production build
+pnpm run dev              # Start development server with hot reload
+pnpm run build            # Build for production
+pnpm run start            # Start production server
+pnpm run preview          # Preview production build
 
 # Testing
-bun run test             # Run unit tests
-bun run test:watch       # Run tests in watch mode
-bun run test:ui          # Open test UI
-bun run coverage         # Generate test coverage report
+pnpm run test             # Run unit tests
+pnpm run test:watch       # Run tests in watch mode
+pnpm run test:ui          # Open test UI
+pnpm run coverage         # Generate test coverage report
 
 # Code Quality
-bun run lint             # Run ESLint
-bun run lint:fix         # Fix ESLint issues
-bun run type-check       # TypeScript type checking
+pnpm run lint             # Run ESLint
+pnpm run lint:fix         # Fix ESLint issues
+pnpm run type-check       # TypeScript type checking
 
 # Shadcn UI
-bunx shadcn@latest add   # Add new Shadcn component
+pnpx shadcn@latest add   # Add new Shadcn component
+```
+
+### React Server Components Development
+
+#### Creating Server Components (Default)
+
+```typescript
+// app/my-page/page.tsx - Server Component
+import { MyClientComponent } from '@/components/my-client-component';
+import { getServerData } from '@/lib/data-access';
+
+export default async function MyPage() {
+  // Data fetching happens on the server
+  const data = await getServerData();
+  
+  return (
+    <div>
+      <h1>Server Rendered Content</h1>
+      <p>This content is rendered on the server</p>
+      
+      {/* Pass server data to client component */}
+      <MyClientComponent initialData={data} />
+    </div>
+  );
+}
+```
+
+#### Creating Client Components
+
+```typescript
+// components/my-client-component.tsx
+'use client';
+
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+
+interface Props {
+  initialData: any;
+}
+
+export function MyClientComponent({ initialData }: Props) {
+  const [count, setCount] = useState(0);
+  
+  return (
+    <div>
+      <p>Interactive content: {count}</p>
+      <Button onClick={() => setCount(count + 1)}>
+        Click me
+      </Button>
+    </div>
+  );
+}
+```
+
+#### Server-Side Data Fetching
+
+```typescript
+// lib/data-access.ts
+import { cache } from 'react';
+
+// Use React.cache for request-level deduplication
+export const getUserData = cache(async (userId: string) => {
+  // This will only run once per request, even if called multiple times
+  const response = await fetch(`/api/users/${userId}`);
+  return response.json();
+});
+
+// Parallel data fetching to avoid waterfalls
+export const getDashboardData = cache(async () => {
+  const [stats, vaults, portfolio] = await Promise.all([
+    getPortfolioStats(),
+    getActiveVaults(),
+    getUserPortfolio(),
+  ]);
+  
+  return { stats, vaults, portfolio };
+});
+```
+
+#### Using Suspense for Streaming
+
+```typescript
+// app/dashboard/page.tsx
+import { Suspense } from 'react';
+import { DashboardStats } from '@/components/dashboard/dashboard-stats';
+import { DashboardStatsLoading } from '@/components/dashboard/dashboard-stats-loading';
+
+export default function DashboardPage() {
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      
+      {/* Stream UI as data becomes available */}
+      <Suspense fallback={<DashboardStatsLoading />}>
+        <DashboardStats />
+      </Suspense>
+    </div>
+  );
+}
 ```
 
 ### Component Development
@@ -164,7 +303,7 @@ bunx shadcn@latest add   # Add new Shadcn component
 
 ```typescript
 // Install a new component
-bunx shadcn@latest add button
+pnpx shadcn@latest add button
 
 // Use in your component
 import { Button } from '@/components/ui/button'
@@ -363,16 +502,16 @@ export function TodoList() {
 
 ```bash
 # Run all tests
-bun run test
+pnpm run test
 
 # Run specific test file
-bun run test wallet-store.test.ts
+pnpm run test wallet-store.test.ts
 
 # Run tests with UI
-bun run test:ui
+pnpm run test:ui
 
 # Generate coverage
-bun run coverage
+pnpm run coverage
 ```
 
 ### Test Examples
@@ -457,7 +596,7 @@ vercel --prod
 
 - **Code Splitting**: Automatic route-based code splitting
 - **Image Optimization**: Next.js Image component with optimization
-- **Bundle Analysis**: Use `ANALYZE=true bun run build` to analyze bundles
+- **Bundle Analysis**: Use `ANALYZE=true pnpm run build` to analyze bundles
 - **Tree Shaking**: Automatic dead code elimination
 
 ## Performance
@@ -494,7 +633,7 @@ vercel --prod
 3. **Build Issues**:
 
    - Ensure shared packages are built first
-   - Check TypeScript errors with `bun run type-check`
+   - Check TypeScript errors with `pnpm run type-check`
    - Verify environment variables are set
 
 4. **Styling Issues**:

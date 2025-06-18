@@ -1,34 +1,51 @@
-"use client";
-import { VaultDashboard } from "@/components/vault/vault-dashboard";
-import { WalletConnect } from "@/components/wallet/wallet-connect";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import Footer from "@/components/footer";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { BrutalGrid, BrutalSection, BrutalHeadline, BrutalBox, BrutalText } from "@/components/brutalist/layout";
+import {
+    BrutalBox,
+    BrutalGrid,
+    BrutalHeadline,
+    BrutalSection,
+    BrutalText,
+} from '@/components/brutalist/layout';
+import Footer from '@/components/footer';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import Link from 'next/link';
 
+// This is now a Server Component (default in App Router)
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white dark:bg-black">
       {/* Hero Section */}
-      <BrutalSection fullWidth className="min-h-screen flex items-center justify-center border-b-4 border-black dark:border-white">
+      <BrutalSection
+        fullWidth
+        className="min-h-screen flex items-center justify-center border-b-4 border-black dark:border-white"
+      >
         <div className="text-center max-w-6xl mx-auto">
           <BrutalHeadline size="mega" className="mb-8 text-black dark:text-white">
             DEFI
             <br />
             BRUTALISM
           </BrutalHeadline>
-          <BrutalText variant="mono" size="xl" className="mb-12 max-w-4xl mx-auto text-black dark:text-white">
-            THE MOST AGGRESSIVE YIELD OPTIMIZATION PLATFORM. 
-            AI-POWERED. CROSS-CHAIN COMPATIBLE. ZERO COMPROMISE.
+          <BrutalText
+            variant="mono"
+            size="xl"
+            className="mb-12 max-w-4xl mx-auto text-black dark:text-white"
+          >
+            THE MOST AGGRESSIVE YIELD OPTIMIZATION PLATFORM. AI-POWERED. CROSS-CHAIN COMPATIBLE.
+            ZERO COMPROMISE.
           </BrutalText>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Link href="/dashboard">
-              <Button size="xl" className="shadow-brutal-xl text-2xl px-16 py-8 bg-black text-white dark:bg-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200">
+              <Button
+                size="xl"
+                className="shadow-brutal-xl text-2xl px-16 py-8 bg-black text-white dark:bg-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+              >
                 LAUNCH APP
               </Button>
             </Link>
-            <Button size="xl" className="shadow-brutal-xl text-2xl px-16 py-8 bg-black text-white dark:bg-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"> 
+            <Button
+              size="xl"
+              className="shadow-brutal-xl text-2xl px-16 py-8 bg-black text-white dark:bg-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+            >
               READ DOCS
             </Button>
           </div>
@@ -36,9 +53,15 @@ export default function HomePage() {
       </BrutalSection>
 
       {/* Stats Section */}
-      <BrutalSection fullWidth className="bg-white dark:bg-black text-black dark:text-white border-black dark:border-white">
+      <BrutalSection
+        fullWidth
+        className="bg-white dark:bg-black text-black dark:text-white border-black dark:border-white"
+      >
         <BrutalGrid cols={12} className="bg-white dark:bg-black border-black dark:border-white">
-          <BrutalBox className="col-span-12 md:col-span-3 bg-white dark:bg-black border-black dark:border-white text-black dark:text-white text-center" border>
+          <BrutalBox
+            className="col-span-12 md:col-span-3 bg-white dark:bg-black border-black dark:border-white text-black dark:text-white text-center"
+            border
+          >
             <BrutalHeadline size="massive" className="text-black dark:text-white mb-4">
               $127M
             </BrutalHeadline>
@@ -46,8 +69,11 @@ export default function HomePage() {
               TOTAL VALUE LOCKED
             </BrutalText>
           </BrutalBox>
-          
-          <BrutalBox className="col-span-12 md:col-span-3 bg-white dark:bg-black border-black dark:border-white text-black dark:text-white text-center" border>
+
+          <BrutalBox
+            className="col-span-12 md:col-span-3 bg-white dark:bg-black border-black dark:border-white text-black dark:text-white text-center"
+            border
+          >
             <BrutalHeadline size="massive" className="text-black dark:text-white mb-4">
               24.7%
             </BrutalHeadline>
@@ -55,8 +81,11 @@ export default function HomePage() {
               AVERAGE APY
             </BrutalText>
           </BrutalBox>
-          
-          <BrutalBox className="col-span-12 md:col-span-3 bg-white dark:bg-black border-black dark:border-white text-black dark:text-white text-center" border>
+
+          <BrutalBox
+            className="col-span-12 md:col-span-3 bg-white dark:bg-black border-black dark:border-white text-black dark:text-white text-center"
+            border
+          >
             <BrutalHeadline size="massive" className="text-black dark:text-white mb-4">
               7
             </BrutalHeadline>
@@ -64,8 +93,11 @@ export default function HomePage() {
               SUPPORTED CHAINS
             </BrutalText>
           </BrutalBox>
-          
-          <BrutalBox className="col-span-12 md:col-span-3 bg-white dark:bg-black border-black dark:border-white text-black dark:text-white text-center" border>
+
+          <BrutalBox
+            className="col-span-12 md:col-span-3 bg-white dark:bg-black border-black dark:border-white text-black dark:text-white text-center"
+            border
+          >
             <BrutalHeadline size="massive" className="text-black dark:text-white mb-4">
               99.9%
             </BrutalHeadline>
@@ -81,17 +113,19 @@ export default function HomePage() {
         <BrutalHeadline size="giant" className="mb-16 text-center text-black dark:text-white">
           FEATURES
         </BrutalHeadline>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <Card className="bg-white dark:bg-gray-900 border-black dark:border-white">
             <CardHeader>
               <CardTitle className="text-black dark:text-white">AI OPTIMIZATION</CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-400">MACHINE LEARNING ALGORITHMS</CardDescription>
+              <CardDescription className="text-gray-600 dark:text-gray-400">
+                MACHINE LEARNING ALGORITHMS
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <BrutalText variant="mono" className="text-black dark:text-white">
-                ADVANCED AI MODELS CONTINUOUSLY ANALYZE MARKET CONDITIONS 
-                AND OPTIMIZE YIELD STRATEGIES IN REAL-TIME.
+                ADVANCED AI MODELS CONTINUOUSLY ANALYZE MARKET CONDITIONS AND OPTIMIZE YIELD
+                STRATEGIES IN REAL-TIME.
               </BrutalText>
             </CardContent>
           </Card>
@@ -99,12 +133,14 @@ export default function HomePage() {
           <Card className="bg-white dark:bg-gray-900 border-black dark:border-white">
             <CardHeader>
               <CardTitle className="text-black dark:text-white">CROSS-CHAIN SWAPS</CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-400">SEAMLESS BRIDGING</CardDescription>
+              <CardDescription className="text-gray-600 dark:text-gray-400">
+                SEAMLESS BRIDGING
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <BrutalText variant="mono" className="text-black dark:text-white">
-                SWAP FROM ANY SUPPORTED CHAIN DIRECTLY INTO OUR 
-                YIELD-BEARING VAULT WITH ONE TRANSACTION.
+                SWAP FROM ANY SUPPORTED CHAIN DIRECTLY INTO OUR YIELD-BEARING VAULT WITH ONE
+                TRANSACTION.
               </BrutalText>
             </CardContent>
           </Card>
@@ -112,12 +148,14 @@ export default function HomePage() {
           <Card className="bg-white dark:bg-gray-900 border-black dark:border-white">
             <CardHeader>
               <CardTitle className="text-black dark:text-white">UNISWAP V4 HOOKS</CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-400">CUSTOM LIQUIDITY MANAGEMENT</CardDescription>
+              <CardDescription className="text-gray-600 dark:text-gray-400">
+                CUSTOM LIQUIDITY MANAGEMENT
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <BrutalText variant="mono" className="text-black dark:text-white">
-                PROPRIETARY HOOKS OPTIMIZE LIQUIDITY POSITIONS AND 
-                MINIMIZE IMPERMANENT LOSS AUTOMATICALLY.
+                PROPRIETARY HOOKS OPTIMIZE LIQUIDITY POSITIONS AND MINIMIZE IMPERMANENT LOSS
+                AUTOMATICALLY.
               </BrutalText>
             </CardContent>
           </Card>
@@ -125,12 +163,14 @@ export default function HomePage() {
           <Card className="bg-white dark:bg-gray-900 border-black dark:border-white">
             <CardHeader>
               <CardTitle className="text-black dark:text-white">ERC-4626 VAULT</CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-400">STANDARDIZED INTERFACE</CardDescription>
+              <CardDescription className="text-gray-600 dark:text-gray-400">
+                STANDARDIZED INTERFACE
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <BrutalText variant="mono" className="text-black dark:text-white">
-                FULLY COMPLIANT ERC-4626 TOKENIZED VAULT WITH 
-                MAXIMUM COMPOSABILITY AND INTEROPERABILITY.
+                FULLY COMPLIANT ERC-4626 TOKENIZED VAULT WITH MAXIMUM COMPOSABILITY AND
+                INTEROPERABILITY.
               </BrutalText>
             </CardContent>
           </Card>
@@ -138,12 +178,13 @@ export default function HomePage() {
           <Card className="bg-white dark:bg-gray-900 border-black dark:border-white">
             <CardHeader>
               <CardTitle className="text-black dark:text-white">RISK MANAGEMENT</CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-400">AUTOMATED PROTECTION</CardDescription>
+              <CardDescription className="text-gray-600 dark:text-gray-400">
+                AUTOMATED PROTECTION
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <BrutalText variant="mono" className="text-black dark:text-white">
-                AI-POWERED RISK ASSESSMENT AND AUTOMATED CIRCUIT 
-                BREAKERS PROTECT YOUR FUNDS 24/7.
+                AI-POWERED RISK ASSESSMENT AND AUTOMATED CIRCUIT BREAKERS PROTECT YOUR FUNDS 24/7.
               </BrutalText>
             </CardContent>
           </Card>
@@ -151,12 +192,13 @@ export default function HomePage() {
           <Card className="bg-white dark:bg-gray-900 border-black dark:border-white">
             <CardHeader>
               <CardTitle className="text-black dark:text-white">GOVERNANCE TOKEN</CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-400">DECENTRALIZED CONTROL</CardDescription>
+              <CardDescription className="text-gray-600 dark:text-gray-400">
+                DECENTRALIZED CONTROL
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <BrutalText variant="mono" className="text-black dark:text-white">
-                PARTICIPATE IN PROTOCOL GOVERNANCE AND EARN 
-                REWARDS WITH THE VALKYRIE TOKEN.
+                PARTICIPATE IN PROTOCOL GOVERNANCE AND EARN REWARDS WITH THE VALKYRIE TOKEN.
               </BrutalText>
             </CardContent>
           </Card>
@@ -169,9 +211,12 @@ export default function HomePage() {
           <BrutalHeadline size="giant" className="mb-16 text-center text-black dark:text-white">
             TECHNOLOGY
           </BrutalHeadline>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-8">
-            <BrutalBox className="text-center bg-white dark:bg-black border-black dark:border-white" border>
+            <BrutalBox
+              className="text-center bg-white dark:bg-black border-black dark:border-white"
+              border
+            >
               <BrutalText variant="brutal" size="lg" className="mb-4 text-black dark:text-white">
                 SOLIDITY
               </BrutalText>
@@ -179,8 +224,11 @@ export default function HomePage() {
                 SMART CONTRACTS
               </BrutalText>
             </BrutalBox>
-            
-            <BrutalBox className="text-center bg-white dark:bg-black border-black dark:border-white" border>
+
+            <BrutalBox
+              className="text-center bg-white dark:bg-black border-black dark:border-white"
+              border
+            >
               <BrutalText variant="brutal" size="lg" className="mb-4 text-black dark:text-white">
                 FOUNDRY
               </BrutalText>
@@ -188,8 +236,11 @@ export default function HomePage() {
                 TESTING FRAMEWORK
               </BrutalText>
             </BrutalBox>
-            
-            <BrutalBox className="text-center bg-white dark:bg-black border-black dark:border-white" border>
+
+            <BrutalBox
+              className="text-center bg-white dark:bg-black border-black dark:border-white"
+              border
+            >
               <BrutalText variant="brutal" size="lg" className="mb-4 text-black dark:text-white">
                 CHAINLINK
               </BrutalText>
@@ -197,8 +248,11 @@ export default function HomePage() {
                 ORACLE NETWORK
               </BrutalText>
             </BrutalBox>
-            
-            <BrutalBox className="text-center bg-white dark:bg-black border-black dark:border-white" border>
+
+            <BrutalBox
+              className="text-center bg-white dark:bg-black border-black dark:border-white"
+              border
+            >
               <BrutalText variant="brutal" size="lg" className="mb-4 text-black dark:text-white">
                 TYPESCRIPT
               </BrutalText>
@@ -206,8 +260,11 @@ export default function HomePage() {
                 TYPE SAFETY
               </BrutalText>
             </BrutalBox>
-            
-            <BrutalBox className="text-center bg-white dark:bg-black border-black dark:border-white" border>
+
+            <BrutalBox
+              className="text-center bg-white dark:bg-black border-black dark:border-white"
+              border
+            >
               <BrutalText variant="brutal" size="lg" className="mb-4 text-black dark:text-white">
                 NEXT.JS
               </BrutalText>
@@ -215,8 +272,11 @@ export default function HomePage() {
                 REACT FRAMEWORK
               </BrutalText>
             </BrutalBox>
-            
-            <BrutalBox className="text-center bg-white dark:bg-black border-black dark:border-white" border>
+
+            <BrutalBox
+              className="text-center bg-white dark:bg-black border-black dark:border-white"
+              border
+            >
               <BrutalText variant="brutal" size="lg" className="mb-4 text-black dark:text-white">
                 WAGMI
               </BrutalText>
@@ -229,7 +289,10 @@ export default function HomePage() {
       </BrutalSection>
 
       {/* CTA Section */}
-      <BrutalSection fullWidth className="bg-white dark:bg-black text-black dark:text-white border-black dark:border-white py-20">
+      <BrutalSection
+        fullWidth
+        className="bg-white dark:bg-black text-black dark:text-white border-black dark:border-white py-20"
+      >
         <div className="text-center max-w-4xl mx-auto">
           <BrutalHeadline size="huge" className="mb-8 text-black dark:text-white">
             READY TO OPTIMIZE?
@@ -239,11 +302,17 @@ export default function HomePage() {
           </BrutalText>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Link href="/dashboard">
-              <Button size="xl" className="text-2xl px-16 py-8 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 dark:hover:text-white">
+              <Button
+                size="xl"
+                className="text-2xl px-16 py-8 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 dark:hover:text-white"
+              >
                 START EARNING
               </Button>
             </Link>
-            <Button size="xl" className="text-2xl px-16 py-8 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 dark:hover:text-white">
+            <Button
+              size="xl"
+              className="text-2xl px-16 py-8 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 dark:hover:text-white"
+            >
               LEARN MORE
             </Button>
           </div>

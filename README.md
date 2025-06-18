@@ -3,6 +3,7 @@
 🚀 **Modern DeFi Platform with AI-Powered Yield Optimization**
 
 [![Next.js](https://img.shields.io/badge/Frontend-Next.js%2015-black)](https://nextjs.org/)
+[![React Server Components](https://img.shields.io/badge/React-Server%20Components-blue)](https://react.dev/reference/rsc/server-components)
 [![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue)](https://www.typescriptlang.org/)
 [![Reown AppKit](https://img.shields.io/badge/Wallet-Reown%20AppKit-purple)](https://reown.com/)
 [![Foundry](https://img.shields.io/badge/Smart%20Contracts-Foundry-blue)](https://getfoundry.sh/)
@@ -23,8 +24,9 @@ Valkyrie Finance is a next-generation DeFi platform that combines AI-driven yiel
 - **🎮 Interactive Demo**: Full-featured vault and token operations interface
 - **⚡ Production Ready**: Comprehensive CI/CD pipeline with 114/127 smart contract tests passing (89.8%)
 - **🛡️ Type Safety**: 100% TypeScript coverage with strict mode enforcement
-- **🚀 Modern Stack**: Next.js 15, Wagmi v2, Foundry, and cutting-edge Web3 tools
+- **🚀 Modern Stack**: Next.js 15 with React Server Components, Wagmi v2, Foundry, and cutting-edge Web3 tools
 - **🎨 Brutalist Design**: Modern dark/light theme system with simple toggle
+- **⚡ Optimized Performance**: React Server Components for faster loading and reduced client bundle
 
 ---
 
@@ -32,12 +34,14 @@ Valkyrie Finance is a next-generation DeFi platform that combines AI-driven yiel
 
 ### Frontend Stack
 
-- **Framework**: Next.js 15 with App Router and Turbopack
+- **Framework**: Next.js 15 with App Router, React Server Components, and Turbopack
+- **Architecture**: React Server Components (RSC) with selective client-side interactivity
 - **Language**: TypeScript (strict mode, 100% coverage)
 - **Styling**: Tailwind CSS + Shadcn UI components + tailwindcss-animate
 - **Theme System**: Next-themes with default dark mode and simple light/dark toggle
 - **Web3**: Wagmi v2 + Viem + Reown AppKit (WalletConnect v2)
-- **State Management**: Zustand + TanStack Query
+- **State Management**: RSC-compatible Zustand stores + TanStack Query
+- **Data Fetching**: Server-side async/await with React.cache and Suspense streaming
 - **Testing**: Vitest + React Testing Library (23 tests passing)
 - **Code Quality**: ESLint + Prettier with automated CI checks
 
@@ -46,7 +50,7 @@ Valkyrie Finance is a next-generation DeFi platform that combines AI-driven yiel
 - **API**: tRPC with end-to-end type safety
 - **Database**: PostgreSQL with Drizzle ORM
 - **Authentication**: Wallet-based authentication (Better-auth removed)
-- **Runtime**: Node.js with Bun package manager
+- **Runtime**: Node.js with pnpm package manager
 - **Deployment**: Vercel with automatic deployments
 
 ### Smart Contracts
@@ -61,9 +65,40 @@ Valkyrie Finance is a next-generation DeFi platform that combines AI-driven yiel
 
 - **Monorepo**: Turborepo for efficient builds and caching
 - **CI/CD**: GitHub Actions with parallel job execution
-- **Package Management**: Bun for fast installs and builds
+- **Package Management**: pnpm for fast installs and builds
 - **Type Safety**: End-to-end TypeScript with strict mode
 - **Code Quality**: ESLint, Prettier, automated testing
+
+---
+
+## 🆕 React Server Components Architecture
+
+The application has been refactored to leverage React Server Components for optimal performance:
+
+### Server Components (Default)
+- **Homepage**: Static content rendered on server for faster loading
+- **Dashboard Data Fetching**: Server-side async data fetching with caching
+- **Layout Components**: Static navigation and layout elements
+- **SEO Optimization**: Better crawling and social media previews
+
+### Client Components (Interactive)
+- **Wallet Integration**: Wagmi hooks and wallet interactions
+- **Theme Toggle**: Dark/light mode switching
+- **Interactive Forms**: User input and state management
+- **Real-time Updates**: Live data subscriptions
+
+### Key Benefits
+- **Faster Initial Load**: Reduced client-side JavaScript bundle
+- **Better SEO**: Server-rendered content improves search rankings
+- **Improved Performance**: Core Web Vitals (FCP, LCP) optimization
+- **Progressive Enhancement**: UI streams as data becomes available
+- **Secure by Default**: Sensitive operations remain on server
+
+### Data Fetching Patterns
+- **React.cache**: Request-level deduplication
+- **Parallel Fetching**: Avoiding request waterfalls
+- **Suspense Streaming**: Progressive UI loading
+- **Error Boundaries**: Graceful error handling
 
 ---
 
@@ -77,31 +112,39 @@ valkyriefinance/
 ├── apps/
 │   ├── web/                      # Next.js frontend application
 │   │   ├── src/
-│   │   │   ├── app/             # App router pages
-│   │   │   │   ├── page.tsx             # Landing page
+│   │   │   ├── app/             # App router pages (RSC-enabled)
+│   │   │   │   ├── page.tsx             # Landing page (Server Component)
 │   │   │   │   ├── vault/               # Vault demo page
-│   │   │   │   ├── dashboard/           # Analytics dashboard
+│   │   │   │   ├── dashboard/           # Analytics dashboard (RSC + Suspense)
 │   │   │   │   ├── ai/                  # AI features demo
 │   │   │   │   └── stores/              # State management demo
 │   │   │   ├── components/      # Reusable UI components
 │   │   │   │   ├── ui/                  # Shadcn UI components
-│   │   │   │   ├── wallet/              # Wallet-related components
+│   │   │   │   ├── wallet/              # Wallet-related components (Client)
 │   │   │   │   ├── vault/               # Vault interface components
 │   │   │   │   ├── brutalist/           # Brutalist design components
-│   │   │   │   ├── mode-toggle.tsx      # Simple theme toggle button
+│   │   │   │   ├── dashboard/           # Dashboard components (RSC pattern)
+│   │   │   │   ├── mode-toggle.tsx      # Theme toggle (Client Component)
 │   │   │   │   ├── theme-provider.tsx   # Theme system provider
+│   │   │   │   ├── header.tsx           # Header (Server Component)
+│   │   │   │   ├── header-navigation.tsx # Navigation (Client Component)
 │   │   │   │   └── examples/            # Demo components
 │   │   │   ├── hooks/           # Custom React hooks
 │   │   │   │   ├── use-valkyrie-vault.ts    # Vault operations
 │   │   │   │   └── use-valkyrie-token.ts    # Token operations
 │   │   │   ├── lib/             # Utilities and configurations
 │   │   │   │   ├── wagmi-config.ts      # Reown AppKit setup (SSR-safe)
+│   │   │   │   ├── data-access.ts       # Server-side data layer (RSC)
 │   │   │   │   └── env.ts               # Environment validation
-│   │   │   ├── stores/          # Zustand state stores
+│   │   │   ├── stores/          # Zustand state stores (RSC-compatible)
+│   │   │   │   ├── rsc-store-provider.tsx   # RSC-safe store provider
+│   │   │   │   ├── ui-store-factory.ts      # Store factory pattern
+│   │   │   │   ├── portfolio-store-factory.ts
 │   │   │   │   └── __tests__/           # Store unit tests
 │   │   │   └── types/           # TypeScript type definitions
 │   │   ├── tailwind.config.ts   # Tailwind configuration
 │   │   ├── .eslintrc.js         # ESLint configuration
+│   │   ├── RSC_REFACTORING_SUMMARY.md   # RSC migration documentation
 │   │   └── package.json
 │   └── server/                   # tRPC API server
 │       ├── src/
@@ -144,10 +187,9 @@ valkyriefinance/
 
 ### Prerequisites
 
-- **Node.js** 18+
-- **Bun** (recommended package manager)
-- **Git**
-- **PostgreSQL** (for database)
+- Node.js 18+ (recommended: use nvm)
+- PostgreSQL 14+ (local or Docker)
+- pnpm (package manager)
 
 ### Installation
 
@@ -157,11 +199,11 @@ git clone https://github.com/your-org/valkyriefinance.git
 cd valkyriefinance
 
 # Install dependencies
-bun install
+pnpm install
 
 # Build shared packages (required for type checking)
-cd packages/common && bun run build
-cd ../contracts && bun run build
+cd packages/common && pnpm run build
+cd ../contracts && pnpm run build
 cd ../..
 
 # Set up environment variables
@@ -175,19 +217,19 @@ cp apps/server/.env.example apps/server/.env.local
 
 # Set up database
 cd apps/server
-bun run db:push
-bun run db:seed
+pnpm run db:push
+pnpm run db:seed
 
 # Start development servers
 cd ../..
-bun run dev:apps
+pnpm run dev:apps
 ```
 
 ### Access Points
 
 - **Web Application**: http://localhost:3001
 - **API Server**: http://localhost:3000
-- **Database Studio**: `bun run db:studio`
+- **Database Studio**: `pnpm run db:studio`
 
 ---
 
@@ -197,29 +239,29 @@ bun run dev:apps
 
 ```bash
 # Development
-bun run dev              # Start all services
-bun run dev:apps         # Start web + server only
-bun run dev:web          # Start web app only
-bun run dev:server       # Start API server only
+pnpm run dev              # Start all services
+pnpm run dev:apps         # Start web + server only
+pnpm run dev:web          # Start web app only
+pnpm run dev:server       # Start API server only
 
 # Building
-bun run build            # Build all packages
-bun run build:web        # Build web app only
-bun run check-types      # Type checking across all packages
+pnpm run build            # Build all packages
+pnpm run build:web        # Build web app only
+pnpm run check-types      # Type checking across all packages
 
 # Testing
-bun run test             # Run all tests (23 web + 127 contract tests)
-bun run test:watch       # Watch mode testing
+pnpm run test             # Run all tests (23 web + 127 contract tests)
+pnpm run test:watch       # Watch mode testing
 
 # Database
-bun run db:push          # Push schema changes
-bun run db:studio        # Open database studio
-bun run db:generate      # Generate migrations
-bun run db:migrate       # Run migrations
+pnpm run db:push          # Push schema changes
+pnpm run db:studio        # Open database studio
+pnpm run db:generate      # Generate migrations
+pnpm run db:migrate       # Run migrations
 
 # Code Quality
-bun run lint             # Lint all packages
-bun run prepare:deploy   # Prepare for npm-based deployment
+pnpm run lint             # Lint all packages
+pnpm run prepare:deploy   # Prepare for npm-based deployment
 ```
 
 ### Key Components
@@ -289,8 +331,8 @@ forge coverage               # Test coverage report
 
 ```bash
 cd apps/web
-bun run test                 # Run component tests
-bun run test:watch           # Watch mode
+pnpm run test                 # Run component tests
+pnpm run test:watch           # Watch mode
 ```
 
 **Test Categories:**
@@ -303,7 +345,7 @@ bun run test:watch           # Watch mode
 
 ```bash
 cd apps/server
-bun run test                 # Run API tests
+pnpm run test                 # Run API tests
 ```
 
 ---
@@ -463,7 +505,7 @@ NEXT_PUBLIC_ALCHEMY_API_KEY=your_alchemy_api_key
 
 ```bash
 # Prepare for npm-based deployment
-bun run prepare:deploy
+pnpm run prepare:deploy
 
 # Deploy to Vercel
 vercel --prod
@@ -475,13 +517,13 @@ To test the production build locally:
 
 ```bash
 # Build all packages
-bun run build
+pnpm run build
 
 # Or build just the web app
-bun run build:web
+pnpm run build:web
 
 # Start production server
-cd apps/web && bun start
+cd apps/web && pnpm start
 ```
 
 ## CI/CD Pipeline
@@ -499,7 +541,7 @@ The project uses GitHub Actions for continuous integration with comprehensive te
 
 2. **Web Application Tests**
 
-   - Bun setup and dependency installation
+   - pnpm setup and dependency installation
    - Shared package building
    - TypeScript type checking
    - ESLint code quality checks
@@ -595,7 +637,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **[Next.js](https://nextjs.org/)** - For the powerful React framework
 - **[Foundry](https://getfoundry.sh/)** - For smart contract development
 - **[Turborepo](https://turbo.build/)** - For monorepo management
-- **[Bun](https://bun.sh/)** - For fast package management and builds
+- **[pnpm](https://pnpm.io/)** - For fast package management and builds
 
 ---
 
