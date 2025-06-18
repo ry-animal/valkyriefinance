@@ -17,6 +17,7 @@ export default function Header() {
     { to: "/", label: "HOME" },
     { to: "/dashboard", label: "DASHBOARD" },
     { to: "/vault", label: "VAULT" },
+    { to: "/swap", label: "SWAP" },
     { to: "/ai", label: "AI CHAT" },
     { to: "/ai-analytics", label: "AI Analytics" },
   ];

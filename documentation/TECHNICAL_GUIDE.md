@@ -187,8 +187,48 @@ apps/server/src/routers/
 ├── portfolio.ts      # Portfolio management
 ├── vault.ts          # Vault operations
 ├── analytics.ts      # Performance analytics
-└── ai.ts            # AI recommendations
+├── ai.ts            # AI recommendations
+└── bridge.ts         # Cross-chain bridge operations
 ```
+
+#### Bridge Router (`bridge.ts`)
+
+The bridge router provides cross-chain swap functionality using Rubic API integration:
+
+```typescript
+export const bridgeRouter = router({
+  getQuote: publicProcedure
+    .input(bridgeQuoteSchema)
+    .query(async ({ input }) => {
+      // Fetch best quote from Rubic API
+      const response = await fetch(`${RUBIC_API_URL}/quoteBest`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ params: input }),
+      });
+      return response.json();
+    }),
+
+  getSwap: publicProcedure
+    .input(bridgeSwapSchema)
+    .mutation(async ({ input }) => {
+      // Get transaction data for cross-chain swap
+      const response = await fetch(`${RUBIC_API_URL}/swap`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ params: input }),
+      });
+      return response.json();
+    }),
+});
+```
+
+**Key Features:**
+
+- **Real-time Quotes**: Dynamic pricing from Rubic's aggregated liquidity sources
+- **Multi-chain Support**: Ethereum, Arbitrum, Base Sepolia integration
+- **Type Safety**: Full Zod schema validation for inputs and outputs
+- **Error Handling**: Comprehensive error management with structured responses
 
 ### Database Schema
 
@@ -227,6 +267,20 @@ const createPortfolioSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().optional(),
   initialAssets: z.array(assetSchema).optional(),
+});
+
+export const bridgeQuoteSchema = z.object({
+  srcTokenAddress: z.string(),
+  srcTokenBlockchain: z.string(),
+  srcTokenAmount: z.string(),
+  dstTokenAddress: z.string(),
+  dstTokenBlockchain: z.string(),
+  slippage: z.number().optional().default(1),
+  referrer: z.string().optional().default("valkryie"),
+});
+
+export const bridgeSwapSchema = bridgeQuoteSchema.extend({
+  fromAddress: z.string(),
 });
 
 export const portfolioRouter = router({
