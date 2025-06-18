@@ -13,6 +13,8 @@ The server application provides a type-safe API layer using tRPC, handling authe
 - **Database**: PostgreSQL with Drizzle ORM
 - **Authentication**: Wallet-based authentication
 - **AI Integration**: Google AI API integration
+- **Package Manager**: pnpm with workspace optimization
+- **Code Quality**: Biome.js for superior linting and formatting
 - **Validation**: Zod schemas for runtime type checking
 - **Type Safety**: 100% TypeScript coverage
 

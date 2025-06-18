@@ -13,6 +13,8 @@ The contracts package contains the core smart contracts for the Valkyrie Finance
 - **Testing**: Foundry's native testing framework
 - **Deployment**: Foundry scripts
 - **Standards**: ERC-20, ERC-4626, OpenZeppelin contracts
+- **Package Manager**: pnpm with workspace optimization
+- **Code Quality**: Biome.js for consistent formatting
 - **Gas Optimization**: Solidity compiler with 200 runs
 - **Security**: Multiple audit-ready implementations
 

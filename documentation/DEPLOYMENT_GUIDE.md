@@ -9,7 +9,7 @@ This guide covers the complete deployment process for Valkryie Finance, from loc
 Before deploying, ensure you have:
 
 - **Node.js**: Version 18 or higher
-- **pnpm**: Latest version for package management
+- **pnpm**: Version 8+ for package management (replaces bun)
 - **PostgreSQL**: Database for production data
 - **Vercel Account**: For frontend deployment
 - **Railway Account**: For backend deployment (alternative to Vercel)
@@ -46,12 +46,44 @@ NEXT_PUBLIC_ENABLE_AI_CHAT="true"
 NEXT_PUBLIC_ENABLE_WEB3="false"
 ```
 
+## Code Quality & Development Tools
+
+### Biome.js Configuration
+
+The project uses Biome.js for linting and formatting across all packages:
+
+```bash
+# Lint all packages
+pnpm lint
+
+# Format all packages
+pnpm format
+
+# Check specific package
+cd apps/web && pnpm lint
+cd apps/server && pnpm format
+```
+
+### Package Management with pnpm
+
+```bash
+# Install dependencies (uses pnpm workspaces)
+pnpm install
+
+# Add dependency to specific package
+pnpm add --filter @valkyrie/web react-query
+pnpm add --filter @valkyrie/server fastify
+
+# Remove dependency
+pnpm remove --filter @valkyrie/web old-package
+```
+
 ## Deployment Steps
 
 ### 1. Build Preparation
 
 ```bash
-# Install dependencies
+# Install dependencies with pnpm
 pnpm install
 
 # Build shared packages
@@ -64,6 +96,13 @@ cd apps/server
 pnpm db:generate
 pnpm db:migrate
 cd ../..
+
+# Run linting and formatting
+pnpm lint
+pnpm format
+
+# Run tests
+pnpm test
 ```
 
 ### 2. Frontend Deployment (Vercel)
@@ -144,7 +183,7 @@ For local development setup:
 git clone <repository-url>
 cd valkyrie-finance
 
-# Install dependencies  
+# Install dependencies with pnpm
 pnpm install
 
 # Setup environment
@@ -157,148 +196,28 @@ pnpm dev
 # Available development commands:
 pnpm dev:web      # Frontend (http://localhost:3001)  
 pnpm dev:server   # Backend (http://localhost:3000)
+pnpm lint         # Run Biome.js linting
+pnpm format       # Run Biome.js formatting
+pnpm test         # Run all tests
+```
+
+### Development Workflow
+
+```bash
+# Before committing
+pnpm lint          # Check code quality
+pnpm format        # Auto-fix formatting
+pnpm test          # Run test suite
+pnpm type-check    # TypeScript validation
+
+# Package-specific commands
+pnpm --filter @valkyrie/web dev
+pnpm --filter @valkyrie/server build
+pnpm --filter @valkyrie/contracts test
 ```
 
 ## Database Management
 
 ### Migration Workflow
 
-```bash
-# 1. Make schema changes in apps/server/src/db/schema/
-# 2. Generate migration
-cd apps/server
-pnpm db:generate
-
-# 3. Review generated migration
-# 4. Apply to development
-pnpm db:migrate
-
-# 5. For production (Railway example)
-railway run pnpm db:migrate
 ```
-
-### Backup and Restore
-
-```bash
-# Backup production database
-pg_dump $DATABASE_URL > backup.sql
-
-# Restore to development
-psql $LOCAL_DATABASE_URL < backup.sql
-```
-
-## Monitoring and Maintenance
-
-### Health Checks
-
-Both applications include health check endpoints:
-
-- **Web**: `GET /api/health`
-- **Server**: `GET /api/health`
-
-### Performance Monitoring
-
-1. **Vercel Analytics**: Automatic for frontend
-2. **Railway Metrics**: Built-in for backend
-3. **Database Performance**: Monitor query performance and connection pools
-
-### Error Tracking
-
-Implement error tracking service:
-
-```typescript
-// Example: Sentry integration
-import * as Sentry from "@sentry/nextjs"
-
-Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  environment: process.env.NODE_ENV,
-})
-```
-
-## Security Considerations
-
-### Environment Variables
-
-- Never commit `.env` files to version control
-- Use different secrets for each environment
-- Rotate secrets regularly
-
-### Database Security
-
-- Use connection pooling for production
-- Enable SSL for database connections
-- Regular security updates
-
-### API Security
-
-- Implement rate limiting
-- Use CORS properly
-- Validate all inputs
-- Keep dependencies updated
-
-## Troubleshooting
-
-### Common Deployment Issues
-
-1. **Build Failures**:
-   ```bash
-   # Check TypeScript errors
-   pnpm run type-check
-   
-   # Verify dependencies
-   pnpm install
-   ```
-
-2. **Database Connection Issues**:
-   ```bash
-   # Test connection
-   pnpm db:validate
-   ```
-
-3. **Environment Variable Issues**:
-   - Verify all required variables are set
-   - Check for typos in variable names
-   - Ensure values are properly escaped
-
-### Performance Issues
-
-1. **Slow API Responses**:
-   - Check database query performance
-   - Review N+1 query patterns
-   - Implement caching where appropriate
-
-2. **High Memory Usage**:
-   - Monitor memory leaks
-   - Optimize database connections
-   - Review large object handling
-
-## Scaling Considerations
-
-### Horizontal Scaling
-
-- **Frontend**: Automatic with Vercel
-- **Backend**: Scale Railway instances
-- **Database**: Consider read replicas
-
-### Caching Strategy
-
-- **CDN**: Vercel Edge Network
-- **API Caching**: Implement Redis for API responses
-- **Database Caching**: Query result caching
-
-### Load Testing
-
-```bash
-# Example load testing with Artillery
-npm install -g artillery
-artillery quick --count 100 --num 10 https://your-api.com/health
-```
-
-This deployment guide ensures a robust, scalable production environment for the Valkyrie Finance platform.
-
----
-
-**Last Updated**: December 2024
-**Version**: 2.0
-**Maintainer**: DevOps Team

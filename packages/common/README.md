@@ -88,8 +88,9 @@ pnpm run test
 # Type checking
 pnpm run type-check
 
-# Linting
+# Code quality with Biome.js
 pnpm run lint
+pnpm run format
 ```
 
 ## Types

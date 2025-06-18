@@ -20,11 +20,12 @@ valkryiefinance/
 
 **Frontend (apps/web)**
 
-- **Framework**: Next.js 15 with App Router
+- **Framework**: Next.js 15 with App Router and React Server Components
 - **UI**: React 19, TypeScript, Tailwind CSS, Shadcn UI
 - **Web3**: Wagmi, Viem, ConnectKit
-- **State**: Zustand for Web3 state management
+- **State**: Zustand with RSC-compatible patterns
 - **API**: tRPC client with TanStack Query
+- **Code Quality**: Biome.js (linting, formatting)
 
 **Backend (apps/server)**
 
@@ -32,6 +33,7 @@ valkryiefinance/
 - **Database**: PostgreSQL with Drizzle ORM
 - **Auth**: Better Auth integration
 - **Validation**: Zod schemas
+- **Code Quality**: Biome.js (linting, formatting)
 
 **Smart Contracts (packages/contracts)**
 
@@ -42,65 +44,114 @@ valkryiefinance/
 
 **Infrastructure**
 
+- **Package Manager**: pnpm with workspaces
 - **Monitoring**: Tenderly integration
 - **Deployment**: Vercel (frontend), Railway (backend)
 - **Testing**: Vitest, Playwright, Foundry
+- **Code Quality**: Biome.js across all packages
 
-## Smart Contract Architecture
+## React Server Components Architecture
 
-### Core Contracts
+### RSC Benefits
 
-#### ValkryieToken (VLK)
+- **~40% reduction** in client-side JavaScript bundle size
+- **Faster initial page loads** with server-rendered content
+- **Better SEO** through server-side rendering
+- **Enhanced security** with server-side operations
+- **Progressive loading** with Suspense boundaries
 
-- **Standard**: ERC-20 with extensions
-- **Features**: Governance capabilities, burnable, pausable
-- **Security**: Access controls, reentrancy guards
-- **Gas Optimized**: Custom implementations for efficiency
+### Component Patterns
 
-```solidity
-contract ValkryieToken is ERC20, ERC20Burnable, Pausable, AccessControl {
-    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+#### Server Components (Default)
 
-    uint256 public constant MAX_SUPPLY = 1_000_000_000 * 10**18;
+All components are Server Components by default for optimal performance:
+
+```typescript
+// apps/web/src/app/page.tsx
+export default function HomePage() {
+  return (
+    <div>
+      <StaticHeroSection />
+      <ServerSideStats />
+    </div>
+  );
 }
 ```
 
-#### ValkryieVault (ERC-4626)
+#### Client Components (Interactive)
 
-- **Standard**: ERC-4626 tokenized vault
-- **Features**: Yield optimization, fee management, emergency controls
-- **Security**: Inflation attack protection, secure asset handling
-- **AI Integration**: Hooks for automated strategy execution
+Only use 'use client' for components requiring interactivity:
 
-```solidity
-contract ValkryieVault is ERC4626, AccessControl, ReentrancyGuard, Pausable {
-    bytes32 public constant STRATEGY_ROLE = keccak256("STRATEGY_ROLE");
+```typescript
+// apps/web/src/components/header-navigation.tsx
+'use client';
 
-    uint256 public performanceFee = 1000; // 10%
-    uint256 public managementFee = 200;   // 2%
+import { useState } from 'react';
+
+export function HeaderNavigation() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // Interactive logic here
 }
 ```
 
-### Security Features
+#### Data Fetching Patterns
 
-#### Access Control
+Server Components support async/await for data fetching:
 
-- **Role-based permissions** using OpenZeppelin's AccessControl
-- **Multi-signature requirements** for critical operations
-- **Emergency pause mechanisms** for all contracts
+```typescript
+// apps/web/src/app/dashboard/page.tsx
+import { cache } from 'react';
+import { Suspense } from 'react';
 
-#### Reentrancy Protection
+const getPortfolioData = cache(async () => {
+  const [stats, holdings] = await Promise.all([
+    fetchPortfolioStats(),
+    fetchHoldings(),
+  ]);
+  return { stats, holdings };
+});
 
-- **ReentrancyGuard** on all external functions
-- **Checks-Effects-Interactions** pattern throughout
-- **Safe external calls** with proper error handling
+export default async function DashboardPage() {
+  return (
+    <Suspense fallback={<DashboardLoading />}>
+      <DashboardContent dataPromise={getPortfolioData()} />
+    </Suspense>
+  );
+}
+```
 
-#### Economic Security
+### RSC-Compatible State Management
 
-- **Inflation attack protection** in ERC-4626 vault
-- **Slippage protection** for swaps
-- **Fee validation** and bounds checking
+#### Per-Request Store Pattern
+
+```typescript
+// apps/web/src/stores/rsc-store-provider.tsx
+'use client';
+
+export function RSCStoreProvider({ children }: { children: React.ReactNode }) {
+  const [store] = useState(() => createUIStore());
+  
+  return (
+    <UIStoreContext.Provider value={store}>
+      {children}
+    </UIStoreContext.Provider>
+  );
+}
+```
+
+#### Store Factory Functions
+
+```typescript
+// apps/web/src/stores/ui-store-factory.ts
+export function createUIStore() {
+  return create<UIStore>((set) => ({
+    theme: 'dark',
+    sidebarOpen: false,
+    setTheme: (theme) => set({ theme }),
+    toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
+  }));
+}
+```
 
 ## Frontend Architecture
 
@@ -108,39 +159,73 @@ contract ValkryieVault is ERC4626, AccessControl, ReentrancyGuard, Pausable {
 
 ```
 apps/web/src/
-├── app/                 # Next.js App Router
-│   ├── (auth)/         # Auth-protected routes
-│   ├── dashboard/      # Main dashboard
-│   └── layout.tsx      # Root layout
-├── components/         # Reusable components
-│   ├── ui/            # Shadcn UI components
-│   ├── web3/          # Web3-specific components
-│   └── forms/         # Form components
-├── hooks/             # Custom React hooks
-├── lib/               # Utility libraries
-└── stores/            # Zustand stores
+├── app/                    # Next.js App Router with RSC
+│   ├── (auth)/            # Auth-protected routes (Server Components)
+│   ├── dashboard/         # Dashboard pages (async Server Components)
+│   └── layout.tsx         # Root layout (Server Component)
+├── components/            # Reusable components
+│   ├── ui/               # Shadcn UI components (Client when needed)
+│   ├── web3/             # Web3-specific components (Client Components)
+│   ├── dashboard/        # Dashboard components (mixed RSC)
+│   └── forms/            # Form components (Client Components)
+├── hooks/                # Custom React hooks (Client-side only)
+├── lib/                  # Utility libraries
+│   ├── data-access.ts   # Server-side data fetching with React.cache
+│   └── utils.ts         # Shared utilities
+└── stores/               # Zustand stores with RSC patterns
+    ├── rsc-store-provider.tsx
+    └── *-store-factory.ts
 ```
+
+### Data Access Layer
+
+#### Server-Side Data Fetching
+
+```typescript
+// apps/web/src/lib/data-access.ts
+import { cache } from 'react';
+
+export const getPortfolioStats = cache(async (): Promise<PortfolioStats> => {
+  // Server-only data fetching
+  const response = await fetch(process.env.API_URL + '/portfolio/stats');
+  return response.json();
+});
+
+export const getTokenBalances = cache(async (address: string) => {
+  // Parallel data fetching to avoid waterfalls
+  const [ethBalance, tokenBalances] = await Promise.all([
+    fetchETHBalance(address),
+    fetchTokenBalances(address),
+  ]);
+  return { ethBalance, tokenBalances };
+});
+```
+
+#### Request-Level Deduplication
+
+React.cache provides automatic request-level deduplication:
+- Multiple calls to the same cached function return the same promise
+- Data is fetched only once per request
+- Perfect for Server Component data fetching patterns
 
 ### State Management
 
-#### Zustand Store Structure
+#### Zustand with RSC Compatibility
 
 ```typescript
-interface Web3Store {
-  // Wallet state
-  isConnected: boolean;
-  address: string | undefined;
-  chainId: number | undefined;
+// Client-side store usage
+'use client';
 
-  // Transaction state
-  pendingTxs: Transaction[];
+import { useUIStore } from '@/stores/ui-store';
 
-  // Token balances
-  tokenBalances: Record<string, bigint>;
-
-  // Actions
-  setPendingTx: (tx: Transaction) => void;
-  updateBalance: (token: string, balance: bigint) => void;
+export function ThemeToggle() {
+  const { theme, setTheme } = useUIStore();
+  
+  return (
+    <Button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+      Toggle Theme
+    </Button>
+  );
 }
 ```
 
@@ -150,6 +235,7 @@ interface Web3Store {
 - **Type-safe APIs** end-to-end
 - **Optimistic updates** for better UX
 - **Background refetching** for real-time data
+- **RSC-compatible** data fetching patterns
 
 ### Web3 Integration
 

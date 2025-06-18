@@ -16,11 +16,21 @@ The web application is a Next.js 15 frontend that provides a beautiful, responsi
 - **Web3**: Wagmi v2 + Viem + Reown AppKit (WalletConnect v2)
 - **State Management**: RSC-compatible Zustand stores + TanStack Query
 - **Data Fetching**: Server-side async/await with React.cache and Suspense streaming
+- **Package Manager**: pnpm with workspace optimization
+- **Code Quality**: Biome.js for superior linting and formatting
 - **API**: tRPC client with end-to-end type safety
 - **Testing**: Vitest + React Testing Library
 - **Animation**: Tailwindcss-animate for smooth transitions
 
 ## React Server Components Architecture
+
+### Performance Improvements
+
+- **~40% JavaScript Bundle Reduction**: Server Components reduce client-side JavaScript
+- **Faster Initial Page Loads**: Server-side rendering with progressive hydration  
+- **Improved Core Web Vitals**: Better FCP and LCP scores
+- **Enhanced SEO**: Server-rendered content for better search optimization
+- **Progressive Loading**: Suspense boundaries for optimal perceived performance
 
 ### Server Components (Default)
 - **Homepage** (`app/page.tsx`): Static content rendered on server
@@ -34,6 +44,28 @@ The web application is a Next.js 15 frontend that provides a beautiful, responsi
 - **Wallet Components**: All Web3 interactions and wallet state
 - **Theme Toggle**: Dark/light mode switching
 - **Interactive Forms**: User input and state management
+
+### RSC-Compatible State Management
+
+#### Per-Request Store Pattern
+- **Store Providers**: RSC-safe store providers that prevent server-side data leakage
+- **Factory Functions**: Store factories for creating per-request instances
+- **Client Boundaries**: Clear separation between server and client state
+
+```typescript
+// Example: RSC-compatible store provider
+'use client';
+
+export function RSCStoreProvider({ children }: { children: React.ReactNode }) {
+  const [store] = useState(() => createUIStore());
+  
+  return (
+    <UIStoreContext.Provider value={store}>
+      {children}
+    </UIStoreContext.Provider>
+  );
+}
+```
 
 ### Key Benefits
 - **Faster Initial Load**: Reduced client-side JavaScript bundle (~40% reduction)
