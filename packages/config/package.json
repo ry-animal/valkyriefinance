@@ -1,0 +1,22 @@
+{
+  "name": "@valkyrie/config",
+  "version": "0.1.0",
+  "description": "Shared configurations for Valkyrie monorepo",
+  "private": true,
+  "main": "./index.js",
+  "exports": {
+    "./tailwind": "./tailwind.config.js",
+    "./tsconfig": "./tsconfig.json"
+  },
+  "scripts": {
+    "lint": "biome lint --write .",
+    "format": "biome format --write ."
+  },
+  "dependencies": {
+    "tailwindcss": "^4",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

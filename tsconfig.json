@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "lib": ["dom", "dom.iterable", "es6"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["apps/web/src/*"],
+      "@valkyrie/ui": ["packages/ui/src"],
+      "@valkyrie/ui/*": ["packages/ui/src/*"],
+      "@valkyrie/common": ["packages/common/src"],
+      "@valkyrie/common/*": ["packages/common/src/*"],
+      "@valkyrie/config": ["packages/config"],
+      "@valkyrie/config/*": ["packages/config/*"]
+    }
+  },
+  "include": [],
+  "exclude": ["node_modules", "dist", ".next", "storybook-static"],
+  "references": [
+    { "path": "./apps/web" },
+    { "path": "./apps/server" },
+    { "path": "./apps/storybook-host" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/common" },
+    { "path": "./packages/config" }
+  ]
+}

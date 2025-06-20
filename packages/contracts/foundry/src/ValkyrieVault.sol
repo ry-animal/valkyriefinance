@@ -17,7 +17,7 @@ import "./ValkyriePriceOracle.sol";
 import "./mocks/MockVRFCoordinator.sol";
 
 /**
- * @title ValkyrieVault  
+ * @title ValkyrieVault
  * @author Valkyrie Finance Team
  * @notice AI-driven yield-bearing vault that automatically optimizes strategy allocations across DeFi protocols
  * @dev AI-Driven ERC-4626 Vault with Chainlink Integration
@@ -32,7 +32,7 @@ import "./mocks/MockVRFCoordinator.sol";
  */
 contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
     using Math for uint256;
-    
+
     // Strategy configuration
     struct Strategy {
         address strategyAddress;
@@ -45,7 +45,7 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
         bool isActive;
         bytes32 name;
     }
-    
+
     // AI Strategy Parameters (from chainlink-for-ai-vault framework)
     struct AIStrategyConfig {
         uint256 rebalanceThreshold; // Percentage threshold for rebalancing (basis points)
@@ -63,7 +63,7 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
         uint256 allocation;
         bool isActive;
     }
-    
+
     // VRF Configuration (simplified for testing)
     struct VRFConfig {
         // VRFCoordinatorV2Interface coordinator;
@@ -72,53 +72,53 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
         uint32 callbackGasLimit;
         uint16 requestConfirmations;
     }
-    
+
     // Vault state
     mapping(uint256 => Strategy) public strategies;
     mapping(uint64 => CrossChainStrategy) public crossChainStrategies;
     uint256 public strategyCount;
     uint256 public totalAllocated;
-    
+
     // AI Integration
     ValkyriePriceOracle public immutable priceOracle;
     AIStrategyConfig public aiConfig;
     address public aiController;
     mapping(address => bool) public authorizedRebalancers;
     mapping(bytes32 => uint256) public pendingVRFRequests;
-    
+
     // Performance tracking
     uint256 public totalProfits;
     uint256 public totalLosses;
     uint256 public lastRebalance;
     uint256 public performanceFee = 200; // 2% in basis points
     address public feeRecipient;
-    
+
     // VRF state
     VRFConfig public vrfConfig;
     uint256 public randomSeed;
     uint256 public lastRandomUpdate;
-    
+
     // Vault configuration
     uint256 public maxTotalAssets;
     uint256 public minDeposit = 1e18;
     bool public paused = false;
     bool public emergencyMode = false;
-    
+
     // Constants
     uint256 public constant PRICE_PRECISION = 1e18;
     uint256 public constant MAX_ALLOCATION = 10000; // 100% in basis points
     uint256 public constant EMERGENCY_WITHDRAW_DELAY = 24 hours;
-    
+
     // Inflation attack protection constants
     uint256 private constant DEAD_SHARES = 1000; // 1000 shares permanently locked
     uint256 private constant MIN_SHARES = 1e3;   // Minimum shares to mint (1000 wei)
     address private constant DEAD_ADDRESS = 0x000000000000000000000000000000000000dEaD;
-    
+
     // Enhanced tracking for protocol metrics
     uint256 public totalProtocolFees;
     uint256 public lastRebalanceTime;
     uint256 public managementFee = 50;   // 0.5% annual management fee in basis points
-    
+
     // Events
     event StrategyAdded(uint256 indexed strategyId, address strategyAddress, bytes32 name);
     event StrategyUpdated(uint256 indexed strategyId, uint256 allocation, bool isActive);
@@ -133,7 +133,7 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
     event InflationAttackPrevented(address indexed depositor, uint256 assets, uint256 shares);
     event ProtocolFeesAccrued(uint256 performanceFee, uint256 managementFee);
     event VaultRebalanced(uint256 totalAssets, uint256 newYield);
-    
+
     // Errors
     error VaultPaused();
     error EmergencyModeActive();
@@ -149,32 +149,32 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
         if (paused) revert VaultPaused();
         _;
     }
-    
+
     modifier notEmergency() {
         if (emergencyMode) revert EmergencyModeActive();
         _;
     }
-    
+
     modifier onlyRebalancer() {
         if (!authorizedRebalancers[msg.sender] && msg.sender != owner() && msg.sender != aiController) {
             revert UnauthorizedRebalancer();
         }
         _;
     }
-    
+
     modifier inflationProtection(uint256 assets) {
         if (totalSupply() == 0) {
             require(assets >= MIN_SHARES, "Initial deposit too small");
         }
         _;
     }
-    
+
     /**
      * @notice Creates a new AI-driven vault with specified configuration
      * @dev Constructor initializes all vault parameters and Chainlink integrations
      * @param asset_ The underlying ERC20 asset for the vault
      * @param name_ Name of the vault token
-     * @param symbol_ Symbol of the vault token  
+     * @param symbol_ Symbol of the vault token
      * @param owner_ Initial owner address
      * @param feeRecipient_ Address to receive performance fees
      * @param priceOracle_ Address of the Valkyrie price oracle
@@ -186,7 +186,7 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
         address owner_,
         address feeRecipient_,
         address priceOracle_
-    ) 
+    )
         ERC4626(asset_)
         ERC20(name_, symbol_)
         Ownable(owner_)
@@ -196,7 +196,7 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
         lastRebalance = block.timestamp;
         lastRebalanceTime = block.timestamp;
         maxTotalAssets = type(uint256).max;
-        
+
         // Initialize AI configuration
         aiConfig = AIStrategyConfig({
             rebalanceThreshold: 500,    // 5%
@@ -206,12 +206,12 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
             aiControlEnabled: true,
             emergencyPauseEnabled: true
         });
-        
+
         // Mint dead shares to prevent inflation attacks
         // This ensures totalSupply() is never zero after initialization
         _mint(DEAD_ADDRESS, DEAD_SHARES);
     }
-    
+
     /**
      * @notice Adds a new yield strategy to the vault's portfolio
      * @dev Add a new yield strategy with AI integration
@@ -234,13 +234,13 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
         if (allocation > MAX_ALLOCATION || strategyAddress == address(0) || totalAllocated + allocation > MAX_ALLOCATION) {
             revert InvalidAllocation();
         }
-        
+
         // Cache strategyCount to avoid multiple storage reads
         uint256 strategyId = strategyCount;
         unchecked {
             strategyCount = strategyId + 1;
         }
-        
+
         // Use assembly for more efficient struct packing
         Strategy storage strategy = strategies[strategyId];
         strategy.strategyAddress = strategyAddress;
@@ -252,10 +252,10 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
         // strategy.actualApy defaults to 0
         strategy.riskScore = riskScore;
         strategy.chainSelector = chainSelector;
-        
+
         // Update totalAllocated once
         totalAllocated += allocation;
-        
+
         emit StrategyAdded(strategyId, strategyAddress, name);
     }
 
@@ -267,16 +267,16 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
     function rebalanceStrategy(uint256[] memory newAllocations) external onlyRebalancer nonReentrant notPaused {
         uint256 allocationsLength = newAllocations.length;
         if (allocationsLength != strategyCount) revert InvalidAllocation();
-        
+
         uint256 totalAllocation = 0;
         uint256 totalRiskScore = 0;
-        
+
         // Validate allocations and calculate risk - use unchecked for gas savings
         unchecked {
             for (uint256 i = 0; i < allocationsLength; ++i) {
                 uint256 allocation = newAllocations[i];
                 totalAllocation += allocation;
-                
+
                 if (allocation > 0) {
                     Strategy storage strategy = strategies[i];
                     if (strategy.isActive) {
@@ -285,12 +285,12 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
                 }
             }
         }
-        
+
         if (totalAllocation > MAX_ALLOCATION) revert InvalidAllocation();
-        
+
         // Cache aiConfig for gas savings
         AIStrategyConfig memory config = aiConfig;
-        
+
         // Check risk threshold
         if (totalRiskScore > config.riskThreshold) {
             emit RiskThresholdBreached(totalRiskScore, config.riskThreshold);
@@ -299,15 +299,21 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
                 return;
             }
         }
-        
+
         // Execute rebalancing
         _executeRebalance(newAllocations);
-        
+
         emit AIRebalanceExecuted(msg.sender, block.timestamp, newAllocations);
     }
 
     /**
-     * @dev Execute cross-chain rebalancing via CCIP
+     * @notice Executes cross-chain vault rebalancing using Chainlink CCIP
+     * @dev Sends rebalancing instructions to connected vaults on other chains via CCIP messaging
+     * Ensures proper allocation distribution across multiple blockchain networks
+     * @param chainSelector Target blockchain's Chainlink CCIP chain selector
+     * @param amount Amount of assets to allocate to the target chain strategy
+     * @param data Encoded rebalancing instructions and parameters for the target vault
+     * @return messageId Unique CCIP message identifier for tracking cross-chain operation
      */
     /*
     function rebalanceCrossChain(
@@ -318,7 +324,7 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
         CrossChainStrategy storage crossStrategy = crossChainStrategies[chainSelector];
         if (!crossStrategy.isActive) revert InvalidChainSelector();
         if (amount > totalAssets()) revert InsufficientAssets();
-        
+
         // Prepare CCIP message
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(crossStrategy.vaultAddress),
@@ -327,32 +333,35 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
             extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: 300000})),
             feeToken: address(0) // Native token
         });
-        
+
         message.tokenAmounts[0] = Client.EVMTokenAmount({
             token: address(asset()),
             amount: amount
         });
-        
+
         uint256 fees = IRouterClient(getRouter()).getFee(chainSelector, message);
-        
+
         messageId = IRouterClient(getRouter()).ccipSend{value: fees}(chainSelector, message);
-        
+
         emit CrossChainRebalance(chainSelector, amount, messageId);
-        
+
         return messageId;
     }
 
     /**
-     * @dev Handle incoming CCIP messages (commented out for testing)
+     * @notice Handles incoming cross-chain messages from Chainlink CCIP
+     * @dev Processes rebalancing instructions received from other chains via CCIP
+     * Validates message authenticity and executes cross-chain strategy updates
+     * @param message Decoded CCIP message containing rebalancing instructions and allocations
      */
     /*
     function _ccipReceive(Client.Any2EVMMessage memory message) internal override {
         // Handle cross-chain rebalancing instructions
         bytes memory data = message.data;
-        
+
         // Decode and execute cross-chain strategy updates
         (uint256[] memory allocations, uint256 riskScore) = abi.decode(data, (uint256[], uint256));
-        
+
         if (allocations.length == strategyCount && riskScore <= aiConfig.riskThreshold) {
             _executeRebalance(allocations);
         }
@@ -360,7 +369,10 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
     */
 
     /**
-     * @dev Request randomness for fair selection processes
+     * @notice Requests cryptographically secure randomness from Chainlink VRF
+     * @dev Initiates a VRF request for fair, tamper-proof random number generation
+     * Used for randomized strategy selection and risk mitigation processes
+     * @return requestId Unique identifier for tracking the VRF randomness request
      */
     function requestRandomness() external onlyOwner returns (bytes32 requestId) {
         if (vrfConfig.subscriptionId == 0) revert VRFNotConfigured();
@@ -387,7 +399,11 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
     }
 
     /**
-     * @dev Chainlink VRF mock callback for testing
+     * @notice Receives and processes randomness from Chainlink VRF coordinator
+     * @dev Callback function that handles VRF randomness fulfillment
+     * Updates the vault's random seed for use in strategy selection and risk management
+     * @param requestId Unique identifier that matches the original randomness request
+     * @param randomWords Array of random numbers provided by Chainlink VRF
      */
     function rawFulfillRandomWords(bytes32 requestId, uint256[] memory randomWords) public {
         // Optionally: require(msg.sender == address of mockVRFCoordinator)
@@ -400,7 +416,9 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
     }
 
     /**
-     * @dev Emergency pause functionality
+     * @notice Triggers emergency pause of vault deposits to protect user funds
+     * @dev Pauses new deposits while allowing existing withdrawals during emergency situations
+     * Can be called by the AI controller or vault owner when risks are detected
      */
     function pauseDeposits() external {
         if (msg.sender != aiController && msg.sender != owner()) revert UnauthorizedRebalancer();
@@ -408,7 +426,9 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
     }
 
     /**
-     * @dev Enable emergency withdrawal mode
+     * @notice Enables emergency withdrawal mode for immediate fund access
+     * @dev Activates emergency mode allowing users to withdraw funds without normal restrictions
+     * Used during critical situations where user fund safety is paramount
      */
     function enableEmergencyWithdrawals() external {
         if (msg.sender != aiController && msg.sender != owner()) revert UnauthorizedRebalancer();
@@ -417,7 +437,10 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
     }
 
     /**
-     * @dev Reduce leverage in emergency situations
+     * @notice Reduces leverage across all strategies during emergency situations
+     * @dev Automatically decreases strategy allocations to mitigate risk exposure
+     * Part of the automated risk management system for protecting user funds
+     * @param targetLeverageRatio Maximum leverage ratio to maintain (in basis points)
      */
     function reduceLeverage(uint256 targetLeverageRatio) external onlyRebalancer {
         // Implementation would reduce leverage across strategies
@@ -431,7 +454,7 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
                 }
             }
         }
-        
+
         emit AIRebalanceExecuted(msg.sender, block.timestamp, new uint256[](0));
     }
 
@@ -445,12 +468,15 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
         if (newConfig.riskThreshold > MAX_ALLOCATION) revert InvalidAllocation();
         if (newConfig.maxLeverage > 50000) revert InvalidAllocation(); // Max 5x
         if (newConfig.confidenceThreshold > MAX_ALLOCATION) revert InvalidAllocation();
-        
+
         aiConfig = newConfig;
     }
 
     /**
-     * @dev Set AI controller address
+     * @notice Updates the authorized AI controller address for automated operations
+     * @dev Changes which address can trigger AI-driven rebalancing and emergency functions
+     * Only the vault owner can update the AI controller for security
+     * @param newController Address of the new AI controller contract or account
      */
     function setAIController(address newController) external onlyOwner {
         address oldController = aiController;
@@ -459,7 +485,11 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
     }
 
     /**
-     * @dev Configure VRF parameters
+     * @notice Configures Chainlink VRF parameters for randomness generation
+     * @dev Sets up VRF subscription and callback parameters for secure random number generation
+     * @param keyHash Public key hash for VRF verification
+     * @param subscriptionId Chainlink VRF subscription ID for billing
+     * @param callbackGasLimit Gas limit for VRF callback execution
      */
     function configureVRF(
         bytes32 keyHash,
@@ -490,7 +520,7 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
         totalVaultAssets = totalAssets();
         totalShares = totalSupply();
         sharePrice = totalShares > 0 ? (totalVaultAssets * PRICE_PRECISION) / totalShares : PRICE_PRECISION;
-        
+
         // Calculate weighted risk score with cached values
         uint256 _strategyCount = strategyCount;
         unchecked {
@@ -501,12 +531,15 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
                 }
             }
         }
-        
+
         lastRebalanceTimestamp = lastRebalance;
     }
 
     /**
-     * @dev Get strategy information
+     * @notice Retrieves detailed information about a specific strategy
+     * @dev Returns complete strategy configuration including allocation, performance, and risk metrics
+     * @param strategyId Unique identifier of the strategy to query
+     * @return Complete Strategy struct containing all strategy parameters and current state
      */
     function getStrategy(uint256 strategyId) external view returns (Strategy memory) {
         if (strategyId >= strategyCount) revert InvalidAllocation();
@@ -514,21 +547,26 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
     }
 
     /**
-     * @dev Get AI configuration
+     * @notice Retrieves current AI configuration parameters
+     * @dev Returns all AI-related settings including risk thresholds and automation parameters
+     * @return Current AIStrategyConfig struct with all AI control parameters
      */
     function getAIConfig() external view returns (AIStrategyConfig memory) {
         return aiConfig;
     }
 
     /**
-     * @dev Internal function to execute rebalancing
+     * @notice Internal function that executes strategy rebalancing with new allocations
+     * @dev Updates strategy allocations and redistributes vault assets according to new percentages
+     * Validates total allocations and updates strategy asset tracking
+     * @param newAllocations Array of allocation percentages for each strategy (in basis points)
      */
     function _executeRebalance(uint256[] memory newAllocations) internal {
         // Use only actual vault balance, not totalAssets() to avoid double-counting
         uint256 vaultBalance = IERC20(asset()).balanceOf(address(this));
         uint256 newTotalAllocated = 0;
         uint256 _strategyCount = strategyCount;
-        
+
         unchecked {
             for (uint256 i = 0; i < _strategyCount; ++i) {
                 Strategy storage strategy = strategies[i];
@@ -540,13 +578,15 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
                 }
             }
         }
-        
+
         totalAllocated = newTotalAllocated;
         lastRebalance = block.timestamp;
     }
 
     /**
-     * @dev Internal function to pause vault
+     * @notice Internal function that pauses vault operations with a specified reason
+     * @dev Sets the pause state and emits appropriate events for emergency situations
+     * @param reason Human-readable explanation for why the vault was paused
      */
     function _pauseVault(string memory reason) internal {
         paused = true;
@@ -554,27 +594,38 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
     }
 
     /**
-     * @dev Override deposit to include AI risk checks
+     * @notice Deposits assets into the vault with AI-driven risk validation
+     * @dev Enhanced deposit function that includes automated risk assessment and inflation attack protection
+     * Validates deposits against maximum capacity and security thresholds before processing
+     * @param assets Amount of underlying assets to deposit
+     * @param receiver Address that will receive the vault shares
+     * @return shares Number of vault shares minted to the receiver
      */
     function deposit(uint256 assets, address receiver) public override notPaused notEmergency returns (uint256 shares) {
         // Check if deposit would exceed risk thresholds
         uint256 newTotalAssets = totalAssets() + assets;
         if (newTotalAssets > maxTotalAssets) revert InsufficientAssets();
-        
+
         // Calculate shares using the parent implementation
         shares = super.deposit(assets, receiver);
-        
+
         // Check if this could be an inflation attack attempt
         if (totalSupply() <= DEAD_SHARES + MIN_SHARES && shares < MIN_SHARES) {
             emit InflationAttackPrevented(receiver, assets, shares);
             revert("Deposit amount too small for vault security");
         }
-        
+
         return shares;
     }
 
     /**
-     * @dev Override withdraw to handle emergency mode
+     * @notice Withdraws assets from the vault with emergency mode support
+     * @dev Enhanced withdrawal function that handles both normal and emergency withdrawal scenarios
+     * In emergency mode, allows immediate withdrawals without normal restrictions
+     * @param assets Amount of underlying assets to withdraw
+     * @param receiver Address that will receive the withdrawn assets
+     * @param owner Address that owns the vault shares being redeemed
+     * @return shares Number of vault shares burned in the withdrawal
      */
     function withdraw(
         uint256 assets,
@@ -585,7 +636,7 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
             // In emergency mode, allow immediate withdrawals without normal restrictions
             return _emergencyWithdraw(assets, receiver, owner);
         }
-        
+
         return super.withdraw(assets, receiver, owner);
     }
 
@@ -598,13 +649,13 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
         address owner
     ) internal returns (uint256 shares) {
         shares = previewWithdraw(assets);
-        
+
         if (msg.sender != owner) {
             _spendAllowance(owner, msg.sender, shares);
         }
-        
+
         _withdraw(msg.sender, receiver, owner, assets, shares);
-        
+
         return shares;
     }
 
@@ -618,6 +669,14 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
         return IERC20(asset()).balanceOf(address(this));
     }
 
+    /**
+     * @notice Configures Chainlink VRF parameters for secure randomness generation
+     * @dev Updates all VRF-related parameters in a single transaction for atomic configuration
+     * @param keyHash VRF key hash for proof verification
+     * @param subscriptionId Chainlink VRF subscription ID for billing
+     * @param callbackGasLimit Gas limit for VRF callback execution
+     * @param requestConfirmations Minimum confirmations required before VRF fulfillment
+     */
     function setVRFConfig(bytes32 keyHash, uint64 subscriptionId, uint32 callbackGasLimit, uint16 requestConfirmations) external onlyOwner {
         vrfConfig = VRFConfig({
             keyHash: keyHash,
@@ -635,21 +694,21 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
         uint256 total = totalSupply();
         return total > DEAD_SHARES ? total - DEAD_SHARES : 0;
     }
-    
+
     /**
      * @notice Enhanced preview functions that account for fees
      * @dev Override to include management and performance fees in calculations
      */
     function previewDeposit(uint256 assets) public view override returns (uint256) {
         uint256 baseShares = super.previewDeposit(assets);
-        
+
         // Account for management fees in share calculation
         uint256 managementFeeAssets = _calculateManagementFees();
         if (managementFeeAssets > 0) {
             uint256 vaultTotalAssets = totalAssets() + managementFeeAssets;
             baseShares = assets * totalSupply() / vaultTotalAssets;
         }
-        
+
         return baseShares;
     }
 
@@ -657,11 +716,16 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
      * @dev Calculate management fees based on time elapsed
      * @return Management fee in underlying asset terms
      */
+    /**
+     * @notice Calculates accrued management fees based on time elapsed
+     * @dev Internal function that computes management fees using the annual fee rate
+     * @return Calculated management fee amount in underlying asset units
+     */
     function _calculateManagementFees() internal view returns (uint256) {
         if (lastRebalanceTime == 0) return 0;
-        
+
         uint256 timeElapsed = block.timestamp - lastRebalanceTime;
         uint256 annualFee = (totalAssets() * managementFee) / 10000; // managementFee in basis points
         return (annualFee * timeElapsed) / 365 days;
     }
-} 
+}

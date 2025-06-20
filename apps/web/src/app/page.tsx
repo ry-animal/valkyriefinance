@@ -6,6 +6,7 @@ import {
   BrutalSection,
   BrutalText,
 } from '@/components/brutalist/layout';
+import { SharedUITest } from '@/components/examples/shared-ui-test';
 import Footer from '@/components/footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -317,6 +318,14 @@ export default function HomePage() {
             </Button>
           </div>
         </div>
+      </BrutalSection>
+
+      {/* Component Library Test */}
+      <BrutalSection className="py-20 bg-gray-50 dark:bg-gray-900">
+        <BrutalHeadline size="giant" className="mb-16 text-center text-black dark:text-white">
+          COMPONENT LIBRARY
+        </BrutalHeadline>
+        <SharedUITest />
       </BrutalSection>
 
       <Footer />

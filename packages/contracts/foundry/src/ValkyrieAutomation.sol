@@ -39,11 +39,11 @@ contract ValkyrieAutomation is Ownable, ReentrancyGuard {
     }
 
     StrategyConfig public strategyConfig;
-    
+
     // State management
     uint256 public lastRebalanceTime;
     uint256 public lastUpkeepTime;
-    
+
     // Events
     event StrategyConfigUpdated(StrategyConfig newConfig);
 
@@ -62,7 +62,7 @@ contract ValkyrieAutomation is Ownable, ReentrancyGuard {
         donId = _donId;
         subscriptionId = _subscriptionId;
         gasLimit = 300000;
-        
+
         // Default strategy configuration
         strategyConfig = StrategyConfig({
             rebalanceThreshold: 500, // 5%
@@ -75,19 +75,27 @@ contract ValkyrieAutomation is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @notice Update strategy configuration
+     * @notice Updates the AI strategy configuration parameters for automated vault management
+     * @dev Modifies risk thresholds, rebalancing parameters, and automation settings
+     * Only the contract owner can update these critical parameters
+     * @param newConfig Complete StrategyConfig struct with updated automation parameters
      */
     function updateStrategyConfig(StrategyConfig calldata newConfig) external onlyOwner {
         if (newConfig.rebalanceThreshold > 5000) revert InvalidConfiguration(); // Max 50%
         if (newConfig.riskThreshold > 10000) revert InvalidConfiguration(); // Max 100%
         if (newConfig.maxLeverage > 50000) revert InvalidConfiguration(); // Max 5x
-        
+
         strategyConfig = newConfig;
         emit StrategyConfigUpdated(newConfig);
     }
 
     /**
-     * @notice Update Chainlink Functions configuration
+     * @notice Updates Chainlink Functions configuration for AI computation
+     * @dev Modifies DON ID, subscription settings, and gas limits for off-chain AI execution
+     * @param _donId Decentralized Oracle Network identifier for Functions requests
+     * @param _subscriptionId Chainlink Functions subscription ID for billing
+     * @param _gasLimit Gas limit for Functions callback execution
+     * @param _jobId Specific job identifier for AI computation tasks
      */
     function updateFunctionsConfig(
         bytes32 _donId,
@@ -102,9 +110,11 @@ contract ValkyrieAutomation is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @notice Get current strategy configuration
+     * @notice Retrieves the current strategy configuration parameters
+     * @dev Returns all automation settings including thresholds, leverage limits, and control flags
+     * @return Current StrategyConfig struct containing all automation parameters
      */
     function getStrategyConfig() external view returns (StrategyConfig memory) {
         return strategyConfig;
     }
-} 
+}

@@ -4,8 +4,33 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*", "!**/*.stories.{tsx,jsx,mdx}"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+    },
+    "build-storybook": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "**/*.stories.{tsx,jsx,mdx}",
+        ".storybook/**/*",
+        "../../../packages/ui/src/**/*.{tsx,jsx,ts,js}",
+        "!node_modules/**"
+      ],
+      "outputs": ["storybook-static/**"]
+    },
+    "storybook": {
+      "cache": false,
+      "persistent": true,
+      "inputs": [
+        "**/*.stories.{tsx,jsx,mdx}",
+        ".storybook/**/*",
+        "../../../packages/ui/src/**/*.{tsx,jsx,ts,js}"
+      ]
+    },
+    "test-storybook": {
+      "dependsOn": ["build-storybook"],
+      "inputs": ["**/*.stories.{tsx,jsx,mdx}", ".storybook/**/*"],
+      "outputs": []
     },
     "lint": {
       "dependsOn": ["^lint"]

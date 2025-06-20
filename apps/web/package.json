@@ -40,6 +40,7 @@
     "@trpc/tanstack-react-query": "^11.0.0",
     "@valkyrie/common": "file:../../packages/common",
     "@valkyrie/contracts": "file:../../packages/contracts",
+    "@valkyrie/ui": "workspace:^",
     "@wagmi/connectors": "^5.8.5",
     "@wagmi/core": "^2.17.3",
     "ai": "^4.3.16",
