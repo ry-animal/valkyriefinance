@@ -1,0 +1,109 @@
+name: Storybook & Chromatic
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 👈 Required to retrieve git history
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Run linting
+        run: pnpm lint
+
+      - name: Build Storybook
+        run: pnpm --filter storybook-host build-storybook
+
+      - name: Run Chromatic
+        uses: chromaui/action@latest
+        with:
+          # 👇 Chromatic projectToken, refer to the manage page to obtain it.
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          workingDir: apps/storybook-host
+          exitZeroOnChanges: true # 👈 Option to prevent the workflow from failing
+          # 👇 Run Chromatic on our pre-built Storybook
+          storybookBuildDir: storybook-static
+
+      - name: Deploy Storybook to GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./apps/storybook-host/storybook-static
+          destination_dir: storybook
+          cname: storybook.valkyriefinance.com # Optional: Add your custom domain
+
+  accessibility-testing:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright
+        run: pnpm --filter storybook-host exec playwright install --with-deps
+
+      - name: Start Storybook
+        run: pnpm --filter storybook-host storybook &
+
+      - name: Wait for Storybook
+        run: npx wait-on http://localhost:6006
+
+      - name: Run accessibility tests
+        run: pnpm --filter storybook-host test:a11y
+
+      - name: Run E2E tests
+        run: pnpm --filter storybook-host test:e2e

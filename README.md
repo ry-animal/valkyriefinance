@@ -406,3 +406,125 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Built with ❤️ for the future of DeFi**
 
 _Revolutionizing decentralized finance through AI-driven automation and intelligent yield optimization._
+
+## 📦 Workspaces
+
+```
+├── apps/
+│   ├── web/              # Main Next.js application
+│   └── storybook-host/   # Dedicated Storybook workspace
+├── packages/
+│   └── ui/               # Shared UI components library
+└── .github/workflows/    # CI/CD automation
+```
+
+## 🎨 Storybook & Design System
+
+Our comprehensive component library is documented and tested with Storybook:
+
+- **Live Storybook**: [https://ry-animal.github.io/valkyriefinance](https://ry-animal.github.io/valkyriefinance)
+- **Local Development**: `pnpm --filter storybook-host storybook`
+- **Visual Testing**: Integrated with Chromatic for visual regression testing
+- **Accessibility Testing**: Built-in a11y checks for all components
+
+### Storybook Features
+- 🔍 **Visual Testing** with Chromatic integration
+- ♿ **Accessibility Testing** with automated a11y checks
+- 🧪 **Interactive Testing** with Storybook test runner
+- 📱 **Responsive Design** testing across viewports
+- 🎯 **Component Documentation** with auto-generated docs
+
+## 🚀 Quick Start
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev
+
+# Start Storybook
+pnpm --filter storybook-host storybook
+
+# Run visual tests
+pnpm --filter storybook-host test:visual
+
+# Build for production
+pnpm build
+```
+
+## 🔧 Development Workflow
+
+### Component Development
+1. Create components in `packages/ui/src/components/`
+2. Write stories in `packages/ui/src/stories/`
+3. Test with Storybook: `pnpm --filter storybook-host storybook`
+4. Run visual tests: `pnpm --filter storybook-host test:visual`
+
+### Testing Strategy
+- **Unit Tests**: Component-level testing
+- **Visual Tests**: Chromatic visual regression testing
+- **Accessibility Tests**: Automated a11y compliance checks
+- **E2E Tests**: Full user journey testing
+
+### CI/CD Pipeline
+- ✅ **Automated Testing**: All tests run on every PR
+- 🎨 **Visual Testing**: Chromatic integration for design consistency
+- 📦 **Automated Deployment**: Storybook deployed to GitHub Pages
+- 🔍 **Code Quality**: Biome.js linting and formatting
+
+## 🌐 Deployment
+
+- **Main App**: Deployed on Vercel (production)
+- **Storybook**: Auto-deployed to GitHub Pages on main branch
+- **Preview Deployments**: Automatic preview builds for PRs
+
+## 🛠️ Scripts
+
+```bash
+# Development
+pnpm dev                              # Start all dev servers
+pnpm --filter storybook-host storybook # Start Storybook only
+
+# Building
+pnpm build                            # Build all packages
+pnpm --filter storybook-host build-storybook # Build Storybook only
+
+# Testing
+pnpm test                             # Run all tests
+pnpm --filter storybook-host test:visual     # Visual regression tests
+pnpm --filter storybook-host test:a11y       # Accessibility tests
+pnpm --filter storybook-host test:e2e        # End-to-end tests
+
+# Code Quality
+pnpm lint                             # Lint all packages
+pnpm format                           # Format all code
+```
+
+## 📚 Documentation
+
+- **Component Documentation**: Available in Storybook
+- **API Documentation**: Auto-generated from TypeScript
+- **Contributing Guide**: See `CONTRIBUTING.md`
+- **Deployment Guide**: See `DEPLOYMENT.md`
+
+## 🔗 Links
+
+- **Repository**: [https://github.com/ry-animal/valkyriefinance](https://github.com/ry-animal/valkyriefinance)
+- **Storybook**: [https://ry-animal.github.io/valkyriefinance](https://ry-animal.github.io/valkyriefinance)
+- **Production App**: Coming soon
+- **Design System**: View in Storybook
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes and write tests
+4. Run the test suite: `pnpm test`
+5. Commit your changes: `git commit -m 'Add amazing feature'`
+6. Push to the branch: `git push origin feature/amazing-feature`
+7. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
