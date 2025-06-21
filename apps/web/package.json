@@ -39,6 +39,7 @@
     "@trpc/server": "^11.0.0",
     "@trpc/tanstack-react-query": "^11.0.0",
     "@valkyrie/common": "file:../../packages/common",
+    "@valkyrie/config": "workspace:^",
     "@valkyrie/contracts": "file:../../packages/contracts",
     "@valkyrie/ui": "workspace:^",
     "@wagmi/connectors": "^5.8.5",

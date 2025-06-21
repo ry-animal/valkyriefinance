@@ -135,39 +135,22 @@ export const formatters = {
   },
 };
 
-/**
- * Validation utilities using centralized patterns
- *
- * MIGRATION NOTES:
- * - Replaced hardcoded regex patterns with centralized @valkyrie/config/constants
- * - Consistent validation across all packages
- * - Easy to update patterns globally
- *
- * OLD FILE BACKED UP AS: index.old.ts
- */
-
-import { VALIDATION_PATTERNS } from '@valkyrie/config/constants';
-
+// Validation utilities
 export const validators = {
   isValidAddress: (address: string): boolean => {
-    return VALIDATION_PATTERNS.ETHEREUM_ADDRESS.test(address);
+    return /^0x[a-fA-F0-9]{40}$/.test(address);
   },
 
   isValidTransactionHash: (hash: string): boolean => {
-    return VALIDATION_PATTERNS.TRANSACTION_HASH.test(hash);
+    return /^0x[a-fA-F0-9]{64}$/.test(hash);
   },
 
   isValidEmail: (email: string): boolean => {
-    // Keep email validation local as it's not blockchain-specific
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   },
 
   isValidUUID: (uuid: string): boolean => {
-    return VALIDATION_PATTERNS.UUID.test(uuid);
-  },
-
-  isValidPrivateKey: (key: string): boolean => {
-    return VALIDATION_PATTERNS.PRIVATE_KEY.test(key);
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid);
   },
 };
 

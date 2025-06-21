@@ -23,58 +23,13 @@ export function ConnectButton() {
     );
   }
 
-  // Use Reown AppKit's built-in button with custom styling
+  // Use Reown AppKit's built-in button with secure styling
   return (
     <div className="brutal-wallet-wrapper">
-      <style jsx global>{`
-                w3m-button {
-                    --w3m-color-mix: #000000;
-                    --w3m-color-mix-strength: 100%;
-                    --w3m-font-family: Impact, Arial Black, sans-serif;
-                    --w3m-border-radius-master: 0px;
-                    --w3m-font-size-master: 16px;
-                }
-                w3m-button::part(w3m-button) {
-                    background: #ffffff !important;
-                    color: #000000 !important;
-                    border: 4px solid #000000 !important;
-                    box-shadow: 8px 8px 0px 0px #000000 !important;
-                    font-family: Impact, Arial Black, sans-serif !important;
-                    font-weight: 900 !important;
-                    text-transform: uppercase !important;
-                    letter-spacing: 0.1em !important;
-                    padding: 12px 24px !important;
-                    transition: all 0.1s ease-out !important;
-                    border-radius: 0px !important;
-                }
-                w3m-button::part(w3m-button):hover {
-                    background: #000000 !important;
-                    color: #ffffff !important;
-                    transform: translate(2px, 2px) !important;
-                    box-shadow: 4px 4px 0px 0px #000000 !important;
-                }
-                /* Override any nested button styles */
-                w3m-button button {
-                    background: #ffffff !important;
-                    color: #000000 !important;
-                    border: 4px solid #000000 !important;
-                    box-shadow: 8px 8px 0px 0px #000000 !important;
-                    font-family: Impact, Arial Black, sans-serif !important;
-                    font-weight: 900 !important;
-                    text-transform: uppercase !important;
-                    letter-spacing: 0.1em !important;
-                    padding: 12px 24px !important;
-                    transition: all 0.1s ease-out !important;
-                    border-radius: 0px !important;
-                }
-                w3m-button button:hover {
-                    background: #000000 !important;
-                    color: #ffffff !important;
-                    transform: translate(2px, 2px) !important;
-                    box-shadow: 4px 4px 0px 0px #000000 !important;
-                }
-            `}</style>
-      <w3m-button />
+      {/* Secure: Use CSS module or external stylesheet instead of inline styles */}
+      <div className="w3m-brutal-theme">
+        <w3m-button />
+      </div>
     </div>
   );
 }

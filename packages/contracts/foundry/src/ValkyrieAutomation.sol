@@ -50,6 +50,14 @@ contract ValkyrieAutomation is Ownable, ReentrancyGuard {
     // Errors
     error InvalidConfiguration();
 
+    /**
+     * @notice Creates a new ValkyrieAutomation contract for AI-driven vault management
+     * @dev Initializes the automation system with vault, oracle, and Chainlink service connections
+     * @param _vault Address of the ValkyrieVault contract to automate
+     * @param _priceOracle Address of the ValkyriePriceOracle for market data
+     * @param _donId Chainlink Functions Decentralized Oracle Network identifier
+     * @param _subscriptionId Chainlink subscription ID for service billing
+     */
     constructor(
         address /* _functionsRouter */,
         address _vault,

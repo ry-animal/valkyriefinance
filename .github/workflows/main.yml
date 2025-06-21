@@ -31,6 +31,46 @@ jobs:
             contracts:
               - 'packages/contracts/**'
 
+  # Security scanning for dependencies
+  security-scan:
+    needs: changes
+    if: ${{ needs.changes.outputs.packages == 'true' || needs.changes.outputs.web == 'true' || needs.changes.outputs.server == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run dependency audit
+        run: pnpm audit --audit-level high
+
+      - name: Run security scan with Snyk
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high --file=package.json
+
+      - name: Upload Snyk results to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: snyk.sarif
+
   # Fast Biome checks (formatting and linting)
   biome-check:
     needs: changes
@@ -38,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       # Cache Biome binary for faster subsequent runs
       - name: Cache Biome
         uses: actions/cache@v4
@@ -47,22 +87,22 @@ jobs:
           key: ${{ runner.os }}-biome-${{ hashFiles('**/biome.json') }}
           restore-keys: |
             ${{ runner.os }}-biome-
-      
+
       - uses: pnpm/action-setup@v2
         with:
           version: 8
-          
+
       - uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'pnpm'
-          
+
       - run: pnpm install --frozen-lockfile
-      
+
       # Fast Biome CI check (includes formatting, linting, and import sorting)
       - name: Biome CI Check
         run: pnpm run check:ci
-        
+
       # Report formatting issues as annotations
       - name: Check Formatting
         if: failure()

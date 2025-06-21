@@ -3,20 +3,53 @@
   "version": "0.1.0",
   "description": "Shared configurations for Valkyrie monorepo",
   "private": true,
-  "main": "./index.js",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./env": {
+      "types": "./dist/env/index.d.ts",
+      "import": "./dist/env/index.js"
+    },
+    "./networks": {
+      "types": "./dist/networks/index.d.ts",
+      "import": "./dist/networks/index.js"
+    },
+    "./contracts": {
+      "types": "./dist/contracts/index.d.ts",
+      "import": "./dist/contracts/index.js"
+    },
+    "./constants": {
+      "types": "./dist/constants/index.d.ts",
+      "import": "./dist/constants/index.js"
+    },
     "./tailwind": "./tailwind.config.js",
     "./tsconfig": "./tsconfig.json"
   },
+  "files": [
+    "dist",
+    "tailwind.config.js",
+    "tsconfig.json"
+  ],
   "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
     "lint": "biome lint --write .",
-    "format": "biome format --write ."
+    "format": "biome format --write .",
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "zod": "^3.25.16",
+    "dotenv": "^16.5.0",
     "tailwindcss": "^4",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@types/node": "^22.10.5",
     "typescript": "^5.4.5"
   }
 }
