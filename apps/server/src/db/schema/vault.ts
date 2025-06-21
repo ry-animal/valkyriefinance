@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm';
 import {
   boolean,
   index,
@@ -24,7 +25,7 @@ export const vaultOperations = pgTable(
   'vault_operations',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: text('user_id')
+    userId: uuid('user_id')
       .references(() => user.id, { onDelete: 'cascade' })
       .notNull(),
     vaultAddress: text('vault_address').notNull(),
@@ -71,3 +72,15 @@ export const vaultStrategies = pgTable(
     ),
   })
 );
+
+export const vaultOperationsRelations = relations(vaultOperations, ({ one }) => ({
+  user: one(user, {
+    fields: [vaultOperations.userId],
+    references: [user.id],
+  }),
+}));
+
+export const vaultStrategiesRelations = relations(vaultStrategies, ({ one }) => ({
+  // Vault strategies don't have direct user relationships
+  // They are associated with vaults, not users
+}));

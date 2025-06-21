@@ -1,293 +1,197 @@
 'use client';
 
-import { AlertTriangle, BarChart, Bot, ShieldAlert, TrendingUp, Zap } from 'lucide-react';
+import { Brain, PieChart, Target, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import type { TokenAnalysis } from '@/types/api';
-import { trpc } from '@/utils/trpc';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-// Mock portfolio data
-const MOCK_PORTFOLIO = {
-  totalValue: '12500.00',
-  assets: [
-    { symbol: 'BTC', balance: '0.1', valueUsd: '4074.21', percentage: 32.59 },
-    { symbol: 'ETH', balance: '2.5', valueUsd: '6094.01', percentage: 48.75 },
-    { symbol: 'LINK', balance: '150', valueUsd: '2331.78', percentage: 18.66 },
-  ],
-  chainDistribution: { Ethereum: '12500.00' },
-};
+const currentAllocation = [
+  { asset: 'ETH', percentage: 45, value: '$4,500', color: 'bg-blue-500' },
+  { asset: 'USDC', percentage: 30, value: '$3,000', color: 'bg-green-500' },
+  { asset: 'WBTC', percentage: 15, value: '$1,500', color: 'bg-orange-500' },
+  { asset: 'UNI', percentage: 10, value: '$1,000', color: 'bg-purple-500' },
+];
 
-type OptimizationData = NonNullable<
-  Awaited<ReturnType<typeof trpc.ai.optimizePortfolioAdvanced.useMutation>>['data']
->;
+const optimizedAllocation = [
+  { asset: 'ETH', percentage: 35, value: '$3,500', color: 'bg-blue-500', change: -10 },
+  { asset: 'USDC', percentage: 35, value: '$3,500', color: 'bg-green-500', change: +5 },
+  { asset: 'WBTC', percentage: 20, value: '$2,000', color: 'bg-orange-500', change: +5 },
+  { asset: 'UNI', percentage: 10, value: '$1,000', color: 'bg-purple-500', change: 0 },
+];
+
+const strategies = [
+  {
+    name: 'Conservative Growth',
+    expectedReturn: '12.5%',
+    riskScore: 4.2,
+    description: 'Stable returns with lower volatility',
+    allocation: 'High stablecoin, moderate ETH',
+  },
+  {
+    name: 'Aggressive Growth',
+    expectedReturn: '28.7%',
+    riskScore: 8.1,
+    description: 'Maximum returns with higher risk',
+    allocation: 'High ETH/BTC, minimal stablecoins',
+  },
+  {
+    name: 'Balanced Portfolio',
+    expectedReturn: '18.3%',
+    riskScore: 6.5,
+    description: 'Optimal risk-reward balance',
+    allocation: 'Diversified across major assets',
+  },
+];
 
 export function PortfolioOptimization() {
-  const [optData, setOptData] = useState<OptimizationData | null>(null);
-  const optMutation = trpc.ai.optimizePortfolioAdvanced.useMutation({
-    onSuccess: setOptData,
-  });
+  const [selectedStrategy, setSelectedStrategy] = useState('Balanced Portfolio');
+  const [isOptimizing, setIsOptimizing] = useState(false);
 
-  const handleOptimize = () => {
-    optMutation.mutate(MOCK_PORTFOLIO);
+  const handleOptimize = async () => {
+    setIsOptimizing(true);
+    // Simulate AI optimization process
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setIsOptimizing(false);
   };
 
   return (
-    <Card className="col-span-full">
+    <Card>
       <CardHeader>
-        <CardTitle>Advanced AI Portfolio Optimization</CardTitle>
-        <CardDescription>
-          Get a comprehensive, multi-faceted optimization plan for your portfolio using the Valkyrie
-          AI Engine.
-        </CardDescription>
+        <CardTitle className="flex items-center space-x-2">
+          <Brain className="h-5 w-5" />
+          <span>AI Portfolio Optimization</span>
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        {!optData && !optMutation.isPending && (
-          <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg">
-            <h3 className="text-lg font-semibold mb-2">Ready to Optimize?</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Our AI will analyze your current holdings and provide a detailed plan to enhance
-              returns and manage risk.
-            </p>
-            <Button onClick={handleOptimize}>
-              <Zap className="mr-2 h-4 w-4" />
-              Optimize My Portfolio
-            </Button>
-          </div>
-        )}
+        <Tabs defaultValue="current" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="current">Current</TabsTrigger>
+            <TabsTrigger value="optimized">AI Optimized</TabsTrigger>
+            <TabsTrigger value="strategies">Strategies</TabsTrigger>
+          </TabsList>
 
-        {optMutation.isPending && <OptimizationSkeleton />}
-
-        {optMutation.isError && (
-          <div className="p-4 bg-destructive/10 text-destructive rounded-lg flex items-center gap-2">
-            <AlertTriangle size={16} />
-            <p className="text-sm font-medium">{optMutation.error.message}</p>
-          </div>
-        )}
-
-        {optData && (
-          <div className="space-y-6">
-            <OptimizationResult data={optData} />
-          </div>
-        )}
-      </CardContent>
-      {optData && (
-        <CardFooter>
-          <Button onClick={handleOptimize} variant="outline" className="w-full">
-            <Zap className="mr-2 h-4 w-4" />
-            Re-run Optimization
-          </Button>
-        </CardFooter>
-      )}
-    </Card>
-  );
-}
-
-function OptimizationResult({ data }: { data: OptimizationData }) {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {/* Column 1: Summary & Actions */}
-      <div className="lg:col-span-1 space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp size={20} />
-              Summary
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span>Confidence:</span>{' '}
-              <Badge>{(data.optimization.confidence * 100).toFixed(1)}%</Badge>
+          <TabsContent value="current" className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">Current Allocation</h3>
+              <Badge variant="outline" className="flex items-center space-x-1">
+                <Target className="h-3 w-3" />
+                <span>Total: $10,000</span>
+              </Badge>
             </div>
-            <div className="flex justify-between">
-              <span>Expected Return:</span>{' '}
-              <span className="font-medium text-green-600">
-                {(data.optimization.expectedReturn * 100).toFixed(2)}%
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span>Projected Risk:</span>{' '}
-              <span className="font-medium text-yellow-600">
-                {(data.optimization.risk * 100).toFixed(2)}%
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Zap size={20} />
-              Recommended Actions
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="list-disc list-inside space-y-1 text-sm">
-              {data.recommendations.map((rec: string) => (
-                <li key={rec.substring(0, 20)}>{rec}</li>
+
+            <div className="space-y-3">
+              {currentAllocation.map((item) => (
+                <div key={item.asset} className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-3 h-3 rounded-full ${item.color}`} />
+                      <span className="font-medium">{item.asset}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span>{item.percentage}%</span>
+                      <span className="text-muted-foreground">{item.value}</span>
+                    </div>
+                  </div>
+                  <Progress value={item.percentage} className="h-2" />
+                </div>
               ))}
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
+            </div>
+          </TabsContent>
 
-      {/* Column 2: Risk & Reasoning */}
-      <div className="lg:col-span-1 space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ShieldAlert size={20} />
-              Risk Metrics
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span>Volatility:</span>{' '}
-              <span>{(data.riskMetrics.volatility * 100).toFixed(2)}%</span>
+          <TabsContent value="optimized" className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">AI Optimized Allocation</h3>
+              <div className="flex items-center space-x-2">
+                <Badge variant="default" className="bg-green-500">
+                  +15.2% Expected Return
+                </Badge>
+                <Button onClick={handleOptimize} disabled={isOptimizing} size="sm">
+                  {isOptimizing ? 'Optimizing...' : 'Apply Changes'}
+                </Button>
+              </div>
             </div>
-            <div className="flex justify-between">
-              <span>Sharpe Ratio:</span> <span>{data.riskMetrics.sharpeRatio.toFixed(3)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Max Drawdown:</span>{' '}
-              <span>{(data.riskMetrics.maxDrawdown * 100).toFixed(2)}%</span>
-            </div>
-            <div className="flex justify-between">
-              <span>95% VaR:</span> <span>{(data.riskMetrics.var95 * 100).toFixed(2)}%</span>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Bot size={20} />
-              AI Reasoning
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">{data.optimization.reasoning}</p>
-          </CardContent>
-        </Card>
-      </div>
 
-      {/* Column 3: Market Analysis */}
-      <div className="lg:col-span-1">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart size={20} />
-              Market Analysis
-            </CardTitle>
-            <CardDescription>
-              Based on 1-day timeframe. Overall sentiment: {data.marketAnalysis.sentiment}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Token</TableHead>
-                  <TableHead>Trend</TableHead>
-                  <TableHead className="text-right">Price</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.marketAnalysis.tokenAnalysis.map((token: TokenAnalysis) => (
-                  <TableRow key={token.symbol || token.token}>
-                    <TableCell className="font-medium">{token.symbol || token.token}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={token.trend === 'bullish' ? 'text-green-600' : 'text-red-600'}
-                      >
-                        {token.trend}
+            <div className="space-y-3">
+              {optimizedAllocation.map((item) => (
+                <div key={item.asset} className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-3 h-3 rounded-full ${item.color}`} />
+                      <span className="font-medium">{item.asset}</span>
+                      {item.change !== 0 && (
+                        <Badge
+                          variant={item.change > 0 ? 'default' : 'destructive'}
+                          className="text-xs"
+                        >
+                          {item.change > 0 ? '+' : ''}
+                          {item.change}%
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span>{item.percentage}%</span>
+                      <span className="text-muted-foreground">{item.value}</span>
+                    </div>
+                  </div>
+                  <Progress value={item.percentage} className="h-2" />
+                </div>
+              ))}
+            </div>
+
+            <div className="p-4 bg-muted/50 rounded-lg">
+              <h4 className="font-semibold text-sm mb-2">Optimization Summary</h4>
+              <p className="text-sm text-muted-foreground">
+                AI recommends reducing ETH exposure and increasing USDC and WBTC allocation for
+                better risk-adjusted returns based on current market conditions.
+              </p>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="strategies" className="space-y-4">
+            <h3 className="font-semibold">AI Strategy Recommendations</h3>
+
+            <div className="space-y-3">
+              {strategies.map((strategy) => (
+                <button
+                  key={strategy.name}
+                  type="button"
+                  className={`w-full p-4 border rounded-lg cursor-pointer transition-colors text-left ${
+                    selectedStrategy === strategy.name
+                      ? 'border-primary bg-primary/5'
+                      : 'hover:bg-muted/50'
+                  }`}
+                  onClick={() => setSelectedStrategy(strategy.name)}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-semibold">{strategy.name}</h4>
+                    <div className="flex items-center space-x-2">
+                      <Badge variant="outline" className="bg-green-500/10">
+                        <TrendingUp className="h-3 w-3 mr-1" />
+                        {strategy.expectedReturn}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="text-right font-mono">
-                      ${token.price.toFixed(2)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-}
+                      <Badge variant="outline">Risk: {strategy.riskScore}/10</Badge>
+                    </div>
+                  </div>
 
-function OptimizationSkeleton() {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div className="lg:col-span-1 space-y-6">
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-6 w-2/3" />
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-4/5" />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-6 w-2/3" />
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-4/5" />
-          </CardContent>
-        </Card>
-      </div>
-      <div className="lg:col-span-1 space-y-6">
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-6 w-2/3" />
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-4/5" />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-6 w-2/3" />
-          </CardHeader>
-          <CardContent>
-            <Skeleton className="h-16 w-full" />
-          </CardContent>
-        </Card>
-      </div>
-      <div className="lg:col-span-1">
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-6 w-2/3" />
-          </CardHeader>
-          <CardContent>
-            <Skeleton className="h-24 w-full" />
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+                  <p className="text-sm text-muted-foreground mb-2">{strategy.description}</p>
+
+                  <div className="flex items-center space-x-2 text-xs">
+                    <PieChart className="h-3 w-3" />
+                    <span>{strategy.allocation}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <Button className="w-full" disabled={isOptimizing}>
+              Implement {selectedStrategy} Strategy
+            </Button>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   );
 }

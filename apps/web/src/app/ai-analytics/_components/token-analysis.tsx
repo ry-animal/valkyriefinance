@@ -1,206 +1,148 @@
 'use client';
 
-import { AlertTriangle, Bot } from 'lucide-react';
+import { Search, Star, TrendingDown, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { trpc } from '@/utils/trpc';
 
-type TokenAnalysisData = NonNullable<
-  Awaited<ReturnType<typeof trpc.ai.getTokenAnalysis.useMutation>>['data']
->;
+const tokenData = [
+  {
+    symbol: 'ETH',
+    name: 'Ethereum',
+    price: '$2,345.67',
+    change: '+5.2%',
+    trend: 'up' as const,
+    aiScore: 8.7,
+    recommendation: 'Strong Buy',
+    volume: '$1.2B',
+  },
+  {
+    symbol: 'USDC',
+    name: 'USD Coin',
+    price: '$1.00',
+    change: '+0.1%',
+    trend: 'up' as const,
+    aiScore: 9.1,
+    recommendation: 'Hold',
+    volume: '$2.8B',
+  },
+  {
+    symbol: 'WBTC',
+    name: 'Wrapped Bitcoin',
+    price: '$43,210.45',
+    change: '-2.3%',
+    trend: 'down' as const,
+    aiScore: 7.4,
+    recommendation: 'Buy',
+    volume: '$890M',
+  },
+  {
+    symbol: 'UNI',
+    name: 'Uniswap',
+    price: '$8.92',
+    change: '+12.8%',
+    trend: 'up' as const,
+    aiScore: 8.2,
+    recommendation: 'Strong Buy',
+    volume: '$145M',
+  },
+];
 
 export function TokenAnalysis() {
-  const [tokens, setTokens] = useState('BTC,ETH,LINK');
-  const [analysisResult, setAnalysisResult] = useState<TokenAnalysisData | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const tokenAnalysisMutation = trpc.ai.getTokenAnalysis.useMutation({
-    onSuccess: (data) => {
-      setAnalysisResult(data);
-    },
-  });
+  const filteredTokens = tokenData.filter(
+    (token) =>
+      token.symbol.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      token.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  const handleAnalyze = () => {
-    const tokenList = tokens
-      .split(',')
-      .map((t) => t.trim().toUpperCase())
-      .filter(Boolean);
-    if (tokenList.length > 0) {
-      tokenAnalysisMutation.mutate({ tokens: tokenList });
-    }
-  };
-
-  const getTrendColor = (trend: string) => {
-    switch (trend) {
-      case 'bullish':
-        return 'bg-green-500/20 text-green-700';
-      case 'bearish':
-        return 'bg-red-500/20 text-red-700';
+  const getRecommendationColor = (recommendation: string) => {
+    switch (recommendation) {
+      case 'Strong Buy':
+        return 'bg-green-500';
+      case 'Buy':
+        return 'bg-green-400';
+      case 'Hold':
+        return 'bg-yellow-500';
+      case 'Sell':
+        return 'bg-red-400';
+      case 'Strong Sell':
+        return 'bg-red-500';
       default:
-        return 'bg-gray-500/20 text-gray-700';
-    }
-  };
-
-  const getRecommendationColor = (rec: string) => {
-    switch (rec) {
-      case 'BUY':
-        return 'text-green-600';
-      case 'SELL':
-        return 'text-red-600';
-      default:
-        return 'text-gray-600';
+        return 'bg-gray-500';
     }
   };
 
   return (
     <Card>
       <CardHeader>
-        <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Bot size={20} /> AI Token Analysis
-            </CardTitle>
-            <CardDescription>
-              Enter comma-separated token symbols for AI-driven analysis.
-            </CardDescription>
-          </div>
+        <CardTitle className="flex items-center space-x-2">
+          <Star className="h-5 w-5" />
+          <span>AI Token Analysis</span>
+        </CardTitle>
+        <div className="relative">
+          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search tokens..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex gap-2 mb-4">
-          <Input
-            value={tokens}
-            onChange={(e) => setTokens(e.target.value)}
-            placeholder="e.g., BTC, ETH, SOL"
-            disabled={tokenAnalysisMutation.isPending}
-          />
-          <Button onClick={handleAnalyze} disabled={tokenAnalysisMutation.isPending}>
-            {tokenAnalysisMutation.isPending ? 'Analyzing...' : 'Analyze'}
-          </Button>
-        </div>
+        <div className="space-y-4">
+          {filteredTokens.map((token) => (
+            <div
+              key={token.symbol}
+              className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+            >
+              <div className="flex items-center space-x-4">
+                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                  <span className="font-bold text-sm">{token.symbol}</span>
+                </div>
+                <div>
+                  <h3 className="font-semibold">{token.name}</h3>
+                  <p className="text-sm text-muted-foreground">{token.symbol}</p>
+                </div>
+              </div>
 
-        {tokenAnalysisMutation.isError && (
-          <div className="p-4 bg-destructive/10 text-destructive rounded-lg flex items-center gap-2">
-            <AlertTriangle size={16} />
-            <p className="text-sm font-medium">{tokenAnalysisMutation.error.message}</p>
-          </div>
-        )}
+              <div className="text-right">
+                <div className="font-semibold">{token.price}</div>
+                <div className="flex items-center space-x-1 text-sm">
+                  {token.trend === 'up' ? (
+                    <TrendingUp className="h-3 w-3 text-green-500" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3 text-red-500" />
+                  )}
+                  <span className={token.trend === 'up' ? 'text-green-500' : 'text-red-500'}>
+                    {token.change}
+                  </span>
+                </div>
+              </div>
 
-        {tokenAnalysisMutation.isPending && <TokenAnalysisSkeleton />}
+              <div className="text-center">
+                <div className="text-lg font-bold">{token.aiScore}/10</div>
+                <div className="text-xs text-muted-foreground">AI Score</div>
+              </div>
 
-        {analysisResult && (
-          <div>
-            <div className="flex justify-between items-baseline mb-2">
-              <h4 className="font-semibold">
-                Analysis Result:{' '}
-                <span className="text-muted-foreground font-normal">
-                  {analysisResult.overallTrend}
-                </span>
-              </h4>
-              <p className="text-xs text-muted-foreground">
-                Updated: {new Date(analysisResult.timestamp).toLocaleString()}
-              </p>
+              <div className="text-right">
+                <Badge className={getRecommendationColor(token.recommendation)}>
+                  {token.recommendation}
+                </Badge>
+                <div className="text-xs text-muted-foreground mt-1">Vol: {token.volume}</div>
+              </div>
+
+              <Button variant="outline" size="sm">
+                Analyze
+              </Button>
             </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Token</TableHead>
-                  <TableHead className="text-right">Price (USD)</TableHead>
-                  <TableHead className="text-right">24h Change</TableHead>
-                  <TableHead>Trend</TableHead>
-                  <TableHead>AI Recommendation</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {analysisResult.tokenAnalysis.map((token: any) => (
-                  <TableRow key={token.token}>
-                    <TableCell className="font-medium">{token.token}</TableCell>
-                    <TableCell className="text-right font-mono">
-                      ${token.price.toFixed(2)}
-                    </TableCell>
-                    <TableCell
-                      className={`text-right ${token.change_24h >= 0 ? 'text-green-600' : 'text-red-600'}`}
-                    >
-                      {(token.change_24h * 100).toFixed(2)}%
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={getTrendColor(token.trend)}>
-                        {token.trend}
-                      </Badge>
-                    </TableCell>
-                    <TableCell
-                      className={`font-bold ${getRecommendationColor(token.recommendation)}`}
-                    >
-                      {token.recommendation} ({token.strength})
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )}
+          ))}
+        </div>
       </CardContent>
     </Card>
-  );
-}
-
-function TokenAnalysisSkeleton() {
-  return (
-    <div className="space-y-2">
-      <Skeleton className="h-8 w-1/4" />
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>
-              <Skeleton className="h-5 w-[80px]" />
-            </TableHead>
-            <TableHead>
-              <Skeleton className="h-5 w-[100px]" />
-            </TableHead>
-            <TableHead>
-              <Skeleton className="h-5 w-[60px]" />
-            </TableHead>
-            <TableHead>
-              <Skeleton className="h-5 w-[90px]" />
-            </TableHead>
-            <TableHead>
-              <Skeleton className="h-5 w-[120px]" />
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {Array.from({ length: 3 }).map((_, i) => (
-            <TableRow key={i}>
-              <TableCell>
-                <Skeleton className="h-5 w-[70px]" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-5 w-[90px]" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-5 w-[50px]" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-5 w-[80px]" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-5 w-[110px]" />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
   );
 }

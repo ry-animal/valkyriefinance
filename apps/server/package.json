@@ -15,7 +15,9 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "tsx src/db/migrate.ts",
+    "db:migrate:make": "drizzle-kit generate",
+    "db:apply-rls": "tsx src/db/scripts/apply-rls.ts"
   },
   "dependencies": {
     "next": "15.3.0",

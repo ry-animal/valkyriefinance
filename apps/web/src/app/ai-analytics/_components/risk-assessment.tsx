@@ -1,134 +1,139 @@
 'use client';
 
-import { AlertTriangle, Shield, ShieldAlert, ShieldCheck } from 'lucide-react';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { trpc } from '@/utils/trpc';
+import { Activity, AlertTriangle, Shield, TrendingUp } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 
-// Mock portfolio data - in a real app, this would come from a user store or API
-const MOCK_PORTFOLIO = {
-  totalValue: '12500.00',
-  assets: [
-    { symbol: 'BTC', balance: '0.1', valueUsd: '4074.21', percentage: 32.59 },
-    { symbol: 'ETH', balance: '2.5', valueUsd: '6094.01', percentage: 48.75 },
-    { symbol: 'LINK', balance: '150', valueUsd: '2331.78', percentage: 18.66 },
-  ],
-  chainDistribution: { Ethereum: '12500.00' },
-};
+const riskMetrics = [
+  {
+    title: 'Portfolio Risk',
+    score: 6.8,
+    maxScore: 10,
+    status: 'Medium',
+    color: 'bg-yellow-500',
+    icon: Shield,
+  },
+  {
+    title: 'Market Volatility',
+    score: 7.2,
+    maxScore: 10,
+    status: 'High',
+    color: 'bg-red-500',
+    icon: TrendingUp,
+  },
+  {
+    title: 'Liquidity Risk',
+    score: 4.1,
+    maxScore: 10,
+    status: 'Low',
+    color: 'bg-green-500',
+    icon: Activity,
+  },
+];
 
-type RiskData = NonNullable<
-  Awaited<ReturnType<typeof trpc.ai.assessPortfolioRisk.useMutation>>['data']
->;
+const riskFactors = [
+  {
+    factor: 'Smart Contract Risk',
+    impact: 'Medium',
+    probability: 'Low',
+    mitigation: 'Audited contracts only',
+  },
+  {
+    factor: 'Market Correlation',
+    impact: 'High',
+    probability: 'Medium',
+    mitigation: 'Diversification strategy',
+  },
+  {
+    factor: 'Impermanent Loss',
+    impact: 'Medium',
+    probability: 'High',
+    mitigation: 'Stable pair selection',
+  },
+];
 
 export function RiskAssessment() {
-  const [riskData, setRiskData] = useState<RiskData | null>(null);
-  const riskMutation = trpc.ai.assessPortfolioRisk.useMutation({
-    onSuccess: setRiskData,
-  });
-
-  const handleAssessRisk = () => {
-    riskMutation.mutate(MOCK_PORTFOLIO);
-  };
-
-  const getRiskIcon = (level: string) => {
-    switch (level) {
-      case 'High':
-        return <ShieldAlert className="h-10 w-10 text-destructive" />;
-      case 'Medium':
-        return <Shield className="h-10 w-10 text-yellow-500" />;
-      case 'Low':
-        return <ShieldCheck className="h-10 w-10 text-green-500" />;
+  const getImpactColor = (impact: string) => {
+    switch (impact.toLowerCase()) {
+      case 'low':
+        return 'bg-green-500';
+      case 'medium':
+        return 'bg-yellow-500';
+      case 'high':
+        return 'bg-red-500';
       default:
-        return <Shield size={40} />;
+        return 'bg-gray-500';
     }
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>AI Portfolio Risk Assessment</CardTitle>
-        <CardDescription>Get an AI-powered risk analysis of your portfolio.</CardDescription>
+        <CardTitle className="flex items-center space-x-2">
+          <AlertTriangle className="h-5 w-5" />
+          <span>Risk Assessment</span>
+        </CardTitle>
       </CardHeader>
-      <CardContent>
-        {!riskData && !riskMutation.isPending && (
-          <Button onClick={handleAssessRisk} className="w-full">
-            Assess My Portfolio Risk
-          </Button>
-        )}
+      <CardContent className="space-y-6">
+        {/* Risk Scores */}
+        <div className="space-y-4">
+          {riskMetrics.map((metric) => {
+            const Icon = metric.icon;
+            const percentage = (metric.score / metric.maxScore) * 100;
 
-        {riskMutation.isPending && <RiskSkeleton />}
-
-        {riskMutation.isError && (
-          <div className="p-4 bg-destructive/10 text-destructive rounded-lg flex items-center gap-2">
-            <AlertTriangle size={16} />
-            <p className="text-sm font-medium">{riskMutation.error.message}</p>
-          </div>
-        )}
-
-        {riskData && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-center gap-4 p-4 bg-muted rounded-lg">
-              {getRiskIcon(riskData.riskLevel)}
-              <div>
-                <p className="text-sm text-muted-foreground">Risk Level</p>
-                <p className="text-2xl font-bold">{riskData.riskLevel}</p>
+            return (
+              <div key={metric.title} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Icon className="h-4 w-4" />
+                    <span className="text-sm font-medium">{metric.title}</span>
+                  </div>
+                  <Badge className={metric.color}>{metric.status}</Badge>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Progress value={percentage} className="flex-1" />
+                  <span className="text-sm font-semibold">
+                    {metric.score}/{metric.maxScore}
+                  </span>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Risk Score</p>
-                <p className="text-2xl font-bold">{riskData.riskScore}/10</p>
+            );
+          })}
+        </div>
+
+        {/* Risk Factors */}
+        <div className="space-y-3">
+          <h4 className="font-semibold text-sm">Key Risk Factors</h4>
+          {riskFactors.map((factor, index) => (
+            <div
+              key={index}
+              className="p-3 border rounded-lg space-y-2 hover:bg-muted/50 transition-colors"
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-sm">{factor.factor}</span>
+                <div className="flex space-x-1">
+                  <Badge variant="outline" className={getImpactColor(factor.impact)}>
+                    {factor.impact}
+                  </Badge>
+                  <Badge variant="outline">{factor.probability}</Badge>
+                </div>
               </div>
+              <p className="text-xs text-muted-foreground">Mitigation: {factor.mitigation}</p>
             </div>
+          ))}
+        </div>
 
-            <div>
-              <h4 className="font-semibold mb-2">Warnings:</h4>
-              <ul className="list-disc list-inside space-y-1 text-sm">
-                {riskData.warnings.map((warning, i) => (
-                  <li key={i}>{warning}</li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-2">Recommendations:</h4>
-              <ul className="list-disc list-inside space-y-1 text-sm">
-                {riskData.recommendations.map((rec, i) => (
-                  <li key={i}>{rec}</li>
-                ))}
-              </ul>
-            </div>
-
-            <Button onClick={handleAssessRisk} className="w-full" variant="outline">
-              Re-assess Risk
-            </Button>
-          </div>
-        )}
+        {/* Overall Assessment */}
+        <div className="p-4 bg-muted/50 rounded-lg">
+          <h4 className="font-semibold text-sm mb-2">AI Recommendation</h4>
+          <p className="text-sm text-muted-foreground">
+            Current portfolio shows moderate risk levels. Consider reducing exposure to
+            high-volatility assets and increasing stable asset allocation for better risk-adjusted
+            returns.
+          </p>
+        </div>
       </CardContent>
     </Card>
-  );
-}
-
-function RiskSkeleton() {
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-center gap-4 p-4 bg-muted rounded-lg">
-        <Skeleton className="h-10 w-10 rounded-full" />
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-[80px]" />
-          <Skeleton className="h-8 w-[50px]" />
-        </div>
-      </div>
-      <div className="space-y-2">
-        <Skeleton className="h-5 w-1/3" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-2/3" />
-      </div>
-      <div className="space-y-2">
-        <Skeleton className="h-5 w-1/3" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-3/4" />
-      </div>
-    </div>
   );
 }

@@ -62,8 +62,8 @@ test.describe('Error Handling', () => {
     // Navigate to vault with proper wait
     await Promise.all([page.waitForURL('/vault'), page.click('nav >> text=VAULT')]);
 
-    // Navigate to AI chat with proper wait
-    await Promise.all([page.waitForURL('/ai'), page.click('nav >> text=AI CHAT')]);
+    // Navigate to AI Analytics with proper wait
+    await Promise.all([page.waitForURL('/ai-analytics'), page.click('nav >> text=AI Analytics')]);
 
     // Navigate back home with proper wait
     await Promise.all([page.waitForURL('/'), page.click('nav >> text=HOME')]);

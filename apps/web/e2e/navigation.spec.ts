@@ -42,7 +42,7 @@ test.describe('Navigation', () => {
     await expect(page.locator('nav >> text=HOME')).toBeVisible();
     await expect(page.locator('nav >> text=DASHBOARD')).toBeVisible();
     await expect(page.locator('nav >> text=VAULT')).toBeVisible();
-    await expect(page.locator('nav >> text=AI CHAT')).toBeVisible();
+    await expect(page.locator('nav >> text=AI Analytics')).toBeVisible();
 
     // Should have wallet connect button (use test id) - wait for it to be visible
     await expect(page.locator('[data-testid="connect-button"]').first()).toBeVisible({
@@ -68,7 +68,7 @@ test.describe('Navigation', () => {
     await expect(page.locator('div.md\\:hidden >> text=HOME')).toBeVisible();
     await expect(page.locator('div.md\\:hidden >> text=DASHBOARD')).toBeVisible();
     await expect(page.locator('div.md\\:hidden >> text=VAULT')).toBeVisible();
-    await expect(page.locator('div.md\\:hidden >> text=AI CHAT')).toBeVisible();
+    await expect(page.locator('div.md\\:hidden >> text=AI Analytics')).toBeVisible();
   });
 
   test('should highlight active navigation item', async ({ page }) => {

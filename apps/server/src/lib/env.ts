@@ -1,4 +1,9 @@
+import { config } from 'dotenv';
 import { z } from 'zod';
+
+// Load environment variables from .env files
+// Priority: .env.local > .env > .env.example
+config({ path: ['.env.local', '.env'] });
 
 const envSchema = z.object({
   // Database Configuration

@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm';
 import {
   boolean,
   index,
@@ -15,7 +16,7 @@ export const aiRecommendations = pgTable(
   'ai_recommendations',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: text('user_id').references(() => user.id),
+    userId: uuid('user_id').references(() => user.id),
     type: text('type').notNull(),
     title: text('title').notNull(),
     description: text('description').notNull(),
@@ -59,3 +60,15 @@ export const marketData = pgTable(
     timestampIdx: index('market_data_timestamp_idx').on(table.createdAt),
   })
 );
+
+export const aiRecommendationsRelations = relations(aiRecommendations, ({ one }) => ({
+  user: one(user, {
+    fields: [aiRecommendations.userId],
+    references: [user.id],
+  }),
+}));
+
+export const marketDataRelations = relations(marketData, ({ one }) => ({
+  // Market data doesn't have direct user relationships
+  // It's public data available to all users
+}));

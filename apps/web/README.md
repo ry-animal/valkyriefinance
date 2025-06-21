@@ -27,7 +27,7 @@ The web application is a Next.js 15 frontend that provides a beautiful, responsi
 ### Performance Improvements
 
 - **~40% JavaScript Bundle Reduction**: Server Components reduce client-side JavaScript
-- **Faster Initial Page Loads**: Server-side rendering with progressive hydration  
+- **Faster Initial Page Loads**: Server-side rendering with progressive hydration
 - **Improved Core Web Vitals**: Better FCP and LCP scores
 - **Enhanced SEO**: Server-rendered content for better search optimization
 - **Progressive Loading**: Suspense boundaries for optimal perceived performance
@@ -58,7 +58,7 @@ The web application is a Next.js 15 frontend that provides a beautiful, responsi
 
 export function RSCStoreProvider({ children }: { children: React.ReactNode }) {
   const [store] = useState(() => createUIStore());
-  
+
   return (
     <UIStoreContext.Provider value={store}>
       {children}
@@ -192,7 +192,7 @@ The application will be available at: http://localhost:3001
 
 ### 🤖 AI Features
 
-- **AI Chat Interface**: Interactive AI assistant for DeFi guidance
+- **AI Analytics**: Advanced market analytics and portfolio insights
 - **Strategy Recommendations**: AI-powered yield optimization suggestions
 - **Portfolio Analysis**: Intelligent portfolio performance insights
 - **Risk Assessment**: AI-driven risk analysis and alerts
@@ -242,12 +242,12 @@ import { getServerData } from '@/lib/data-access';
 export default async function MyPage() {
   // Data fetching happens on the server
   const data = await getServerData();
-  
+
   return (
     <div>
       <h1>Server Rendered Content</h1>
       <p>This content is rendered on the server</p>
-      
+
       {/* Pass server data to client component */}
       <MyClientComponent initialData={data} />
     </div>
@@ -270,7 +270,7 @@ interface Props {
 
 export function MyClientComponent({ initialData }: Props) {
   const [count, setCount] = useState(0);
-  
+
   return (
     <div>
       <p>Interactive content: {count}</p>
@@ -302,7 +302,7 @@ export const getDashboardData = cache(async () => {
     getActiveVaults(),
     getUserPortfolio(),
   ]);
-  
+
   return { stats, vaults, portfolio };
 });
 ```
@@ -319,7 +319,7 @@ export default function DashboardPage() {
   return (
     <div>
       <h1>Dashboard</h1>
-      
+
       {/* Stream UI as data becomes available */}
       <Suspense fallback={<DashboardStatsLoading />}>
         <DashboardStats />

@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm';
 import {
   boolean,
   index,
@@ -14,7 +15,7 @@ export const portfolios = pgTable(
   'portfolios',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: text('user_id')
+    userId: uuid('user_id')
       .references(() => user.id, { onDelete: 'cascade' })
       .notNull(),
     name: text('name').notNull(),
@@ -56,3 +57,18 @@ export const portfolioAssets = pgTable(
     ),
   })
 );
+
+export const portfoliosRelations = relations(portfolios, ({ one, many }) => ({
+  user: one(user, {
+    fields: [portfolios.userId],
+    references: [user.id],
+  }),
+  assets: many(portfolioAssets),
+}));
+
+export const portfolioAssetsRelations = relations(portfolioAssets, ({ one }) => ({
+  portfolio: one(portfolios, {
+    fields: [portfolioAssets.portfolioId],
+    references: [portfolios.id],
+  }),
+}));

@@ -129,4 +129,95 @@ export const vaultRouter = router({
         .returning();
       return strategy;
     }),
+
+  // Rebalance vault strategies (transactional)
+  rebalanceVaultStrategies: publicProcedure
+    .input(
+      z.object({
+        vaultAddress: z.string(),
+        strategies: z.array(
+          z.object({
+            strategyAddress: z.string(),
+            name: z.string(),
+            allocation: z.string(), // Percentage as decimal (e.g., "0.25" for 25%)
+            isActive: z.boolean(),
+          })
+        ),
+        operationDetails: z.object({
+          userId: z.string(),
+          transactionHash: z.string(),
+          blockNumber: z.number(),
+          gasUsed: z.string().optional(),
+        }),
+      })
+    )
+    .mutation(async ({ input }) => {
+      // Ensure allocations sum to 1 (100%)
+      const totalAllocation = input.strategies.reduce(
+        (sum, s) => sum + parseFloat(s.allocation),
+        0
+      );
+
+      if (Math.abs(totalAllocation - 1) > 0.0001) {
+        throw new Error(`Allocations must sum to 100% (got ${totalAllocation * 100}%)`);
+      }
+
+      // Use a transaction for atomic updates
+      return await db.transaction(async (tx) => {
+        // 1. Update all strategies
+        const updatedStrategies = await Promise.all(
+          input.strategies.map(async (strategy) => {
+            const [updated] = await tx
+              .insert(vaultStrategies)
+              .values({
+                vaultAddress: input.vaultAddress,
+                strategyAddress: strategy.strategyAddress,
+                name: strategy.name,
+                allocation: strategy.allocation,
+                isActive: strategy.isActive,
+              })
+              .onConflictDoUpdate({
+                target: [vaultStrategies.vaultAddress, vaultStrategies.strategyAddress],
+                set: {
+                  allocation: strategy.allocation,
+                  isActive: strategy.isActive,
+                  updatedAt: new Date(),
+                },
+              })
+              .returning();
+            return updated;
+          })
+        );
+
+        // 2. Record the rebalance operation
+        const [operation] = await tx
+          .insert(vaultOperations)
+          .values({
+            userId: input.operationDetails.userId,
+            vaultAddress: input.vaultAddress,
+            operationType: 'rebalance',
+            assetAmount: '0', // Rebalance doesn't move assets, just changes allocations
+            shareAmount: '0',
+            transactionHash: input.operationDetails.transactionHash,
+            blockNumber: input.operationDetails.blockNumber,
+            gasUsed: input.operationDetails.gasUsed,
+            metadata: {
+              strategies: input.strategies,
+              previousAllocations: await tx
+                .select({
+                  strategyAddress: vaultStrategies.strategyAddress,
+                  allocation: vaultStrategies.allocation,
+                })
+                .from(vaultStrategies)
+                .where(eq(vaultStrategies.vaultAddress, input.vaultAddress)),
+            },
+          })
+          .returning();
+
+        return {
+          strategies: updatedStrategies,
+          operation,
+        };
+      });
+    }),
 });

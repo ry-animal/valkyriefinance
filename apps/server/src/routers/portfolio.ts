@@ -73,4 +73,59 @@ export const portfolioRouter = router({
         .returning();
       return portfolio;
     }),
+
+  // Update portfolio assets (transactional)
+  updatePortfolioAssets: publicProcedure
+    .input(
+      z.object({
+        portfolioId: z.string(),
+        assets: z.array(
+          z.object({
+            tokenAddress: z.string(),
+            tokenSymbol: z.string(),
+            tokenDecimals: z.number(),
+            chainId: z.number(),
+            balance: z.string(),
+            valueUsd: z.string().optional(),
+          })
+        ),
+        totalValue: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      // Use a transaction to ensure data consistency
+      return await db.transaction(async (tx) => {
+        // 1. Delete existing assets
+        await tx.delete(portfolioAssets).where(eq(portfolioAssets.portfolioId, input.portfolioId));
+
+        // 2. Insert new assets
+        const newAssets =
+          input.assets.length > 0
+            ? await tx
+                .insert(portfolioAssets)
+                .values(
+                  input.assets.map((asset) => ({
+                    portfolioId: input.portfolioId,
+                    ...asset,
+                  }))
+                )
+                .returning()
+            : [];
+
+        // 3. Update portfolio total value
+        const [updatedPortfolio] = await tx
+          .update(portfolios)
+          .set({
+            totalValue: input.totalValue,
+            updatedAt: new Date(),
+          })
+          .where(eq(portfolios.id, input.portfolioId))
+          .returning();
+
+        return {
+          portfolio: updatedPortfolio,
+          assets: newAssets,
+        };
+      });
+    }),
 });

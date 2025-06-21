@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm';
 import {
   index,
   integer,
@@ -32,7 +33,7 @@ export const transactions = pgTable(
   'transactions',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: text('user_id')
+    userId: uuid('user_id')
       .references(() => user.id, { onDelete: 'cascade' })
       .notNull(),
     hash: text('hash').notNull().unique(),
@@ -58,3 +59,10 @@ export const transactions = pgTable(
     chainIdx: index('transactions_chain_idx').on(table.chainId),
   })
 );
+
+export const transactionsRelations = relations(transactions, ({ one }) => ({
+  user: one(user, {
+    fields: [transactions.userId],
+    references: [user.id],
+  }),
+}));

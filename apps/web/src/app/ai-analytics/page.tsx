@@ -7,9 +7,6 @@ import { PortfolioOptimization } from './_components/portfolio-optimization';
 import { RiskAssessment } from './_components/risk-assessment';
 import { TokenAnalysis } from './_components/token-analysis';
 
-// TODO: Create and import these components
-// import { PortfolioOptimization } from './_components/portfolio-optimization';
-
 export default function AIAnalyticsPage() {
   return (
     <ClientWalletGuard>
