@@ -1,17 +1,56 @@
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db, portfolioAssets, portfolios } from '@/db';
+import {
+  getPortfolioAssetsSummary,
+  getPortfolioCount,
+  getPortfolioDetails,
+  getPortfolioSummary,
+} from '@/db/queries/portfolio';
+import { cacheKeys, invalidateCache, withCache } from '@/lib/cache';
 import { publicProcedure, router } from '@/lib/trpc';
 
 export const portfolioRouter = router({
-  // Get user's portfolios
+  // Get user's portfolios (optimized with caching)
   getUserPortfolios: publicProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ input }) => {
-      return await db.select().from(portfolios).where(eq(portfolios.userId, input.userId));
+      return await withCache(
+        cacheKeys.userPortfolios(input.userId),
+        () => getPortfolioSummary(input.userId),
+        300000 // 5 minutes cache
+      );
     }),
 
-  // Create a new portfolio
+  // Get user's portfolio count (optimized count query with caching)
+  getUserPortfolioCount: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ input }) => {
+      return await withCache(
+        cacheKeys.userStats(input.userId),
+        () => getPortfolioCount(input.userId),
+        300000 // 5 minutes cache
+      );
+    }),
+
+  // Get single portfolio details (cached)
+  getPortfolioDetails: publicProcedure
+    .input(
+      z.object({
+        portfolioId: z.string(),
+        userId: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      const result = await withCache(
+        cacheKeys.portfolioDetails(input.portfolioId),
+        () => getPortfolioDetails(input.portfolioId, input.userId),
+        180000 // 3 minutes cache
+      );
+      return result[0] || null;
+    }),
+
+  // Create a new portfolio (with cache invalidation)
   createPortfolio: publicProcedure
     .input(
       z.object({
@@ -23,20 +62,25 @@ export const portfolioRouter = router({
     )
     .mutation(async ({ input }) => {
       const [portfolio] = await db.insert(portfolios).values(input).returning();
+
+      // Invalidate user's portfolio cache
+      invalidateCache.userPortfolios(input.userId);
+
       return portfolio;
     }),
 
-  // Get portfolio assets
+  // Get portfolio assets (optimized with caching)
   getPortfolioAssets: publicProcedure
     .input(z.object({ portfolioId: z.string() }))
     .query(async ({ input }) => {
-      return await db
-        .select()
-        .from(portfolioAssets)
-        .where(eq(portfolioAssets.portfolioId, input.portfolioId));
+      return await withCache(
+        cacheKeys.portfolioAssets(input.portfolioId),
+        () => getPortfolioAssetsSummary(input.portfolioId),
+        120000 // 2 minutes cache (shorter for more dynamic data)
+      );
     }),
 
-  // Add asset to portfolio
+  // Add asset to portfolio (with cache invalidation)
   addAssetToPortfolio: publicProcedure
     .input(
       z.object({
@@ -51,10 +95,14 @@ export const portfolioRouter = router({
     )
     .mutation(async ({ input }) => {
       const [asset] = await db.insert(portfolioAssets).values(input).returning();
+
+      // Invalidate portfolio cache
+      invalidateCache.portfolio(input.portfolioId);
+
       return asset;
     }),
 
-  // Update portfolio total value
+  // Update portfolio total value (with cache invalidation)
   updatePortfolioValue: publicProcedure
     .input(
       z.object({
@@ -71,6 +119,10 @@ export const portfolioRouter = router({
         })
         .where(eq(portfolios.id, input.portfolioId))
         .returning();
+
+      // Invalidate portfolio cache
+      invalidateCache.portfolio(input.portfolioId);
+
       return portfolio;
     }),
 

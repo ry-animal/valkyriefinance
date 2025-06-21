@@ -1,4 +1,5 @@
 import { publicProcedure, router } from '../lib/trpc';
+import { adminRouter } from './admin';
 import { aiRouter } from './ai';
 import { analyticsRouter } from './analytics';
 import { authRouter } from './auth';
@@ -18,5 +19,6 @@ export const appRouter = router({
   analytics: analyticsRouter,
   ai: aiRouter,
   bridge: bridgeRouter,
+  admin: adminRouter,
 });
 export type AppRouter = typeof appRouter;
