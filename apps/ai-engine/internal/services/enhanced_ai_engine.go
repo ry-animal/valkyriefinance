@@ -2,6 +2,8 @@ package services
 
 import (
 	"context"
+	"fmt"
+	"log/slog"
 	"math"
 	"sort"
 	"time"
@@ -12,15 +14,24 @@ import (
 // EnhancedAIEngine provides improved AI capabilities
 type EnhancedAIEngine struct {
 	running bool
+	logger  *slog.Logger
 }
 
 // NewEnhancedAIEngine creates a new enhanced AI engine
 func NewEnhancedAIEngine() *EnhancedAIEngine {
-	return &EnhancedAIEngine{}
+	return &EnhancedAIEngine{
+		logger: slog.Default().With("component", "ai-engine"),
+	}
 }
 
 // GetRebalanceRecommendation provides intelligent portfolio rebalancing
 func (e *EnhancedAIEngine) GetRebalanceRecommendation(ctx context.Context, portfolio models.Portfolio) (*models.RebalanceRecommendation, error) {
+	start := time.Now()
+	e.logger.Info("starting portfolio rebalance recommendation",
+		"portfolio_id", portfolio.ID,
+		"positions_count", len(portfolio.Positions),
+	)
+
 	// Enhanced portfolio analysis
 	analysis := e.analyzePortfolio(portfolio)
 
@@ -33,7 +44,7 @@ func (e *EnhancedAIEngine) GetRebalanceRecommendation(ctx context.Context, portf
 	// Calculate confidence based on portfolio quality
 	confidence := e.calculateConfidence(portfolio, analysis)
 
-	return &models.RebalanceRecommendation{
+	recommendation := &models.RebalanceRecommendation{
 		PortfolioID:    portfolio.ID,
 		Timestamp:      time.Now(),
 		Confidence:     confidence,
@@ -41,11 +52,37 @@ func (e *EnhancedAIEngine) GetRebalanceRecommendation(ctx context.Context, portf
 		Risk:           analysis.Risk,
 		Actions:        actions,
 		Reasoning:      e.generateReasoning(analysis, actions),
-	}, nil
+	}
+
+	duration := time.Since(start)
+	e.logger.Info("completed portfolio rebalance recommendation",
+		"portfolio_id", portfolio.ID,
+		"confidence", confidence,
+		"actions_count", len(actions),
+		"duration_ms", duration.Milliseconds(),
+	)
+
+	return recommendation, nil
 }
 
 // CalculateRiskMetrics provides sophisticated risk analysis
 func (e *EnhancedAIEngine) CalculateRiskMetrics(ctx context.Context, portfolio models.Portfolio) (*models.RiskMetrics, error) {
+	start := time.Now()
+	e.logger.Info("starting risk metrics calculation",
+		"portfolio_id", portfolio.ID,
+		"positions_count", len(portfolio.Positions),
+	)
+
+	// Validate portfolio
+	if len(portfolio.Positions) == 0 {
+		err := fmt.Errorf("portfolio %s has no positions", portfolio.ID)
+		e.logger.Error("risk calculation failed - empty portfolio",
+			"portfolio_id", portfolio.ID,
+			"error", err,
+		)
+		return nil, fmt.Errorf("failed to calculate risk metrics: %w", err)
+	}
+
 	// Volatility based on token types and market conditions
 	volatility := e.calculatePortfolioVolatility(portfolio.Positions)
 
@@ -62,7 +99,7 @@ func (e *EnhancedAIEngine) CalculateRiskMetrics(ctx context.Context, portfolio m
 	// Beta calculation relative to crypto market
 	beta := e.calculateBeta(portfolio.Positions)
 
-	return &models.RiskMetrics{
+	metrics := &models.RiskMetrics{
 		PortfolioID: portfolio.ID,
 		VaR95:       var95,
 		VaR99:       var99,
@@ -71,11 +108,37 @@ func (e *EnhancedAIEngine) CalculateRiskMetrics(ctx context.Context, portfolio m
 		MaxDrawdown: maxDrawdown,
 		Beta:        beta,
 		Timestamp:   time.Now(),
-	}, nil
+	}
+
+	duration := time.Since(start)
+	e.logger.Info("completed risk metrics calculation",
+		"portfolio_id", portfolio.ID,
+		"volatility", volatility,
+		"sharpe_ratio", sharpeRatio,
+		"duration_ms", duration.Milliseconds(),
+	)
+
+	return metrics, nil
 }
 
 // GetMarketAnalysis provides enhanced market analysis
 func (e *EnhancedAIEngine) GetMarketAnalysis(ctx context.Context, tokens []string, timeframe string) (*models.MarketAnalysis, error) {
+	start := time.Now()
+	e.logger.Info("starting market analysis",
+		"tokens", tokens,
+		"timeframe", timeframe,
+		"tokens_count", len(tokens),
+	)
+
+	// Validate input
+	if len(tokens) == 0 {
+		err := fmt.Errorf("no tokens provided for analysis")
+		e.logger.Error("market analysis failed - no tokens",
+			"error", err,
+		)
+		return nil, fmt.Errorf("failed to get market analysis: %w", err)
+	}
+
 	tokenAnalysis := make([]models.TokenAnalysis, len(tokens))
 
 	for i, token := range tokens {
@@ -87,11 +150,20 @@ func (e *EnhancedAIEngine) GetMarketAnalysis(ctx context.Context, tokens []strin
 	// Market sentiment analysis
 	sentiment := e.analyzeMarketSentiment(tokens)
 
-	return &models.MarketAnalysis{
+	analysis := &models.MarketAnalysis{
 		TokenAnalysis: tokenAnalysis,
 		Sentiment:     sentiment,
 		Timestamp:     time.Now(),
-	}, nil
+	}
+
+	duration := time.Since(start)
+	e.logger.Info("completed market analysis",
+		"tokens_count", len(tokens),
+		"sentiment_score", sentiment.FearGreedIndex,
+		"duration_ms", duration.Milliseconds(),
+	)
+
+	return analysis, nil
 }
 
 // Portfolio Analysis Helper Functions
@@ -298,9 +370,9 @@ func (e *EnhancedAIEngine) calculateVaR(portfolio models.Portfolio, confidence f
 	}
 
 	// VaR = Z-score * volatility * sqrt(time period) * portfolio value
-	// Assuming 1-day VaR
+	// Assuming 1-day VaR, return as negative value (loss)
 	var_ := zScore * volatility * math.Sqrt(1.0/365.0) // Daily VaR
-	return var_
+	return -var_ // Return negative value to represent potential loss
 }
 
 func (e *EnhancedAIEngine) calculateSharpeRatio(positions []models.PortfolioPosition, volatility float64) float64 {
@@ -322,8 +394,8 @@ func (e *EnhancedAIEngine) calculateSharpeRatio(positions []models.PortfolioPosi
 
 func (e *EnhancedAIEngine) estimateMaxDrawdown(positions []models.PortfolioPosition, volatility float64) float64 {
 	// Estimate max drawdown based on volatility and historical patterns
-	// This is a simplified estimation
-	return volatility * 2.5 // Rough estimation: 2.5x volatility
+	// This is a simplified estimation, return as negative value (loss)
+	return -volatility * 2.5 // Rough estimation: 2.5x volatility as negative (loss)
 }
 
 func (e *EnhancedAIEngine) calculateBeta(positions []models.PortfolioPosition) float64 {
