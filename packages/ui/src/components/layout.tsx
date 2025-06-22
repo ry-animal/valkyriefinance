@@ -1,21 +1,29 @@
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 
 interface BrutalGridProps extends React.HTMLAttributes<HTMLDivElement> {
-  columns?: 'auto' | 'brutal' | number;
+  cols?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 }
 
 const BrutalGrid = React.forwardRef<HTMLDivElement, BrutalGridProps>(
-  ({ className, columns = 'brutal', children, ...props }, ref) => {
-    const gridClass =
-      typeof columns === 'number'
-        ? `grid-cols-${columns}`
-        : columns === 'brutal'
-          ? 'grid-cols-brutal'
-          : 'grid-cols-brutal-auto';
+  ({ className, cols = 12, children, ...props }, ref) => {
+    const gridClass = {
+      1: 'grid-cols-1',
+      2: 'grid-cols-2',
+      3: 'grid-cols-3',
+      4: 'grid-cols-4',
+      5: 'grid-cols-5',
+      6: 'grid-cols-6',
+      7: 'grid-cols-7',
+      8: 'grid-cols-8',
+      9: 'grid-cols-9',
+      10: 'grid-cols-10',
+      11: 'grid-cols-11',
+      12: 'grid-cols-12',
+    }[cols];
 
     return (
-      <div ref={ref} className={cn('grid gap-grid p-grid', gridClass, className)} {...props}>
+      <div ref={ref} className={cn('grid', gridClass, className)} {...props}>
         {children}
       </div>
     );
@@ -24,19 +32,17 @@ const BrutalGrid = React.forwardRef<HTMLDivElement, BrutalGridProps>(
 BrutalGrid.displayName = 'BrutalGrid';
 
 interface BrutalSectionProps extends React.HTMLAttributes<HTMLElement> {
-  variant?: 'default' | 'inverted' | 'bordered';
+  fullWidth?: boolean;
 }
 
 const BrutalSection = React.forwardRef<HTMLElement, BrutalSectionProps>(
-  ({ className, variant = 'default', children, ...props }, ref) => {
-    const variantClasses = {
-      default: 'bg-white text-black',
-      inverted: 'bg-black text-white',
-      bordered: 'bg-white text-black border-b-4 border-black',
-    };
-
+  ({ className, fullWidth = false, children, ...props }, ref) => {
     return (
-      <section ref={ref} className={cn('w-full', variantClasses[variant], className)} {...props}>
+      <section
+        ref={ref}
+        className={cn('py-8 px-4', fullWidth ? 'w-full' : 'max-w-7xl mx-auto', className)}
+        {...props}
+      >
         {children}
       </section>
     );
@@ -45,35 +51,30 @@ const BrutalSection = React.forwardRef<HTMLElement, BrutalSectionProps>(
 BrutalSection.displayName = 'BrutalSection';
 
 interface BrutalHeadlineProps extends React.HTMLAttributes<HTMLHeadingElement> {
-  level?: 1 | 2 | 3 | 4 | 5 | 6;
-  size?: 'mega' | 'giant' | 'massive' | 'huge' | 'large' | 'medium';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'huge' | 'massive' | 'mega' | 'giant';
 }
 
 const BrutalHeadline = React.forwardRef<HTMLHeadingElement, BrutalHeadlineProps>(
-  ({ className, level = 1, size = 'massive', children, ...props }, ref) => {
-    const Comp = `h${level}` as keyof JSX.IntrinsicElements;
+  ({ className, size = 'lg', children, ...props }, ref) => {
+    const sizeClass = {
+      sm: 'text-lg font-black',
+      md: 'text-xl font-black',
+      lg: 'text-2xl font-black',
+      xl: 'text-3xl font-black',
+      huge: 'text-4xl font-black',
+      massive: 'text-5xl font-black',
+      mega: 'text-6xl font-black',
+      giant: 'text-7xl font-black',
+    }[size];
 
-    const sizeClasses = {
-      mega: 'text-mega',
-      giant: 'text-giant',
-      massive: 'text-massive',
-      huge: 'text-huge',
-      large: 'text-6xl',
-      medium: 'text-4xl',
-    };
-
-    return React.createElement(
-      Comp,
-      {
-        ref,
-        className: cn(
-          'font-brutal font-black uppercase tracking-tighter leading-none',
-          sizeClasses[size],
-          className
-        ),
-        ...props,
-      },
-      children
+    return (
+      <h1
+        ref={ref}
+        className={cn(sizeClass, 'uppercase tracking-tight leading-none', className)}
+        {...props}
+      >
+        {children}
+      </h1>
     );
   }
 );
@@ -108,29 +109,28 @@ const BrutalBox = React.forwardRef<HTMLDivElement, BrutalBoxProps>(
 BrutalBox.displayName = 'BrutalBox';
 
 interface BrutalTextProps extends React.HTMLAttributes<HTMLParagraphElement> {
-  variant?: 'mono' | 'brutal' | 'normal';
-  size?: 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl';
+  variant?: 'default' | 'mono' | 'brutal';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
 const BrutalText = React.forwardRef<HTMLParagraphElement, BrutalTextProps>(
-  ({ className, variant = 'mono', size = 'base', children, ...props }, ref) => {
-    const variantClasses = {
+  ({ className, variant = 'default', size = 'md', children, ...props }, ref) => {
+    const variantClass = {
+      default: '',
       mono: 'font-mono',
-      brutal: 'font-brutal font-black uppercase',
-      normal: 'font-sans',
-    };
+      brutal: 'font-black uppercase tracking-wide',
+    }[variant];
 
-    const sizeClasses = {
+    const sizeClass = {
       xs: 'text-xs',
       sm: 'text-sm',
-      base: 'text-base',
+      md: 'text-base',
       lg: 'text-lg',
       xl: 'text-xl',
-      '2xl': 'text-2xl',
-    };
+    }[size];
 
     return (
-      <p ref={ref} className={cn(variantClasses[variant], sizeClasses[size], className)} {...props}>
+      <p ref={ref} className={cn(variantClass, sizeClass, className)} {...props}>
         {children}
       </p>
     );

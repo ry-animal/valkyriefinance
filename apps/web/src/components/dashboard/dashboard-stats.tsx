@@ -1,8 +1,8 @@
 'use client';
 
+import { Card, CardContent, CardHeader, CardTitle } from '@valkyrie/ui';
 import { DollarSign, Target, TrendingUp, Wallet } from 'lucide-react';
 import { use } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { PortfolioStats } from '@/lib/data-access';
 
 interface DashboardStatsProps {

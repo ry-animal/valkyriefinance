@@ -3,11 +3,11 @@
 import { Brain, DollarSign, Shield, TrendingDown, TrendingUp, Zap } from 'lucide-react';
 import { useState } from 'react';
 import { formatEther } from 'viem';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@valkyrie/ui';
+import { Button } from '@valkyrie/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@valkyrie/ui';
+import { Progress } from '@valkyrie/ui';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@valkyrie/ui';
 import { useVaultBalance, useVaultInfo } from '@/hooks/use-valkyrie-vault';
 import { bt } from '@/lib/theme-utils';
 import { cn } from '@/lib/utils';

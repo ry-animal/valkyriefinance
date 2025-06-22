@@ -1,6 +1,6 @@
 'use client';
 
-import { PageHeader } from '@/components/ui/layout';
+import { PageHeader } from '@valkyrie/ui';
 import { ClientWalletGuard } from '@/components/wallet/client-wallet-guard';
 import { MarketIndicators } from './_components/market-indicators';
 import { PortfolioOptimization } from './_components/portfolio-optimization';

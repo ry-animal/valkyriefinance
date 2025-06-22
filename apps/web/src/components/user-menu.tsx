@@ -1,21 +1,21 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useAccount, useDisconnect } from 'wagmi';
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+  Skeleton,
+} from '@valkyrie/ui';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useAccount, useDisconnect } from 'wagmi';
 import { bt } from '@/lib/theme-utils';
 import { cn } from '@/lib/utils';
 import { getAppKit } from '@/lib/wagmi-config';
-import { Button } from './ui/button';
-import { Skeleton } from './ui/skeleton';
 
 export default function UserMenu() {
   const [mounted, setMounted] = useState(false);

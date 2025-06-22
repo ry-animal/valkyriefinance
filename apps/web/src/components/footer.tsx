@@ -1,10 +1,4 @@
-import {
-  BrutalBox,
-  BrutalGrid,
-  BrutalHeadline,
-  BrutalSection,
-  BrutalText,
-} from '@/components/brutalist/layout';
+import { BrutalBox, BrutalGrid, BrutalHeadline, BrutalSection, BrutalText } from '@valkyrie/ui';
 
 export default function Footer() {
   return (

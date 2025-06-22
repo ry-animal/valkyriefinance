@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useDebounce } from 'use-debounce';
 import { useAccount, useSendTransaction } from 'wagmi';
-import { Button } from '@/components/ui/button';
+import { Button } from '@valkyrie/ui';
 import {
   Card,
   CardContent,
@@ -11,15 +11,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+} from '@valkyrie/ui';
+import { Input } from '@valkyrie/ui';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@valkyrie/ui';
 import { trpc } from '@/utils/trpc';
 
 // Mock data for now

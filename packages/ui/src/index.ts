@@ -1,68 +1,30 @@
 // Export components
 
-export { Alert, AlertDescription, AlertTitle, alertVariants } from './components/alert';
-export { Avatar, AvatarFallback, AvatarImage } from './components/avatar';
-export type { BadgeProps } from './components/badge';
-export { Badge, badgeVariants } from './components/badge';
-export type { ButtonProps } from './components/button';
-export { Button, buttonVariants } from './components/button';
-export {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from './components/card';
-export { Checkbox } from './components/checkbox';
-export {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from './components/dropdown-menu';
-export type { InputProps } from './components/input';
-export { Input } from './components/input';
-export { Label, labelVariants } from './components/label';
-export { Progress } from './components/progress';
-export {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectScrollDownButton,
-  SelectScrollUpButton,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-} from './components/select';
-export { Skeleton } from './components/skeleton';
-export {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-  tableVariants,
-} from './components/table';
-export { Tabs, TabsContent, TabsList, TabsTrigger } from './components/tabs';
+export * from './components/alert';
+export * from './components/avatar';
+export * from './components/badge';
+export * from './components/button';
+export * from './components/card';
+export * from './components/checkbox';
+export * from './components/dialog';
+export * from './components/dropdown-menu';
+export * from './components/form';
+export * from './components/input';
+export * from './components/label';
+export * from './components/layout';
+export * from './components/popover';
+export * from './components/progress';
+export * from './components/select';
+export * from './components/separator';
+export * from './components/sheet';
+export * from './components/skeleton';
+export * from './components/switch';
+export * from './components/table';
+export * from './components/tabs';
+export * from './components/textarea';
+export * from './components/toast';
+export * from './components/tooltip';
 
-export { Toaster } from './components/toast';
 export type { ComponentProps, ComponentPropsWithRef, VariantProps } from './lib/utils';
 // Export utilities
 export { cn, cva } from './lib/utils';

@@ -1,9 +1,8 @@
 import { createAppKit } from '@reown/appkit/react';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 import { QueryClient } from '@tanstack/react-query';
-import { appConstants } from '@valkyrie/config/constants';
-import { allChains, getChain, mainnetChains } from '@valkyrie/config/networks';
 import { createConfig, http } from 'wagmi';
+import { arbitrum, mainnet, optimism, sepolia } from 'wagmi/chains';
 import { coinbaseWallet, injected, walletConnect } from 'wagmi/connectors';
 import { env } from './env';
 
@@ -20,16 +19,18 @@ import { env } from './env';
 // 1. Get projectId from environment
 const projectId = env.NEXT_PUBLIC_REOWN_PROJECT_ID;
 
-// 2. Create a metadata object using shared constants
+// 2. Create a metadata object
 const metadata = {
-  name: appConstants.app.name,
-  description: appConstants.app.description,
-  url: appConstants.app.url,
+  name: 'Valkyrie Finance',
+  description: 'AI-powered DeFi yield optimization platform',
+  url: 'https://valkryie.finance',
   icons: ['https://assets.reown.com/reown-profile-pic.png'],
 };
 
-// 3. Set the networks using centralized configuration
-export const networks = env.NEXT_PUBLIC_ENABLE_TESTNETS ? allChains : mainnetChains;
+// 3. Set the networks
+export const networks = env.NEXT_PUBLIC_ENABLE_TESTNETS
+  ? [mainnet, arbitrum, optimism, sepolia]
+  : [mainnet, arbitrum, optimism];
 
 // 4. Create Wagmi Adapter
 export const wagmiAdapter = new WagmiAdapter({
@@ -60,14 +61,13 @@ export function getAppKit() {
   return appKit;
 }
 
-// 6. Create wagmi config function with auto-generated transports
+// 6. Create wagmi config
 function createWagmiConfig() {
-  // Auto-generate transports from centralized network configurations
   const transports = Object.fromEntries(
     networks.map((chain) => {
-      let rpcUrl = chain.rpcUrl;
+      let rpcUrl: string = chain.rpcUrls.default.http[0];
 
-      // Use Alchemy if API key is available and it's a supported network
+      // Use Alchemy if API key is available
       if (env.NEXT_PUBLIC_ALCHEMY_API_KEY) {
         switch (chain.id) {
           case 1: // Ethereum
@@ -82,7 +82,6 @@ function createWagmiConfig() {
           case 10: // Optimism
             rpcUrl = `https://opt-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_API_KEY}`;
             break;
-          // For other networks, use the default RPC from config
         }
       }
 
@@ -94,7 +93,7 @@ function createWagmiConfig() {
     chains: networks as any,
     connectors: [
       injected(),
-      coinbaseWallet({ appName: appConstants.app.name }),
+      coinbaseWallet({ appName: 'Valkyrie Finance' }),
       ...(typeof window !== 'undefined'
         ? [
             walletConnect({
@@ -113,7 +112,7 @@ export const wagmiConfig = createWagmiConfig();
 // 7. Export query client
 export const queryClient = new QueryClient();
 
-// Helper function to get chain by ID (using centralized config)
+// Helper function to get chain by ID
 export function getChainById(chainId: number) {
-  return getChain(chainId);
+  return networks.find((chain) => chain.id === chainId);
 }

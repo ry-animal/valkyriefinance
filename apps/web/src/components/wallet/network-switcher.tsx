@@ -1,13 +1,13 @@
 import { ChevronDown, Network } from 'lucide-react';
 import { useChainId, useSwitchChain } from 'wagmi';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Badge } from '@valkyrie/ui';
+import { Button } from '@valkyrie/ui';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@valkyrie/ui-menu';
 import { getChainById, networks } from '@/lib/wagmi-config';
 
 export function NetworkSwitcher() {

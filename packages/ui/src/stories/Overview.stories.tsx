@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { Layout, Monitor, MousePointer, Palette, Smartphone, Tablet, Type } from 'lucide-react';
 import React from 'react';
 import { Alert, AlertDescription, AlertTitle } from '../components/alert';
 import { Avatar, AvatarFallback, AvatarImage } from '../components/avatar';
@@ -10,36 +11,14 @@ import { Label } from '../components/label';
 import { Progress } from '../components/progress';
 import { Skeleton } from '../components/skeleton';
 
-const meta: Meta = {
+const meta = {
   title: 'Design System/Overview',
   parameters: {
     layout: 'fullscreen',
     docs: {
       description: {
-        component: `
-# Valkyrie Finance Design System
-
-A comprehensive design system built with **Shadcn/UI** components, **Tailwind CSS**, and **design tokens**.
-This overview showcases the complete component library with consistent theming and accessibility features.
-
-## Key Features
-
-- 🎨 **Token-based Design System**: Consistent colors, spacing, and typography
-- 🌙 **Dark Mode Support**: Complete light/dark theme implementation
-- ♿ **Accessibility First**: WCAG compliant components with proper ARIA labels
-- 📱 **Responsive Design**: Mobile-first responsive components
-- ⚡ **React Server Components**: Compatible with Next.js 15 RSC architecture
-- 🎯 **TypeScript**: Full type safety across all components
-
-## Design Tokens
-
-Our design system is built on a foundation of design tokens that ensure consistency:
-
-- **Colors**: Semantic color palette with light/dark mode variants
-- **Typography**: Consistent font scales and weights
-- **Spacing**: Harmonious spacing scale
-- **Border Radius**: Consistent corner radius system
-        `,
+        component:
+          'Complete overview of the Valkyrie Finance design system components and patterns.',
       },
     },
     // RSC compatibility
@@ -48,194 +27,269 @@ Our design system is built on a foundation of design tokens that ensure consiste
     },
   },
   tags: ['autodocs'],
-};
+} satisfies Meta;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const DesignSystemOverview: Story = {
-  name: 'Complete Design System',
+export const DesignSystem: Story = {
   render: () => (
-    <div className="min-h-screen bg-background p-8 space-y-8">
-      {/* Header Section */}
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center space-y-4 mb-12">
-          <h1 className="text-4xl font-bold text-foreground">Valkyrie Finance Design System</h1>
-          <p className="text-xl text-foreground-secondary max-w-2xl mx-auto">
-            A modern, accessible, and comprehensive component library for building beautiful Web3
-            interfaces.
-          </p>
-          <div className="flex gap-2 justify-center">
-            <Badge variant="default">Next.js 15</Badge>
-            <Badge variant="secondary">React 19</Badge>
-            <Badge variant="outline">TypeScript</Badge>
-            <Badge variant="destructive">Tailwind CSS</Badge>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="border-b bg-card">
+        <div className="container mx-auto px-6 py-8">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <Palette className="h-6 w-6" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold">Valkyrie Design System</h1>
+              <p className="text-muted-foreground">
+                A comprehensive design system built with Tailwind CSS v4 and shadcn/ui
+              </p>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Color Palette */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Color System</CardTitle>
-            <CardDescription>
-              Our semantic color palette adapts to light and dark themes
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="space-y-2">
-                <div className="h-16 bg-primary rounded-lg flex items-center justify-center">
-                  <span className="text-primary-foreground font-medium">Primary</span>
-                </div>
-                <p className="text-sm text-foreground-secondary">Primary actions</p>
-              </div>
-              <div className="space-y-2">
-                <div className="h-16 bg-secondary rounded-lg flex items-center justify-center">
-                  <span className="text-secondary-foreground font-medium">Secondary</span>
-                </div>
-                <p className="text-sm text-foreground-secondary">Secondary actions</p>
-              </div>
-              <div className="space-y-2">
-                <div className="h-16 bg-destructive rounded-lg flex items-center justify-center">
-                  <span className="text-destructive-foreground font-medium">Destructive</span>
-                </div>
-                <p className="text-sm text-foreground-secondary">Dangerous actions</p>
-              </div>
-              <div className="space-y-2">
-                <div className="h-16 bg-muted rounded-lg flex items-center justify-center">
-                  <span className="text-muted-foreground font-medium">Muted</span>
-                </div>
-                <p className="text-sm text-foreground-secondary">Subtle elements</p>
-              </div>
+      <div className="container mx-auto px-6 py-8">
+        <div className="grid gap-8">
+          {/* Color Palette */}
+          <section>
+            <div className="mb-6 flex items-center gap-3">
+              <Palette className="h-5 w-5" />
+              <h2 className="text-2xl font-semibold">Color Palette</h2>
             </div>
-          </CardContent>
-        </Card>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">Primary</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="h-12 w-full rounded bg-primary"></div>
+                  <div className="h-8 w-full rounded bg-primary/80"></div>
+                  <div className="h-8 w-full rounded bg-primary/60"></div>
+                  <div className="h-8 w-full rounded bg-primary/40"></div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">Secondary</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="h-12 w-full rounded bg-secondary"></div>
+                  <div className="h-8 w-full rounded bg-secondary/80"></div>
+                  <div className="h-8 w-full rounded bg-secondary/60"></div>
+                  <div className="h-8 w-full rounded bg-secondary/40"></div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">Accent</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="h-12 w-full rounded bg-accent"></div>
+                  <div className="h-8 w-full rounded bg-accent/80"></div>
+                  <div className="h-8 w-full rounded bg-accent/60"></div>
+                  <div className="h-8 w-full rounded bg-accent/40"></div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">Destructive</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="h-12 w-full rounded bg-destructive"></div>
+                  <div className="h-8 w-full rounded bg-destructive/80"></div>
+                  <div className="h-8 w-full rounded bg-destructive/60"></div>
+                  <div className="h-8 w-full rounded bg-destructive/40"></div>
+                </CardContent>
+              </Card>
+            </div>
+          </section>
 
-        {/* Components Showcase */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Buttons */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Buttons</CardTitle>
-              <CardDescription>Interactive elements for user actions</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button className="w-full">Primary Button</Button>
-              <Button variant="secondary" className="w-full">
-                Secondary Button
-              </Button>
-              <Button variant="outline" className="w-full">
-                Outline Button
-              </Button>
-              <Button variant="destructive" className="w-full">
-                Destructive Button
-              </Button>
-              <Button variant="ghost" className="w-full">
-                Ghost Button
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Form Elements */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Form Components</CardTitle>
-              <CardDescription>Input fields and form controls</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" placeholder="Enter your email" />
-              </div>
-              <div className="space-y-2">
-                <Label>Progress Example</Label>
-                <Progress value={75} className="w-full" />
-                <p className="text-sm text-foreground-secondary">75% complete</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* User Interface */}
-          <Card>
-            <CardHeader>
-              <CardTitle>User Interface</CardTitle>
-              <CardDescription>Avatars, badges, and status indicators</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <Avatar>
-                  <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face" />
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
+          {/* Typography */}
+          <section>
+            <div className="mb-6 flex items-center gap-3">
+              <Type className="h-5 w-5" />
+              <h2 className="text-2xl font-semibold">Typography</h2>
+            </div>
+            <Card>
+              <CardContent className="space-y-4 pt-6">
                 <div>
-                  <p className="font-medium">John Doe</p>
-                  <p className="text-sm text-foreground-secondary">Developer</p>
+                  <h1 className="text-4xl font-bold">Heading 1</h1>
+                  <p className="text-sm text-muted-foreground">text-4xl font-bold</p>
                 </div>
-              </div>
-              <div className="flex gap-2 flex-wrap">
-                <Badge>Active</Badge>
-                <Badge variant="secondary">Beta</Badge>
-                <Badge variant="outline">New</Badge>
-              </div>
-            </CardContent>
-          </Card>
+                <div>
+                  <h2 className="text-3xl font-semibold">Heading 2</h2>
+                  <p className="text-sm text-muted-foreground">text-3xl font-semibold</p>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-medium">Heading 3</h3>
+                  <p className="text-sm text-muted-foreground">text-2xl font-medium</p>
+                </div>
+                <div>
+                  <p className="text-base">
+                    Body text - Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  </p>
+                  <p className="text-sm text-muted-foreground">text-base</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    Small text - Additional information or captions.
+                  </p>
+                  <p className="text-xs text-muted-foreground">text-sm text-muted-foreground</p>
+                </div>
+              </CardContent>
+            </Card>
+          </section>
 
-          {/* Feedback Components */}
-          <Card className="md:col-span-2 lg:col-span-3">
-            <CardHeader>
-              <CardTitle>Feedback & Status</CardTitle>
-              <CardDescription>Alerts, notifications, and loading states</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Alert>
-                <AlertTitle>Information</AlertTitle>
-                <AlertDescription>
-                  This is an informational alert to provide context to users.
-                </AlertDescription>
-              </Alert>
+          {/* Components */}
+          <section>
+            <div className="mb-6 flex items-center gap-3">
+              <MousePointer className="h-5 w-5" />
+              <h2 className="text-2xl font-semibold">Components</h2>
+            </div>
+            <div className="grid gap-6 lg:grid-cols-2">
+              {/* Buttons */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Buttons</CardTitle>
+                  <CardDescription>Interactive elements for user actions</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex flex-wrap gap-2">
+                    <Button>Primary</Button>
+                    <Button variant="secondary">Secondary</Button>
+                    <Button variant="outline">Outline</Button>
+                    <Button variant="ghost">Ghost</Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button size="sm">Small</Button>
+                    <Button>Default</Button>
+                    <Button size="lg">Large</Button>
+                  </div>
+                </CardContent>
+              </Card>
 
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-3">
-                  <h4 className="font-medium">Loading States</h4>
+              {/* Form Elements */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Form Elements</CardTitle>
+                  <CardDescription>Input fields and form controls</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-3/4" />
-                    <Skeleton className="h-4 w-1/2" />
+                    <Label htmlFor="demo-input">Email</Label>
+                    <Input id="demo-input" type="email" placeholder="Enter your email" />
                   </div>
-                </div>
-                <div className="space-y-3">
-                  <h4 className="font-medium">Status Indicators</h4>
                   <div className="flex gap-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-emerald-500 rounded-full" />
-                      <span className="text-sm">Online</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-amber-500 rounded-full" />
-                      <span className="text-sm">Away</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-red-500 rounded-full" />
-                      <span className="text-sm">Offline</span>
-                    </div>
+                    <Badge>Default</Badge>
+                    <Badge variant="secondary">Secondary</Badge>
+                    <Badge variant="destructive">Destructive</Badge>
+                    <Badge variant="outline">Outline</Badge>
                   </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                </CardContent>
+              </Card>
 
-        {/* Footer */}
-        <div className="text-center mt-12 pt-8 border-t border-border">
-          <p className="text-foreground-secondary">
-            Built with ❤️ for the Valkyrie Finance ecosystem
-          </p>
+              {/* Avatars */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Avatars</CardTitle>
+                  <CardDescription>User profile representations</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-8 w-8" />
+                    <Avatar className="h-10 w-10" />
+                    <Avatar className="h-12 w-12" />
+                    <Avatar className="h-16 w-16" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Cards */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Card Layouts</CardTitle>
+                  <CardDescription>Content containers and layouts</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <Card className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">Total Balance</p>
+                          <p className="text-2xl font-bold">$12,345.67</p>
+                        </div>
+                        <Badge variant="default">+12.5%</Badge>
+                      </div>
+                    </Card>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </section>
+
+          {/* Responsive Design */}
+          <section>
+            <div className="mb-6 flex items-center gap-3">
+              <Layout className="h-5 w-5" />
+              <h2 className="text-2xl font-semibold">Responsive Design</h2>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Smartphone className="h-4 w-4" />
+                    <CardTitle className="text-sm">Mobile</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Optimized for mobile devices with touch-friendly interactions.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Tablet className="h-4 w-4" />
+                    <CardTitle className="text-sm">Tablet</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Adaptive layouts that work seamlessly on tablet devices.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Monitor className="h-4 w-4" />
+                    <CardTitle className="text-sm">Desktop</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Full-featured experience for desktop and larger screens.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </section>
         </div>
       </div>
     </div>
   ),
   parameters: {
-    layout: 'fullscreen',
+    docs: {
+      description: {
+        story:
+          'Complete overview of the design system including colors, typography, components, and responsive design principles.',
+      },
+    },
   },
 };
 

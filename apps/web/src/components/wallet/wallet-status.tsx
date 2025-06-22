@@ -3,9 +3,9 @@
 import { Copy, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAccount, useBalance, useEnsName } from 'wagmi';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@valkyrie/ui';
+import { Button } from '@valkyrie/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@valkyrie/ui';
 
 export function WalletStatus() {
   const { address, isConnected, chain, status } = useAccount();

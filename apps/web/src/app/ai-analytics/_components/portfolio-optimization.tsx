@@ -2,11 +2,11 @@
 
 import { Brain, PieChart, Target, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@valkyrie/ui';
+import { Button } from '@valkyrie/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@valkyrie/ui';
+import { Progress } from '@valkyrie/ui';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@valkyrie/ui';
 
 const currentAllocation = [
   { asset: 'ETH', percentage: 45, value: '$4,500', color: 'bg-blue-500' },

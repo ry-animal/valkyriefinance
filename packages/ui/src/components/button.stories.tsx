@@ -1,15 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { Download, Loader2, Mail } from 'lucide-react';
+import React from 'react';
 import { Button } from './button';
 
-const meta: Meta<typeof Button> = {
-  title: 'Components/Button',
+const meta = {
+  title: 'UI/Button',
   component: Button,
   parameters: {
     layout: 'centered',
     docs: {
       description: {
-        component:
-          'Brutalist button component with shadow effects, hover transforms, and multiple variants. Features thick borders and bold styling consistent with the Valkyrie design system.',
+        component: 'A versatile button component with multiple variants, sizes, and states.',
       },
     },
   },
@@ -21,94 +22,27 @@ const meta: Meta<typeof Button> = {
     },
     size: {
       control: { type: 'select' },
-      options: ['sm', 'default', 'lg', 'xl', 'icon'],
+      options: ['default', 'sm', 'lg', 'icon'],
     },
     disabled: {
-      control: 'boolean',
+      control: { type: 'boolean' },
+    },
+    asChild: {
+      control: { type: 'boolean' },
     },
   },
-};
+} satisfies Meta<typeof Button>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    children: 'Default Button',
+    children: 'Button',
   },
 };
 
-export const Destructive: Story = {
-  args: {
-    variant: 'destructive',
-    children: 'Delete Item',
-  },
-};
-
-export const Outline: Story = {
-  args: {
-    variant: 'outline',
-    children: 'Outline Button',
-  },
-};
-
-export const Secondary: Story = {
-  args: {
-    variant: 'secondary',
-    children: 'Secondary',
-  },
-};
-
-export const Ghost: Story = {
-  args: {
-    variant: 'ghost',
-    children: 'Ghost Button',
-  },
-};
-
-export const Link: Story = {
-  args: {
-    variant: 'link',
-    children: 'Link Button',
-  },
-};
-
-export const Small: Story = {
-  args: {
-    size: 'sm',
-    children: 'Small Button',
-  },
-};
-
-export const Large: Story = {
-  args: {
-    size: 'lg',
-    children: 'Large Button',
-  },
-};
-
-export const ExtraLarge: Story = {
-  args: {
-    size: 'xl',
-    children: 'Extra Large',
-  },
-};
-
-export const Icon: Story = {
-  args: {
-    size: 'icon',
-    children: '🚀',
-  },
-};
-
-export const Disabled: Story = {
-  args: {
-    disabled: true,
-    children: 'Disabled Button',
-  },
-};
-
-export const AllVariants: Story = {
+export const Variants: Story = {
   render: () => (
     <div className="flex flex-wrap gap-4">
       <Button variant="default">Default</Button>
@@ -119,43 +53,117 @@ export const AllVariants: Story = {
       <Button variant="link">Link</Button>
     </div>
   ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'All available button variants.',
+      },
+    },
+  },
 };
 
-export const AllSizes: Story = {
+export const Sizes: Story = {
   render: () => (
-    <div className="flex flex-wrap items-center gap-4">
+    <div className="flex items-center gap-4">
       <Button size="sm">Small</Button>
       <Button size="default">Default</Button>
       <Button size="lg">Large</Button>
-      <Button size="xl">Extra Large</Button>
-      <Button size="icon">🎯</Button>
+      <Button size="icon">
+        <Mail className="h-4 w-4" />
+      </Button>
     </div>
   ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Different button sizes including icon-only variant.',
+      },
+    },
+  },
 };
 
-export const BrutalistShowcase: Story = {
+export const WithIcons: Story = {
   render: () => (
-    <div className="space-y-4">
-      <div className="text-center">
-        <h3 className="text-lg font-bold mb-4">Brutalist Button Styling</h3>
-        <p className="text-sm text-muted-foreground mb-6">
-          Features shadow-brutal effects, thick borders, and hover transforms
-        </p>
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <Button className="transform transition-transform hover:translate-x-1 hover:-translate-y-1">
-          Hover Effect
-        </Button>
-        <Button variant="destructive" size="lg">
-          Bold & Dangerous
-        </Button>
-        <Button variant="outline" size="xl">
-          Extra Bold Outline
-        </Button>
-        <Button variant="secondary" disabled>
-          Disabled State
-        </Button>
-      </div>
+    <div className="flex gap-4">
+      <Button>
+        <Mail className="mr-2 h-4 w-4" />
+        Send Email
+      </Button>
+      <Button variant="outline">
+        <Download className="mr-2 h-4 w-4" />
+        Download
+      </Button>
+      <Button variant="secondary">
+        Continue
+        <Mail className="ml-2 h-4 w-4" />
+      </Button>
     </div>
   ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Buttons with icons positioned before or after text.',
+      },
+    },
+  },
+};
+
+export const Loading: Story = {
+  render: () => (
+    <div className="flex gap-4">
+      <Button disabled>
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        Loading...
+      </Button>
+      <Button variant="outline" disabled>
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        Please wait
+      </Button>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Loading state buttons with spinner icons.',
+      },
+    },
+  },
+};
+
+export const Disabled: Story = {
+  render: () => (
+    <div className="flex gap-4">
+      <Button disabled>Disabled Default</Button>
+      <Button variant="destructive" disabled>
+        Disabled Destructive
+      </Button>
+      <Button variant="outline" disabled>
+        Disabled Outline
+      </Button>
+      <Button variant="secondary" disabled>
+        Disabled Secondary
+      </Button>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Disabled state for all button variants.',
+      },
+    },
+  },
+};
+
+export const Interactive: Story = {
+  args: {
+    children: 'Click me',
+    onClick: () => alert('Button clicked!'),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Interactive button with click handler.',
+      },
+    },
+  },
 };

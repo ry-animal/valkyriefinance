@@ -1,5 +1,4 @@
 {
-  "extends": "../config/tsconfig.json",
   "compilerOptions": {
     "target": "es2019",
     "lib": ["dom", "dom.iterable", "esnext"],

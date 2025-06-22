@@ -1,4 +1,4 @@
-import { BrutalBox, BrutalHeadline, BrutalText } from './brutalist/layout';
+import { BrutalBox, BrutalHeadline, BrutalText } from '@valkyrie/ui';
 import UserMenu from './user-menu';
 
 export default function SignInForm() {

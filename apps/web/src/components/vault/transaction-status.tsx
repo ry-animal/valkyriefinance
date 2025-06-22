@@ -3,10 +3,10 @@
 import { AlertTriangle, ArrowUpRight, CheckCircle, Clock, ExternalLink } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useChainId, useWaitForTransactionReceipt } from 'wagmi';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
+import { Badge } from '@valkyrie/ui';
+import { Button } from '@valkyrie/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@valkyrie/ui';
+import { Progress } from '@valkyrie/ui';
 import { bt } from '@/lib/theme-utils';
 import { cn } from '@/lib/utils';
 import { useWeb3Store } from '@/stores/web3-store';

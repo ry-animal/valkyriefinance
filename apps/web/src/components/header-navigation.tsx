@@ -1,9 +1,9 @@
 'use client';
 
+import { Button } from '@valkyrie/ui';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface NavigationProps {

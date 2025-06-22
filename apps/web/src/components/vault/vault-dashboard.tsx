@@ -1,6 +1,23 @@
 'use client';
 
 import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+  Progress,
+  Skeleton,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@valkyrie/ui';
+import {
   AlertTriangle,
   CheckCircle,
   DollarSign,
@@ -14,14 +31,6 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { formatEther, formatUnits, parseEther } from 'viem';
 import { useAccount, useChainId } from 'wagmi';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { type SimpleTokenBalance, useSimpleTokenBalances } from '@/hooks/use-simple-token-balances';
 import {
   useAssetAllowance,

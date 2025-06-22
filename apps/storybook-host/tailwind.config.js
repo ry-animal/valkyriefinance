@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  ...require('../../packages/config/tailwind.config.js'),
+  extends: "../../packages/config/tailwind.config.js",
+  darkMode: ["class"],
   content: [
     './src/**/*.{js,ts,jsx,tsx,mdx}',
     './.storybook/**/*.{js,ts,jsx,tsx,mdx}',

@@ -1,15 +1,18 @@
-import Link from 'next/link';
 import {
   BrutalBox,
   BrutalGrid,
   BrutalHeadline,
   BrutalSection,
   BrutalText,
-} from '@/components/brutalist/layout';
-import { SharedUITest } from '@/components/examples/shared-ui-test';
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@valkyrie/ui';
+import Link from 'next/link';
 import Footer from '@/components/footer';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 // This is now a Server Component (default in App Router)
 export default function HomePage() {
@@ -318,14 +321,6 @@ export default function HomePage() {
             </Button>
           </div>
         </div>
-      </BrutalSection>
-
-      {/* Component Library Test */}
-      <BrutalSection className="py-20 bg-gray-50 dark:bg-gray-900">
-        <BrutalHeadline size="giant" className="mb-16 text-center text-black dark:text-white">
-          COMPONENT LIBRARY
-        </BrutalHeadline>
-        <SharedUITest />
       </BrutalSection>
 
       <Footer />

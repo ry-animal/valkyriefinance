@@ -2,7 +2,7 @@
 
 import { Wallet } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@valkyrie/ui';
 
 export function WalletConnect() {
   const [mounted, setMounted] = useState(false);

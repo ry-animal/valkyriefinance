@@ -2,10 +2,10 @@
 
 import { Search, Star, TrendingDown, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Badge } from '@valkyrie/ui';
+import { Button } from '@valkyrie/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@valkyrie/ui';
+import { Input } from '@valkyrie/ui';
 
 const tokenData = [
   {

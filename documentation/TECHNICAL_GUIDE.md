@@ -1,841 +1,502 @@
-# Valkryie Finance - Technical Guide
+# Valkyrie Finance - Technical Architecture Guide
 
-## Architecture Overview
+## System Overview
 
-### System Architecture
+Valkyrie Finance is a next-generation DeFi platform that combines AI-powered yield optimization with a sophisticated component-based architecture. The platform is built using a modern monorepo structure with TypeScript, React, and cutting-edge DeFi protocols.
 
-Valkryie Finance is built as a modern DeFi platform using a monorepo architecture with clear separation of concerns:
+## 🏗️ **Monorepo Architecture**
 
+### **Project Structure**
 ```
 valkryiefinance/
 ├── apps/
-│   ├── web/          # Next.js frontend (Port 3001)
-│   └── server/       # tRPC API server (Port 3000)
+│   ├── web/              # Next.js frontend application (port 3001)
+│   ├── server/           # tRPC API server with database (port 3000)
+│   ├── storybook-host/   # Component documentation (port 6006)
+│   └── ai-engine/        # Go-based AI optimization service
 ├── packages/
-│   ├── contracts/    # Foundry smart contracts
-│   └── common/       # Shared types and utilities
+│   ├── ui/               # Centralized component library (@valkyrie/ui)
+│   ├── common/           # Shared types and utilities (@valkyrie/common)
+│   ├── config/           # Environment and configuration (@valkyrie/config)
+│   └── contracts/        # Smart contract ABIs and types (@valkyrie/contracts)
 ```
 
-### Technology Stack
+### **Development Workflow**
+- **Single Command**: `pnpm dev` runs all services simultaneously
+- **Hot Reload**: Live development with instant feedback across all apps
+- **Type Safety**: End-to-end TypeScript with shared types and validation
+- **Component Development**: Add shadcn → move to UI package → create stories
 
-**Frontend (apps/web)**
+## 🎨 **Component System Architecture**
 
-- **Framework**: Next.js 15 with App Router and React Server Components
-- **UI**: React 19, TypeScript, Tailwind CSS, Shadcn UI
-- **Web3**: Wagmi, Viem, ConnectKit
-- **State**: Zustand with RSC-compatible patterns
-- **API**: tRPC client with TanStack Query
-- **Code Quality**: Biome.js (linting, formatting)
+### **Centralized UI Package (`@valkyrie/ui`)**
 
-**Backend (apps/server)**
+**Core Philosophy**: Single source of truth for all UI components with comprehensive Storybook documentation.
 
-- **Framework**: Next.js API routes with tRPC
-- **Database**: PostgreSQL with Drizzle ORM
-- **Auth**: Better Auth integration
-- **Validation**: Zod schemas
-- **Code Quality**: Biome.js (linting, formatting)
+**Component Categories**:
+- **Core**: Button, Card, Input, Label, Badge, Avatar, Alert
+- **Layout**: BrutalGrid, BrutalSection, Separator, Sheet
+- **Forms**: Form, Textarea, Switch, Checkbox, Select with React Hook Form
+- **Overlays**: Dialog, Popover, Tooltip, Toast
+- **Data**: Table, Tabs, Progress, Skeleton
 
-**Smart Contracts (packages/contracts)**
-
-- **Language**: Solidity 0.8.20+
-- **Framework**: Foundry
-- **Standards**: ERC-20, ERC-4626, OpenZeppelin
-- **Testing**: Comprehensive Foundry test suite
-
-**Infrastructure**
-
-- **Package Manager**: pnpm with workspaces
-- **Monitoring**: Tenderly integration
-- **Deployment**: Vercel (frontend), Railway (backend)
-- **Testing**: Vitest, Playwright, Foundry
-- **Code Quality**: Biome.js across all packages
-
-## React Server Components Architecture
-
-### RSC Benefits
-
-- **~40% reduction** in client-side JavaScript bundle size
-- **Faster initial page loads** with server-rendered content
-- **Better SEO** through server-side rendering
-- **Enhanced security** with server-side operations
-- **Progressive loading** with Suspense boundaries
-
-### Component Patterns
-
-#### Server Components (Default)
-
-All components are Server Components by default for optimal performance:
-
+**Technology Stack**:
 ```typescript
-// apps/web/src/app/page.tsx
-export default function HomePage() {
-  return (
-    <div>
-      <StaticHeroSection />
-      <ServerSideStats />
-    </div>
-  );
+// Component foundation
+- Shadcn/ui components (battle-tested, accessible)
+- Radix UI primitives (headless, composable)
+- Tailwind CSS (utility-first styling)
+- React Hook Form + Zod (type-safe form validation)
+
+// Development tools
+- Storybook 8 (interactive documentation)
+- TypeScript strict mode (type safety)
+- Vitest (unit testing)
+- Playwright (E2E testing)
+```
+
+### **Storybook Documentation System**
+
+**Interactive Examples**: 50+ stories covering real-world use cases
+- **Form Stories**: Contact forms, settings, DeFi vault deposits
+- **Dialog Stories**: Confirmations, wallet connections, vault details
+- **Tooltip Stories**: DeFi explanations, help context, smart contract info
+
+**DeFi-Specific Components**:
+```typescript
+// Vault deposit form with validation
+export const VaultDepositForm = {
+  token: z.string().min(1, 'Please select a token'),
+  amount: z.coerce.number().min(0.01, 'Minimum deposit is 0.01'),
+  slippage: z.coerce.number().min(0.1).max(10),
+  autoCompound: z.boolean(),
+}
+
+// Wallet connection dialog
+export const WalletConnectionDialog = {
+  wallets: ['MetaMask', 'WalletConnect', 'Coinbase'],
+  onConnect: (walletId: string) => void,
+  selectedWallet: string | null,
 }
 ```
 
-#### Client Components (Interactive)
+## 🖥️ **Frontend Architecture (Next.js App)**
 
-Only use 'use client' for components requiring interactivity:
-
-```typescript
-// apps/web/src/components/header-navigation.tsx
-'use client';
-
-import { useState } from 'react';
-
-export function HeaderNavigation() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  // Interactive logic here
-}
-```
-
-#### Data Fetching Patterns
-
-Server Components support async/await for data fetching:
-
-```typescript
-// apps/web/src/app/dashboard/page.tsx
-import { cache } from 'react';
-import { Suspense } from 'react';
-
-const getPortfolioData = cache(async () => {
-  const [stats, holdings] = await Promise.all([
-    fetchPortfolioStats(),
-    fetchHoldings(),
-  ]);
-  return { stats, holdings };
-});
-
-export default async function DashboardPage() {
-  return (
-    <Suspense fallback={<DashboardLoading />}>
-      <DashboardContent dataPromise={getPortfolioData()} />
-    </Suspense>
-  );
-}
-```
-
-### RSC-Compatible State Management
-
-#### Per-Request Store Pattern
-
-```typescript
-// apps/web/src/stores/rsc-store-provider.tsx
-'use client';
-
-export function RSCStoreProvider({ children }: { children: React.ReactNode }) {
-  const [store] = useState(() => createUIStore());
-  
-  return (
-    <UIStoreContext.Provider value={store}>
-      {children}
-    </UIStoreContext.Provider>
-  );
-}
-```
-
-#### Store Factory Functions
-
-```typescript
-// apps/web/src/stores/ui-store-factory.ts
-export function createUIStore() {
-  return create<UIStore>((set) => ({
-    theme: 'dark',
-    sidebarOpen: false,
-    setTheme: (theme) => set({ theme }),
-    toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
-  }));
-}
-```
-
-## Frontend Architecture
-
-### Component Structure
-
+### **Application Structure**
 ```
 apps/web/src/
-├── app/                    # Next.js App Router with RSC
-│   ├── (auth)/            # Auth-protected routes (Server Components)
-│   ├── dashboard/         # Dashboard pages (async Server Components)
-│   └── layout.tsx         # Root layout (Server Component)
-├── components/            # Reusable components
-│   ├── ui/               # Shadcn UI components (Client when needed)
-│   ├── web3/             # Web3-specific components (Client Components)
-│   ├── dashboard/        # Dashboard components (mixed RSC)
-│   └── forms/            # Form components (Client Components)
-├── hooks/                # Custom React hooks (Client-side only)
-├── lib/                  # Utility libraries
-│   ├── data-access.ts   # Server-side data fetching with React.cache
-│   └── utils.ts         # Shared utilities
-└── stores/               # Zustand stores with RSC patterns
-    ├── rsc-store-provider.tsx
-    └── *-store-factory.ts
+├── app/                  # Next.js App Router
+│   ├── dashboard/        # Main dashboard page
+│   ├── vault/           # Vault management pages
+│   ├── swap/            # Cross-chain swap interface
+│   └── ai-analytics/    # AI insights and analytics
+├── components/          # App-specific components
+│   ├── wallet/          # Web3 wallet integration
+│   ├── vault/           # Vault management UI
+│   └── dashboard/       # Dashboard components
+├── hooks/               # Custom React hooks
+├── lib/                 # Utilities and configuration
+└── stores/              # State management (Zustand)
 ```
 
-### Data Access Layer
-
-#### Server-Side Data Fetching
-
+### **State Management Strategy**
 ```typescript
-// apps/web/src/lib/data-access.ts
-import { cache } from 'react';
+// Zustand for client state
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  isAuthenticated: false,
+  login: (user) => set({ user, isAuthenticated: true }),
+  logout: () => set({ user: null, isAuthenticated: false }),
+}))
 
-export const getPortfolioStats = cache(async (): Promise<PortfolioStats> => {
-  // Server-only data fetching
-  const response = await fetch(process.env.API_URL + '/portfolio/stats');
-  return response.json();
-});
-
-export const getTokenBalances = cache(async (address: string) => {
-  // Parallel data fetching to avoid waterfalls
-  const [ethBalance, tokenBalances] = await Promise.all([
-    fetchETHBalance(address),
-    fetchTokenBalances(address),
-  ]);
-  return { ethBalance, tokenBalances };
-});
-```
-
-#### Request-Level Deduplication
-
-React.cache provides automatic request-level deduplication:
-- Multiple calls to the same cached function return the same promise
-- Data is fetched only once per request
-- Perfect for Server Component data fetching patterns
-
-### State Management
-
-#### Zustand with RSC Compatibility
-
-```typescript
-// Client-side store usage
-'use client';
-
-import { useUIStore } from '@/stores/ui-store';
-
-export function ThemeToggle() {
-  const { theme, setTheme } = useUIStore();
-  
-  return (
-    <Button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
-      Toggle Theme
-    </Button>
-  );
+// TanStack Query for server state
+export const useVaultData = () => {
+  return useQuery({
+    queryKey: ['vault', vaultId],
+    queryFn: () => trpc.vault.getDetails.query({ vaultId }),
+  })
 }
 ```
 
-#### Server State with tRPC
-
-- **Automatic caching** with TanStack Query
-- **Type-safe APIs** end-to-end
-- **Optimistic updates** for better UX
-- **Background refetching** for real-time data
-- **RSC-compatible** data fetching patterns
-
-### Web3 Integration
-
-#### Wagmi Configuration
-
+### **Web3 Integration**
 ```typescript
+// Wagmi + ConnectKit for wallet management
 export const wagmiConfig = createConfig({
-  chains: [mainnet, arbitrum, optimism, base],
-  connectors: [
-    injected(),
-    coinbaseWallet({ appName: "Valkryie Finance" }),
-    walletConnect({ projectId: PROJECT_ID }),
-  ],
+  chains: [mainnet, arbitrum, optimism, sepolia],
+  connectors: [injected(), coinbaseWallet(), walletConnect()],
   transports: {
-    [mainnet.id]: http(ALCHEMY_RPC_URL),
-    // ... other chains
+    [mainnet.id]: http(alchemyUrl),
+    [arbitrum.id]: http(arbitrumUrl),
   },
-});
+})
+
+// Conditional Web3 loading
+if (env.NEXT_PUBLIC_ENABLE_WEB3) {
+  return <WagmiProvider config={wagmiConfig}>{children}</WagmiProvider>
+}
 ```
 
-#### Contract Interactions
+## 🔧 **Backend Architecture (tRPC Server)**
 
-- **Type-safe contract calls** using Wagmi hooks
-- **Automatic ABI inference** from contract artifacts
-- **Transaction status tracking** with toast notifications
-- **Gas estimation** and optimization
-
-## Backend Architecture
-
-### tRPC Router Structure
-
+### **API Layer Design**
 ```
-apps/server/src/routers/
-├── auth.ts           # Authentication routes
-├── portfolio.ts      # Portfolio management
-├── vault.ts          # Vault operations
-├── analytics.ts      # Performance analytics
-├── ai.ts            # AI recommendations
-└── bridge.ts         # Cross-chain bridge operations
+apps/server/src/
+├── routers/             # tRPC route handlers
+│   ├── auth.ts         # Authentication endpoints
+│   ├── vault.ts        # Vault operations
+│   ├── portfolio.ts    # Portfolio management
+│   ├── ai.ts          # AI insights and recommendations
+│   └── bridge.ts      # Cross-chain operations
+├── db/                 # Database layer
+│   ├── schema/        # Drizzle ORM schemas
+│   ├── queries/       # Optimized database queries
+│   └── migrations/    # Database migration files
+└── lib/               # Server utilities and middleware
 ```
 
-#### Bridge Router (`bridge.ts`)
-
-The bridge router provides cross-chain swap functionality using Rubic API integration:
-
+### **Database Schema (Drizzle + Supabase)**
 ```typescript
-export const bridgeRouter = router({
-  getQuote: publicProcedure
-    .input(bridgeQuoteSchema)
+// User and authentication
+export const users = pgTable('users', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  email: varchar('email', { length: 255 }).notNull().unique(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+// Vault operations
+export const vaultDeposits = pgTable('vault_deposits', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').references(() => users.id).notNull(),
+  vaultAddress: varchar('vault_address', { length: 42 }).notNull(),
+  amount: decimal('amount', { precision: 36, scale: 18 }).notNull(),
+  transactionHash: varchar('transaction_hash', { length: 66 }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+// AI recommendations
+export const aiRecommendations = pgTable('ai_recommendations', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').references(() => users.id).notNull(),
+  strategy: varchar('strategy', { length: 100 }).notNull(),
+  confidence: decimal('confidence', { precision: 5, scale: 4 }).notNull(),
+  expectedYield: decimal('expected_yield', { precision: 8, scale: 6 }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+```
+
+### **tRPC Router Implementation**
+```typescript
+// Type-safe API with input validation
+export const vaultRouter = router({
+  getDetails: publicProcedure
+    .input(z.object({ vaultId: z.string() }))
     .query(async ({ input }) => {
-      // Fetch best quote from Rubic API
-      const response = await fetch(`${RUBIC_API_URL}/quoteBest`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ params: input }),
-      });
-      return response.json();
+      return await getVaultDetails(input.vaultId)
     }),
 
-  getSwap: publicProcedure
-    .input(bridgeSwapSchema)
-    .mutation(async ({ input }) => {
-      // Get transaction data for cross-chain swap
-      const response = await fetch(`${RUBIC_API_URL}/swap`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ params: input }),
-      });
-      return response.json();
-    }),
-});
-```
-
-**Key Features:**
-
-- **Real-time Quotes**: Dynamic pricing from Rubic's aggregated liquidity sources
-- **Multi-chain Support**: Ethereum, Arbitrum, Base Sepolia integration
-- **Type Safety**: Full Zod schema validation for inputs and outputs
-- **Error Handling**: Comprehensive error management with structured responses
-
-### Database Schema
-
-#### Core Tables
-
-```sql
--- Users and authentication
-users, accounts, sessions, verification_tokens
-
--- Portfolio management
-portfolios, portfolio_assets, asset_balances
-
--- Transactions
-transactions, transaction_history
-
--- Vault operations
-vault_deposits, vault_withdrawals, vault_strategies
-
--- AI and analytics
-ai_recommendations, performance_metrics, market_data
-```
-
-#### Relationships
-
-- **Users** → **Portfolios** (one-to-many)
-- **Portfolios** → **Assets** (many-to-many through portfolio_assets)
-- **Users** → **Transactions** (one-to-many)
-- **Vault Operations** → **Users** (many-to-one)
-
-### API Design Patterns
-
-#### Input Validation
-
-```typescript
-const createPortfolioSchema = z.object({
-  name: z.string().min(1).max(100),
-  description: z.string().optional(),
-  initialAssets: z.array(assetSchema).optional(),
-});
-
-export const bridgeQuoteSchema = z.object({
-  srcTokenAddress: z.string(),
-  srcTokenBlockchain: z.string(),
-  srcTokenAmount: z.string(),
-  dstTokenAddress: z.string(),
-  dstTokenBlockchain: z.string(),
-  slippage: z.number().optional().default(1),
-  referrer: z.string().optional().default("valkryie"),
-});
-
-export const bridgeSwapSchema = bridgeQuoteSchema.extend({
-  fromAddress: z.string(),
-});
-
-export const portfolioRouter = router({
-  create: protectedProcedure
-    .input(createPortfolioSchema)
+  deposit: protectedProcedure
+    .input(vaultDepositSchema)
     .mutation(async ({ input, ctx }) => {
-      // Implementation
+      return await processVaultDeposit(input, ctx.user.id)
     }),
-});
+})
 ```
 
-#### Error Handling
+## 🤖 **AI Engine Architecture (Go Service)**
 
-- **Structured error responses** with proper HTTP status codes
-- **Client-side error boundaries** for graceful degradation
-- **Comprehensive logging** for debugging and monitoring
+### **Service Design**
+```
+apps/ai-engine/
+├── internal/
+│   ├── models/         # AI model implementations
+│   ├── services/       # Business logic services
+│   └── server/         # gRPC/HTTP server
+├── proto/              # Protocol buffer definitions
+└── cmd/                # Application entry points
+```
 
-## AI Vault Architecture
+### **AI Model Integration**
+```go
+// Yield optimization engine
+type YieldOptimizer struct {
+    models []Model
+    dataCollector DataCollector
+    riskAssessor RiskAssessor
+}
 
-### Strategy Framework
+func (yo *YieldOptimizer) OptimizePortfolio(
+    ctx context.Context,
+    portfolio *Portfolio,
+) (*OptimizationResult, error) {
+    // Collect real-time market data
+    marketData := yo.dataCollector.GetMarketData(ctx)
 
-#### Strategy Interface
+    // Assess risk for each strategy
+    riskScores := yo.riskAssessor.AssessStrategies(portfolio, marketData)
 
-```typescript
-interface VaultStrategy {
-  readonly name: string;
-  readonly riskLevel: 1 | 2 | 3 | 4 | 5;
+    // Run optimization models
+    result := yo.runOptimization(portfolio, marketData, riskScores)
 
-  analyze(marketData: MarketData): Promise<StrategyRecommendation>;
-  execute(
-    vault: VaultContract,
-    params: ExecutionParams
-  ): Promise<TransactionHash>;
-  validate(proposal: StrategyProposal): Promise<ValidationResult>;
+    return result, nil
 }
 ```
 
-#### AI Components
+## 📱 **Smart Contract Architecture**
 
-1. **Market Analysis Engine** - Real-time market data processing
-2. **Strategy Optimizer** - ML-based strategy selection
-3. **Risk Assessment** - Portfolio risk evaluation
-4. **Execution Engine** - Automated trade execution
+### **Contract System Design**
+```
+packages/contracts/foundry/src/
+├── ValkyrieToken.sol      # ERC-20 governance token
+├── ValkyrieVault.sol      # ERC-4626 yield-bearing vault
+├── ValkyrieAutomation.sol # Chainlink automation integration
+└── interfaces/            # Contract interfaces
+```
 
-### Integration Patterns
-
-#### Chainlink Integration
-
-- **Price feeds** for accurate asset pricing
-- **Automation** for strategy execution triggers
-- **Functions** for off-chain computation
-- **CCIP** for cross-chain operations
-
-#### Oracle Security
-
-- **Multiple data sources** for price validation
-- **Time-weighted averages** to prevent manipulation
-- **Circuit breakers** for extreme market conditions
-- **Manual override** capabilities for emergencies
-
-## Testing Strategy
-
-### Smart Contract Testing
-
-#### Foundry Test Structure
-
+### **ERC-4626 Vault Implementation**
 ```solidity
-contract ValkryieVaultTest is Test {
-    ValkryieVault vault;
-    ValkryieToken token;
+contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
+    using SafeERC20 for IERC20;
 
-    function setUp() public {
-        token = new ValkryieToken();
-        vault = new ValkryieVault(IERC20(token), "Vault Shares", "vVLK");
+    // AI-controlled strategy allocation
+    mapping(address => uint256) public strategyAllocations;
+
+    // Deposit with AI optimization
+    function deposit(uint256 assets, address receiver)
+        public
+        override
+        nonReentrant
+        returns (uint256 shares)
+    {
+        shares = super.deposit(assets, receiver);
+
+        // Trigger AI rebalancing
+        _requestRebalance();
+
+        emit DepositWithOptimization(receiver, assets, shares);
     }
 
-    function test_Deposit() public {
-        // Test implementation
-    }
+    // AI-driven strategy rebalancing
+    function rebalanceStrategies(
+        address[] calldata strategies,
+        uint256[] calldata allocations
+    ) external onlyAutomation {
+        require(strategies.length == allocations.length, "Length mismatch");
 
-    function testFuzz_WithdrawAllowsOnlyOwner(uint256 amount, address user) public {
-        // Fuzz test implementation
+        uint256 totalAllocation = 0;
+        for (uint256 i = 0; i < allocations.length; i++) {
+            totalAllocation += allocations[i];
+            strategyAllocations[strategies[i]] = allocations[i];
+        }
+
+        require(totalAllocation == 10000, "Must equal 100%"); // 100% = 10000 basis points
+
+        emit StrategiesRebalanced(strategies, allocations);
     }
 }
 ```
 
-#### Test Categories
+## 🔗 **Integration Patterns**
 
-- **Unit tests** for individual functions
-- **Integration tests** for contract interactions
-- **Fuzz tests** for edge case discovery
-- **Invariant tests** for system-wide properties
-
-### Frontend Testing
-
-#### Component Testing
-
+### **Frontend ↔ Backend Communication**
 ```typescript
-import { render, screen } from "@testing-library/react";
-import { WalletStatus } from "@/components/web3/wallet-status";
+// Type-safe tRPC client
+export const trpc = createTRPCNext<AppRouter>({
+  config() {
+    return {
+      links: [
+        httpBatchLink({
+          url: `${env.NEXT_PUBLIC_SERVER_URL}/api/trpc`,
+        }),
+      ],
+    }
+  },
+})
 
-describe("WalletStatus", () => {
-  it("shows connected state when wallet is connected", () => {
-    render(<WalletStatus />, { wrapper: TestProviders });
-    expect(screen.getByText(/connected/i)).toBeInTheDocument();
-  });
-});
+// React Query integration
+export const useVaultDeposit = () => {
+  return trpc.vault.deposit.useMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries(['vault'])
+      toast.success('Deposit successful!')
+    },
+  })
+}
 ```
 
-#### E2E Testing with Playwright
-
+### **Backend ↔ AI Service Communication**
 ```typescript
-test("user can connect wallet and view portfolio", async ({ page }) => {
-  await page.goto("/dashboard");
-  await page.click('[data-testid="connect-wallet"]');
-  // Mock wallet connection
-  await expect(page.locator('[data-testid="portfolio-value"]')).toBeVisible();
-});
+// gRPC client for AI service
+export class AIServiceClient {
+  private client: AIServiceClient
+
+  async getOptimizationRecommendation(
+    portfolio: Portfolio
+  ): Promise<OptimizationResult> {
+    const request = {
+      portfolio: this.serializePortfolio(portfolio),
+      riskTolerance: portfolio.riskTolerance,
+    }
+
+    const response = await this.client.optimizePortfolio(request)
+    return this.deserializeResult(response)
+  }
+}
 ```
 
-## Development Workflow
-
-### Environment Setup
-
-#### Development Environment
-
-### Prerequisites
-
-- **Node.js 18+**: Runtime environment
-- **pnpm**: Package manager for monorepo management
-- **PostgreSQL 14+**: Database for application data
-- **Git**: Version control
-
-### Quick Setup
-
-```bash
-# Clone repository
-git clone <repository-url>
-cd valkryie-finance
-
-# Install dependencies
-pnpm install
-
-# Environment setup
-cp apps/server/.env.example apps/server/.env.local
-cp apps/web/.env.example apps/web/.env.local
-
-# Database setup
-cd apps/server
-pnpm run db:push
-pnpm run db:seed
-
-# Start development
-pnpm run dev
-```
-
-### Package Scripts
-
-```bash
-# Development
-pnpm dev                 # Start all applications
-pnpm dev:web            # Start frontend only
-pnpm dev:server         # Start backend only
-
-# Building
-pnpm build              # Build all packages
-pnpm build:web          # Build frontend
-pnpm build:server       # Build backend
-
-# Testing
-pnpm test               # Run all tests
-pnpm test:unit          # Unit tests only
-pnpm test:e2e           # End-to-end tests
-pnpm test:watch         # Tests in watch mode
-
-# Code Quality
-pnpm lint               # Lint all packages
-pnpm type-check         # TypeScript type checking
-pnpm format             # Format code with Prettier
-
-# Database Operations
-pnpm db:generate        # Generate migrations
-pnpm db:migrate         # Apply migrations
-pnpm db:push            # Push schema changes
-pnpm db:studio          # Open database studio
-```
-
-### Code Quality
-
-#### TypeScript Configuration
-
-- **Strict mode enabled** for maximum type safety
-- **Path mapping** for clean imports
-- **Incremental compilation** for faster builds
-
-#### Linting and Formatting
-
-- **ESLint** with strict rules for code quality
-- **Prettier** for consistent code formatting
-- **Husky** for pre-commit hooks
-- **lint-staged** for staged file linting
-
-#### Git Workflow
-
-- **Feature branches** for all development work
-- **PR reviews** required before merging
-- **Automated testing** on all PRs
-- **Semantic versioning** for releases
-
-### Testnet Development Strategy
-
-#### Production-Like Testnet Deployment
-
-**Objective**: Test all features with real protocol integrations before mainnet launch
-
-**Deployment Process**:
-
-```bash
-# Deploy to Sepolia with real integrations
-forge script script/DeployTestnetProduction.s.sol \
-  --rpc-url $SEPOLIA_RPC_URL \
-  --private-key $PRIVATE_KEY \
-  --broadcast \
-  --verify \
-  --etherscan-api-key $ETHERSCAN_API_KEY
-```
-
-**Real Protocol Integrations**:
-
-- **Aave V3 Sepolia**: `0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951`
-- **Compound Sepolia**: `0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238`
-- **Chainlink Price Feeds**: ETH/USD and USDC/USD on Sepolia
-- **USDC Sepolia**: `0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8`
-
-#### Testing Phases
-
-**Phase 1 (Week 1-2): Foundation**
-
-- Deploy contracts with real protocol integrations
-- Configure frontend for testnet environment
-- Test basic vault operations with real USDC
-- Validate price oracle functionality
-
-**Phase 2 (Week 2-3): Advanced Features**
-
-- Test yield generation strategies (Aave, Compound)
-- Implement AI strategy mocking
-- Cross-chain functionality preparation
-- Performance optimization
-
-**Phase 3 (Week 3-4): Load Testing**
-
-- Stress test smart contracts
-- Frontend performance optimization
-- Backend scalability testing
-- Security vulnerability assessment
-
-**Phase 4 (Week 4-5): User Acceptance**
-
-- Beta user program launch
-- Complete user journey testing
-- Feedback collection and integration
-- Documentation finalization
-
-#### Mainnet Readiness Criteria
-
-**Technical Requirements**:
-
-- [ ] All 150+ tests passing consistently
-- [ ] Security audit completed with no critical issues
-- [ ] Gas optimization verified (35% reduction achieved)
-- [ ] Performance metrics meeting targets
-
-**User Experience Requirements**:
-
-- [ ] User acceptance testing completed successfully
-- [ ] Support documentation finalized
-- [ ] Community feedback integrated
-- [ ] Beta user satisfaction >4.5/5
-
-**Business Requirements**:
-
-- [ ] Legal and compliance review completed
-- [ ] Partnership integrations tested
-- [ ] Marketing and launch strategy finalized
-- [ ] Incident response procedures documented
-
-## Deployment Architecture
-
-### Infrastructure Overview
-
-#### Frontend Deployment (Vercel)
-
-- **Automatic deployments** from GitHub
-- **Preview deployments** for PRs
-- **Edge caching** for optimal performance
-- **Custom domains** with SSL
-
-#### Backend Deployment (Railway)
-
-- **Auto-scaling** based on demand
-- **Database management** with backups
-- **Environment isolation** (dev/staging/prod)
-- **Health monitoring** and alerts
-
-### Environment Management
-
-#### Configuration
-
+### **Smart Contract Integration**
 ```typescript
-// Environment validation with Zod
-const envSchema = z.object({
-  DATABASE_URL: z.string().url(),
-  NEXTAUTH_SECRET: z.string().min(32),
-  ALCHEMY_API_KEY: z.string(),
-  TENDERLY_ACCESS_KEY: z.string(),
-});
+// Wagmi hooks for contract interaction
+export const useVaultDeposit = (vaultAddress: string) => {
+  return useWriteContract({
+    address: vaultAddress,
+    abi: ValkyrieVaultABI,
+    functionName: 'deposit',
+  })
+}
 
-export const env = envSchema.parse(process.env);
+// Type-safe contract calls
+export const depositToVault = async (
+  amount: bigint,
+  receiver: string
+) => {
+  const { data: hash } = await writeContract({
+    address: VAULT_ADDRESS,
+    abi: ValkyrieVaultABI,
+    functionName: 'deposit',
+    args: [amount, receiver],
+  })
+
+  return hash
+}
 ```
 
-#### Security
+## 🔐 **Security Architecture**
 
-- **Environment variable encryption**
-- **Secret rotation** policies
-- **Access control** for production environments
-- **Audit logging** for all deployments
-
-## Monitoring and Observability
-
-### Smart Contract Monitoring (Tenderly)
-
-#### Real-time Monitoring
-
-- **Transaction tracking** with detailed execution traces
-- **Gas usage optimization** insights
-- **Error detection** and alerting
-- **Performance metrics** dashboard
-
-#### Alert Configuration
-
+### **Authentication & Authorization**
 ```typescript
-const alertConfig = {
-  contractAddress: VAULT_ADDRESS,
-  triggers: [
-    { event: "LargeWithdrawal", threshold: "1000000" },
-    { event: "EmergencyPause", immediate: true },
-    { function: "deposit", gasThreshold: "500000" },
+// Better Auth integration
+export const auth = betterAuth({
+  database: {
+    provider: 'pg',
+    url: env.DATABASE_URL,
+  },
+  plugins: [
+    twoFactor(),
+    organization(),
   ],
-  notifications: ["email", "slack", "webhook"],
-};
+})
+
+// Protected tRPC procedures
+export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
+  if (!ctx.session?.user) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' })
+  }
+
+  return next({
+    ctx: {
+      ...ctx,
+      user: ctx.session.user,
+    },
+  })
+})
 ```
 
-### Application Monitoring
+### **Smart Contract Security**
+```solidity
+// Multi-layered security approach
+contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard, Pausable {
+    using SafeERC20 for IERC20;
 
-#### Performance Tracking
+    // Access control
+    modifier onlyAutomation() {
+        require(msg.sender == automationAddress, "Only automation");
+        _;
+    }
 
-- **Core Web Vitals** monitoring
-- **API response times** tracking
-- **Database query performance**
-- **User experience metrics**
+    // Emergency controls
+    function emergencyPause() external onlyOwner {
+        _pause();
+        emit EmergencyPaused(block.timestamp);
+    }
 
-#### Error Tracking
+    // Withdrawal limits
+    uint256 public constant MAX_WITHDRAWAL_PER_TX = 1000000e18; // 1M tokens
 
-- **Client-side error boundary** integration
-- **Server-side error logging**
-- **Automatic error reporting**
-- **Error correlation** across services
+    function withdraw(uint256 assets, address receiver, address owner)
+        public
+        override
+        nonReentrant
+        whenNotPaused
+        returns (uint256 shares)
+    {
+        require(assets <= MAX_WITHDRAWAL_PER_TX, "Exceeds withdrawal limit");
+        return super.withdraw(assets, receiver, owner);
+    }
+}
+```
 
-## Security Considerations
+## 🚀 **Deployment Architecture**
 
-### Smart Contract Security
+### **Development Environment**
+- **Local Development**: `pnpm dev` - All services with hot reload
+- **Component Development**: Storybook at `localhost:6006`
+- **API Testing**: tRPC panel and Postman integration
+- **Database**: Local Supabase or Docker PostgreSQL
 
-#### Audit Process
+### **Production Deployment**
+- **Frontend**: Vercel with automatic deployments
+- **Backend**: Railway or Vercel serverless functions
+- **Database**: Supabase with connection pooling
+- **AI Service**: Google Cloud Run or AWS ECS
+- **Smart Contracts**: Ethereum mainnet + L2s (Arbitrum, Optimism)
 
-1. **Internal review** by development team
-2. **Automated scanning** with tools like Slither
-3. **Professional audit** by security firms
-4. **Bug bounty program** for ongoing security
+### **CI/CD Pipeline**
+```yaml
+# GitHub Actions workflow
+name: Deploy Production
+on:
+  push:
+    branches: [main]
 
-#### Security Features
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - run: pnpm install
+      - run: pnpm test
+      - run: pnpm build
 
-- **Multi-signature wallets** for admin functions
-- **Time delays** for critical operations
-- **Emergency pause** mechanisms
-- **Upgrade governance** through DAO voting
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Vercel
+        uses: vercel/action@v1
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+```
 
-### Application Security
+## 📊 **Performance Optimization**
 
-#### Authentication & Authorization
+### **Frontend Optimization**
+- **Bundle Splitting**: Dynamic imports for route-based code splitting
+- **Image Optimization**: Next.js Image component with WebP conversion
+- **Caching Strategy**: SWR for data fetching with background revalidation
+- **Component Lazy Loading**: React.lazy for non-critical components
 
-- **Secure session management** with Better Auth
-- **Role-based access control** (RBAC)
-- **API rate limiting** to prevent abuse
-- **Input validation** and sanitization
+### **Backend Optimization**
+- **Database**: Connection pooling and query optimization
+- **Caching**: Redis for session storage and API response caching
+- **Rate Limiting**: Per-user and per-endpoint rate limiting
+- **Background Jobs**: Queue system for heavy AI computations
 
-#### Data Protection
-
-- **Encryption at rest** for sensitive data
-- **HTTPS enforcement** for all communications
-- **CORS configuration** for API security
-- **CSP headers** for XSS protection
-
-## Performance Optimization
-
-### Frontend Optimization
-
-#### Bundle Optimization
-
-- **Tree shaking** to eliminate unused code
-- **Code splitting** for optimal loading
-- **Image optimization** with Next.js Image
-- **Font optimization** with next/font
-
-#### Caching Strategy
-
-- **Static asset caching** at CDN level
-- **API response caching** with TanStack Query
-- **Browser caching** with proper headers
-- **Service worker** for offline functionality
-
-### Backend Optimization
-
-#### Database Performance
-
-- **Connection pooling** for efficient resource usage
-- **Query optimization** with proper indexing
-- **Caching layer** with Redis for frequently accessed data
-- **Read replicas** for scaling read operations
-
-#### API Performance
-
-- **Response compression** with gzip
-- **Pagination** for large datasets
-- **Background jobs** for heavy processing
-- **CDN integration** for global distribution
-
-## AI Services
-
-The AI services consist of a high-performance, Go-based engine located in the `apps/ai-engine` directory. This engine provides a RESTful API that is consumed by the main tRPC server (`apps/server`). This architecture ensures a clean separation of concerns, allowing the AI engine to be optimized independently for performance-critical computations.
-
-### AI Engine API Endpoints
-
-The Go-based AI engine exposes the following RESTful endpoints, which are called by the tRPC server:
-
-- **`GET /health`**: Provides a health check of the AI engine and its sub-services, like the data collector.
-- **`GET /api/market-indicators`**: Returns real-time market indicators, including the Fear & Greed Index, market cap, and DeFi TVL.
-- **`POST /api/optimize-portfolio`**: Accepts a user's portfolio data and returns a comprehensive optimization plan, including rebalancing actions, expected returns, and risk analysis.
-- **`POST /api/risk-metrics`**: Accepts portfolio data and returns detailed risk metrics such as Value at Risk (VaR), Sharpe Ratio, Beta, and max drawdown.
-- **`POST /api/market-analysis`**: Accepts a list of tokens and returns a detailed technical and sentiment analysis for each.
-
-### tRPC AI Router (`apps/server/src/routers/ai.ts`)
-
-The main server application provides a type-safe interface to the AI engine's capabilities through the `aiRouter`. This router abstracts the direct REST calls and integrates the AI insights into the broader platform ecosystem. Key procedures include:
-
-- **`getAIEngineStatus` (Query)**: Wraps the `/health` endpoint.
-- **`getMarketIndicators` (Query)**: Wraps the `/api/market-indicators` endpoint.
-- **`optimizePortfolioAdvanced` (Mutation)**: The primary optimization procedure. It calls the `/api/optimize-portfolio`, `/api/risk-metrics`, and `/api/market-analysis` endpoints in sequence to provide a holistic portfolio review.
-- **`assessPortfolioRisk` (Mutation)**: Wraps the `/api/risk-metrics` endpoint.
-- **`getTokenAnalysis` (Mutation)**: Wraps the `/api/market-analysis` endpoint.
-
-This setup ensures that the frontend application (`apps/web`) can interact with the powerful AI engine through a secure, efficient, and fully type-safe tRPC API.
-
-## Frontend Architecture
-
-The frontend is a Next.js application built with the App Router, located in `apps/web`.
+### **Smart Contract Optimization**
+- **Gas Optimization**: Minimal proxy patterns and efficient storage
+- **Batch Operations**: Multi-call patterns for multiple transactions
+- **Layer 2 Integration**: Arbitrum and Optimism for lower fees
 
 ---
 
-**Last Updated**: December 2024
-**Version**: 2.0
-**Maintainer**: Development Team
+This technical architecture provides a solid foundation for building a sophisticated DeFi platform with AI-powered optimization, comprehensive component systems, and production-ready infrastructure.
