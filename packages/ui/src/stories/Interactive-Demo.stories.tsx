@@ -49,8 +49,8 @@ function InteractiveVaultDashboard() {
     if (!selectedVault || !depositAmount || !agreesToTerms) return;
 
     setIsDepositing(true);
-    // Simulate async operation
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // Simulate async operation with shorter timeout for Chromatic compatibility
+    await new Promise((resolve) => setTimeout(resolve, 600));
     setIsDepositing(false);
     setDepositAmount('');
     setSelectedVault(null);
@@ -290,8 +290,8 @@ export const WithInteractionTest: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    // Wait for component to load
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    // Wait for component to load (reduced for Chromatic)
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     // Test vault selection
     const ethVault = canvas.getByTestId('vault-eth-vault');

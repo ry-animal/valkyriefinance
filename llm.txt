@@ -1,0 +1,177 @@
+# Valkyrie Finance - LLM Instructions
+
+This is a DeFi (Decentralized Finance) platform combining AI-powered yield optimization with cross-chain functionality. The project uses a monorepo architecture with multiple applications and shared packages.
+
+## Project Structure
+
+### Applications
+- `apps/web/` - Next.js 15 frontend with App Router, React Server Components
+- `apps/server/` - Next.js API server with tRPC endpoints and Drizzle ORM
+- `apps/ai-engine/` - Go-based AI service for market analysis and yield optimization
+- `apps/storybook-host/` - Storybook for UI component development
+
+### Shared Packages
+- `packages/ui/` - Shared UI components using shadcn/ui and Tailwind CSS v4
+- `packages/common/` - Shared TypeScript types, Zod schemas, utilities
+- `packages/contracts/` - Smart contracts (Solidity/Foundry) and TypeScript bindings
+- `packages/config/` - Shared configuration and constants
+
+## Technology Stack
+
+### Frontend (apps/web)
+- **Framework**: Next.js 15 with App Router and React Server Components
+- **Styling**: Tailwind CSS v4 with design tokens
+- **UI Components**: shadcn/ui components from packages/ui
+- **State Management**: Zustand stores with RSC-compatible patterns
+- **Web3**: Wagmi v2 + Viem for blockchain interactions
+- **API**: tRPC client connecting to apps/server
+- **Testing**: Vitest + Playwright
+
+### Backend (apps/server)
+- **Framework**: Next.js API routes with tRPC
+- **Database**: PostgreSQL with Drizzle ORM
+- **Caching**: Redis for performance optimization
+- **Auth**: Custom auth system with wallet integration
+- **AI Integration**: gRPC client to apps/ai-engine
+
+### Smart Contracts (packages/contracts)
+- **Framework**: Foundry for Solidity development
+- **Contracts**: ERC-20 token, ERC-4626 vault, Uniswap V4 hooks
+- **Testing**: Comprehensive Foundry test suite
+- **Deployment**: Tenderly integration for monitoring
+
+### AI Engine (apps/ai-engine)
+- **Language**: Go with gRPC server
+- **Purpose**: Market analysis, yield optimization, risk assessment
+- **Data Sources**: DeFi protocols, price feeds, on-chain analytics
+
+## Code Patterns & Conventions
+
+### React Server Components (RSC)
+- Use RSC for data fetching and server-side logic
+- Client components only for interactivity
+- Store providers wrapped in client components
+- Async components for database queries
+
+### State Management
+- Zustand stores with factory pattern for SSR compatibility
+- Store providers in `src/stores/rsc-store-provider.tsx`
+- Separate client/server state boundaries
+
+### API Design
+- tRPC routers in `apps/server/src/routers/`
+- Input validation with Zod schemas from `packages/common`
+- Error handling with custom TRPC errors
+- Rate limiting and caching middleware
+
+### Database
+- Drizzle ORM with PostgreSQL
+- Schema files in `apps/server/src/db/schema/`
+- Row Level Security (RLS) enabled
+- Optimized queries with proper indexing
+
+### Web3 Integration
+- Wagmi configuration in `src/lib/wagmi-config.ts`
+- Custom hooks for contract interactions
+- Network switching and wallet management
+- Type-safe contract bindings from packages/contracts
+
+### Styling
+- Tailwind CSS v4 with `@theme` directive
+- Design tokens in `packages/ui/src/tokens/design-tokens.json`
+- Custom brutal design system with shadows
+- Dark mode support with CSS custom properties
+
+### Testing
+- Unit tests with Vitest
+- E2E tests with Playwright
+- Smart contract tests with Foundry
+- MSW for API mocking
+
+## Key Files & Directories
+
+### Configuration
+- `turbo.json` - Monorepo build pipeline
+- `biome.json` - Linting and formatting (root + per-package)
+- `tsconfig.json` - TypeScript configuration
+- `pnpm-workspace.yaml` - Package manager workspace
+
+### Environment
+- `.env.local` files per application
+- Environment validation with Zod schemas
+- Separate client/server environment variables
+
+### Documentation
+- `documentation/` - Comprehensive project docs
+- `README.md` files per package
+- Inline code documentation for complex logic
+
+## Development Guidelines
+
+### Code Quality
+- Strict TypeScript configuration
+- Biome for linting and formatting
+- Comprehensive error handling
+- Security-first approach for DeFi components
+
+### Performance
+- React Server Components for optimal loading
+- Redis caching for database queries
+- Optimized bundle sizes
+- Web Vitals monitoring
+
+### Security
+- Input validation on all boundaries
+- Rate limiting on API endpoints
+- Secure smart contract patterns
+- Audit trails for financial operations
+
+### Scalability
+- Modular architecture with shared packages
+- Horizontal scaling patterns
+- Database optimization
+- Efficient state management
+
+## Common Tasks
+
+### Adding New Features
+1. Define types in `packages/common`
+2. Add database schema if needed
+3. Create tRPC router procedures
+4. Build UI components in `packages/ui`
+5. Implement frontend pages/components
+6. Add comprehensive tests
+
+### Smart Contract Development
+1. Write contracts in `packages/contracts/foundry/src/`
+2. Comprehensive Foundry tests
+3. Generate TypeScript bindings
+4. Update contract addresses
+5. Deploy with monitoring
+
+### Database Changes
+1. Update schema files
+2. Generate migrations with Drizzle
+3. Update queries and procedures
+4. Test with sample data
+
+## Error Handling
+- Custom error types with context
+- User-friendly error messages
+- Comprehensive logging
+- Graceful degradation patterns
+
+## Performance Optimization
+- Server-side rendering where appropriate
+- Efficient data fetching patterns
+- Caching strategies
+- Bundle optimization
+
+When working with this codebase:
+1. Follow the established patterns and conventions
+2. Use the shared packages for consistency
+3. Implement proper error handling and validation
+4. Write comprehensive tests for new features
+5. Consider security implications for DeFi components
+6. Optimize for performance and scalability
+7. Document complex logic and architectural decisions

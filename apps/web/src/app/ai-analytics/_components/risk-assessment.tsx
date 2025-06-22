@@ -103,9 +103,9 @@ export function RiskAssessment() {
         {/* Risk Factors */}
         <div className="space-y-3">
           <h4 className="font-semibold text-sm">Key Risk Factors</h4>
-          {riskFactors.map((factor, index) => (
+          {riskFactors.map((factor) => (
             <div
-              key={index}
+              key={factor.name}
               className="p-3 border rounded-lg space-y-2 hover:bg-muted/50 transition-colors"
             >
               <div className="flex items-center justify-between">

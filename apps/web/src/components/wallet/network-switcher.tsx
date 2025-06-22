@@ -1,10 +1,11 @@
-import { Badge, Button } from '@valkyrie/ui';
 import {
+  Badge,
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@valkyrie/ui-menu';
+} from '@valkyrie/ui';
 import { ChevronDown, Network } from 'lucide-react';
 import { useChainId, useSwitchChain } from 'wagmi';
 import { getChainById, networks } from '@/lib/wagmi-config';

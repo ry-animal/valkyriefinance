@@ -68,7 +68,7 @@ export const aiRecommendationsRelations = relations(aiRecommendations, ({ one })
   }),
 }));
 
-export const marketDataRelations = relations(marketData, ({ one }) => ({
+export const marketDataRelations = relations(marketData, () => ({
   // Market data doesn't have direct user relationships
   // It's public data available to all users
 }));

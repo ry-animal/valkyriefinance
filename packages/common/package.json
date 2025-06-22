@@ -25,6 +25,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
+    "clean": "rm -rf dist",
     "check-types": "tsc --noEmit",
     "lint": "biome lint --write .",
     "lint:check": "biome lint .",

@@ -26,6 +26,15 @@ valkryiefinance/
 - **Hot Reload**: Live development with instant feedback across all apps
 - **Type Safety**: End-to-end TypeScript with shared types and validation
 - **Component Development**: Add shadcn → move to UI package → create stories
+- **Quality Assurance**: `pnpm check` runs Biome linting across all packages
+- **Workspace Validation**: `pnpm workspace:check` verifies all package health
+
+### **Infrastructure Quality & Reliability**
+- **Code Quality**: Production-grade TypeScript with strict type checking
+- **Session Management**: Redis-backed sessions with proper type safety
+- **Performance Monitoring**: Structured logging and query timing utilities
+- **Error Handling**: Comprehensive error boundaries and type-safe error responses
+- **Rate Limiting**: Redis-distributed rate limiting for API protection
 
 ## 🎨 **Component System Architecture**
 
@@ -491,6 +500,36 @@ jobs:
 - **Caching**: Redis for session storage and API response caching
 - **Rate Limiting**: Per-user and per-endpoint rate limiting
 - **Background Jobs**: Queue system for heavy AI computations
+
+### **Redis Infrastructure**
+```typescript
+// Type-safe Redis session management
+export class RedisSessionManager {
+  async createSession(
+    sessionId: string,
+    sessionData: Record<string, unknown>,
+    ttlSeconds: number = this.defaultTTL
+  ): Promise<void> {
+    const data = {
+      ...sessionData,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + ttlSeconds * 1000,
+    }
+    await kv.setex(`session:${sessionId}`, ttlSeconds, JSON.stringify(data))
+  }
+}
+
+// Distributed rate limiting
+export class RedisRateLimiter {
+  async isAllowed(userIdentifier: string): Promise<{
+    allowed: boolean;
+    remaining: number;
+    resetTime: number;
+  }> {
+    // Redis sliding window rate limiting implementation
+  }
+}
+```
 
 ### **Smart Contract Optimization**
 - **Gas Optimization**: Minimal proxy patterns and efficient storage

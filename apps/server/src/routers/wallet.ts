@@ -25,6 +25,19 @@ const signatureSchema = z.object({
   address: walletAddressSchema,
 });
 
+// Type definitions for cached data
+interface WalletMetadata {
+  address: string;
+  chainId: number;
+  lastConnected: number;
+  sessionId: string;
+}
+
+interface WalletVerificationStatus {
+  verified: boolean;
+  verifiedAt: number;
+}
+
 export const walletRouter = router({
   /**
    * Connect wallet with Redis session management
@@ -38,7 +51,7 @@ export const walletRouter = router({
         ipAddress: z.string().optional(),
       })
     )
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input }) => {
       const { address, chainId, userAgent, ipAddress } = input;
 
       // Rate limiting check
@@ -197,7 +210,7 @@ export const walletRouter = router({
 
       try {
         // Check cache first
-        const cached = await redisCache.get<any>(`session:${sessionId}`);
+        const cached = await redisCache.get<unknown>(`session:${sessionId}`);
         if (cached) {
           return cached;
         }
@@ -285,8 +298,10 @@ export const walletRouter = router({
 
       try {
         // Check cached metadata
-        const metadata = await redisCache.get<any>(`wallet:metadata:${address}`);
-        const verified = await redisCache.get<any>(`wallet:verified:${address}`);
+        const metadata = await redisCache.get<WalletMetadata>(`wallet:metadata:${address}`);
+        const verified = await redisCache.get<WalletVerificationStatus>(
+          `wallet:verified:${address}`
+        );
 
         return {
           connected: !!metadata,

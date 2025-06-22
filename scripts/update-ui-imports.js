@@ -116,6 +116,7 @@ function updateImports(filePath) {
       if (lines[i].trim().startsWith('import ') || lines[i].trim().startsWith('import ')) {
         insertIndex = i + 1;
       } else if (lines[i].trim() === '' && insertIndex > 0) {
+        // Continue scanning past empty lines after imports
       } else if (insertIndex > 0) {
         // We've found the end of imports
         break;

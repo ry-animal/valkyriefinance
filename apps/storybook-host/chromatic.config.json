@@ -1,0 +1,27 @@
+{
+  "$schema": "https://www.chromatic.com/config-file.schema.json",
+  "buildScriptName": "build-storybook",
+  "projectToken": "chpt_2381",
+  "exitZeroOnChanges": true,
+  "exitOnceUploaded": false,
+  "allowConsoleErrors": true,
+  "ignoreLastBuildOnBranch": "main",
+  "skip": "dependabot/**",
+  "onlyChanged": true,
+  "traceChanged": "expanded",
+  "untraced": [
+    "**/*.md",
+    "**/*.mdx",
+    "**/package.json",
+    "**/package-lock.json",
+    "**/yarn.lock",
+    "**/pnpm-lock.yaml"
+  ],
+  "externals": ["public/**"],
+  "delay": 300,
+  "diffThreshold": 0.2,
+  "threshold": 0.2,
+  "pauseAnimationAtEnd": true,
+  "forcedColors": "none",
+  "prefersReducedMotion": "reduce"
+}

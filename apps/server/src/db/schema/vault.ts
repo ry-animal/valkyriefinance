@@ -80,7 +80,7 @@ export const vaultOperationsRelations = relations(vaultOperations, ({ one }) => 
   }),
 }));
 
-export const vaultStrategiesRelations = relations(vaultStrategies, ({ one }) => ({
+export const vaultStrategiesRelations = relations(vaultStrategies, () => ({
   // Vault strategies don't have direct user relationships
   // They are associated with vaults, not users
 }));

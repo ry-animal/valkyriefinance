@@ -88,7 +88,7 @@ export class RedisSessionManager {
 
   async createSession(
     sessionId: string,
-    sessionData: Record<string, any>,
+    sessionData: Record<string, unknown>,
     ttlSeconds: number = this.defaultTTL
   ): Promise<void> {
     const key = `${this.prefix}${sessionId}`;
@@ -101,7 +101,7 @@ export class RedisSessionManager {
     await kv.setex(key, ttlSeconds, JSON.stringify(data));
   }
 
-  async getSession(sessionId: string): Promise<Record<string, any> | null> {
+  async getSession(sessionId: string): Promise<Record<string, unknown> | null> {
     const key = `${this.prefix}${sessionId}`;
     const data = await kv.get(key);
 
@@ -127,7 +127,7 @@ export class RedisSessionManager {
 
   async updateSession(
     sessionId: string,
-    updates: Record<string, any>,
+    updates: Record<string, unknown>,
     extendTTL: boolean = true
   ): Promise<boolean> {
     const existingSession = await this.getSession(sessionId);
@@ -164,7 +164,7 @@ export class RedisSecurityManager {
 
   async storeNonce(
     nonce: string,
-    metadata: Record<string, any> = {},
+    metadata: Record<string, unknown> = {},
     ttlSeconds: number = 300 // 5 minutes
   ): Promise<void> {
     const key = `${this.prefix}nonce:${nonce}`;

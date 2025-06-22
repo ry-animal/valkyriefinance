@@ -2,7 +2,7 @@ import type { NextConfig } from 'next';
 
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
-  reactStrictMode: false,
+  reactStrictMode: true,
 
   // Performance optimizations
   swcMinify: true,
@@ -14,15 +14,52 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
 
+  // Turbopack configuration (moved from experimental)
+  turbopack: {
+    resolveAlias: {
+      '@': './src',
+    },
+  },
+
   // Experimental features for performance
   experimental: {
-    // Enable experimental optimizations
-    optimizePackageImports: ['@/components/ui'],
-    turbo: {
-      resolveAlias: {
-        '@': './src',
-      },
-    },
+    // Enable experimental optimizations for UI package
+    optimizePackageImports: ['@valkyrie/ui', '@/components/ui'],
+    // Enable optimized CSS loading
+    optimizeCss: true,
+    // Enable React compiler (if using React 19+)
+    reactCompiler: false,
+  },
+
+  // Optimize bundle splitting
+  webpack: (config, { dev, isServer }) => {
+    // Optimize for Tailwind v4 and modern CSS
+    if (!dev && !isServer) {
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          ...config.optimization.splitChunks,
+          cacheGroups: {
+            ...config.optimization.splitChunks?.cacheGroups,
+            // Separate vendor chunks for better caching
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              chunks: 'all',
+              priority: 10,
+            },
+            // Separate UI library chunks
+            ui: {
+              test: /[\\/]packages[\\/]ui[\\/]/,
+              name: 'ui',
+              chunks: 'all',
+              priority: 20,
+            },
+          },
+        },
+      };
+    }
+    return config;
   },
 
   // Security headers for comprehensive protection
@@ -46,16 +83,16 @@ const nextConfig: NextConfig = {
             key: 'X-XSS-Protection',
             value: '1; mode=block',
           },
-          // Strict Content Security Policy for XSS prevention
+          // Enhanced Content Security Policy for Web3 and DeFi apps
           {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cloudflare-eth.com https://*.alchemy.com https://*.walletconnect.org https://*.reown.com",
-              "style-src 'self' 'unsafe-inline'", // Required for styled-jsx and CSS-in-JS
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cloudflare-eth.com https://*.alchemy.com https://*.walletconnect.org https://*.reown.com https://cdn.jsdelivr.net",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: https: blob:",
-              "font-src 'self' data:",
-              "connect-src 'self' https: wss: https://cloudflare-eth.com https://*.alchemy.com https://*.walletconnect.org https://*.reown.com",
+              "font-src 'self' data: https://fonts.gstatic.com",
+              "connect-src 'self' https: wss: https://cloudflare-eth.com https://*.alchemy.com https://*.walletconnect.org https://*.reown.com https://api.coingecko.com https://defillama.com",
               "frame-src 'none'",
               "object-src 'none'",
               "base-uri 'self'",
@@ -74,15 +111,33 @@ const nextConfig: NextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
           },
-          // Strict Transport Security (HTTPS only)
-          {
+          // Strict Transport Security (HTTPS only) - only in production
+          ...(process.env.NODE_ENV === 'production' ? [{
             key: 'Strict-Transport-Security',
             value: 'max-age=31536000; includeSubDomains; preload',
-          },
+          }] : []),
         ],
       },
     ];
   },
+
+  // Optimize images for better performance
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+  },
+
+  // Enable compression in production
+  compress: true,
+
+  // Output configuration for static export if needed
+  output: process.env.NEXT_OUTPUT === 'export' ? 'export' : undefined,
+  trailingSlash: process.env.NEXT_OUTPUT === 'export',
+
+  // Disable x-powered-by header for security
+  generateEtags: false,
 };
 
 export default nextConfig;

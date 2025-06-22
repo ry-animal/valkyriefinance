@@ -83,7 +83,10 @@ class PerformanceMonitor {
 export const performanceMonitor = new PerformanceMonitor();
 
 // Query timing decorator
-export function withTiming<T extends any[], R>(queryName: string, fn: (...args: T) => Promise<R>) {
+export function withTiming<T extends unknown[], R>(
+  queryName: string,
+  fn: (...args: T) => Promise<R>
+) {
   return async (...args: T): Promise<R> => {
     const start = performance.now();
     try {
@@ -100,7 +103,7 @@ export function withTiming<T extends any[], R>(queryName: string, fn: (...args: 
 }
 
 // Cached query timing decorator
-export function withCachedTiming<T extends any[], R>(
+export function withCachedTiming<T extends unknown[], R>(
   queryName: string,
   fn: (...args: T) => Promise<R>
 ) {
@@ -123,7 +126,7 @@ export function withCachedTiming<T extends any[], R>(
 
 // Performance middleware for tRPC
 export const performanceMiddleware = (queryName: string) => {
-  return async (opts: any) => {
+  return async (opts: { next: () => Promise<unknown>; ctx?: { user?: { id?: string } } }) => {
     const start = performance.now();
     try {
       const result = await opts.next();

@@ -1,11 +1,10 @@
 import NextImage from 'next/image';
 import Link from 'next/link';
-import { memo, useMemo } from 'react';
 import { HeaderNavigation } from '@/components/header-navigation';
 import { ModeToggle } from '@/components/mode-toggle';
 import UserMenu from '@/components/user-menu';
 
-const NAVIGATION_LINKS: Array<{ to: string; label: string }> = [
+const NAVIGATION_LINKS = [
   { to: '/', label: 'HOME' },
   { to: '/dashboard', label: 'DASHBOARD' },
   { to: '/vault', label: 'VAULT' },
@@ -13,9 +12,7 @@ const NAVIGATION_LINKS: Array<{ to: string; label: string }> = [
   // { to: '/swap', label: 'SWAP' },
 ];
 
-function Header() {
-  const navigationLinks = useMemo(() => NAVIGATION_LINKS, []);
-
+export default function Header() {
   return (
     <header className="bg-white dark:bg-black border-b-4 border-black dark:border-white relative">
       <div className="max-w-7xl mx-auto">
@@ -34,7 +31,7 @@ function Header() {
             </div>
           </Link>
 
-          <HeaderNavigation links={navigationLinks} />
+          <HeaderNavigation links={NAVIGATION_LINKS} />
 
           <div className="hidden md:flex items-center gap-4">
             <ModeToggle />
@@ -45,5 +42,3 @@ function Header() {
     </header>
   );
 }
-
-export default memo(Header);

@@ -23,6 +23,39 @@ const preview: Preview = {
     nextjs: {
       appDirectory: true,
     },
+    // Performance optimizations for Chromatic
+    chromatic: {
+      // Reduce animation duration for faster snapshots
+      pauseAnimationAtEnd: true,
+      // Disable animations in Chromatic
+      disableSnapshot: false,
+    },
+    // Viewport configuration
+    viewport: {
+      viewports: {
+        mobile: {
+          name: 'Mobile',
+          styles: {
+            width: '375px',
+            height: '667px',
+          },
+        },
+        tablet: {
+          name: 'Tablet',
+          styles: {
+            width: '768px',
+            height: '1024px',
+          },
+        },
+        desktop: {
+          name: 'Desktop',
+          styles: {
+            width: '1200px',
+            height: '800px',
+          },
+        },
+      },
+    },
     backgrounds: {
       default: 'light',
       values: [

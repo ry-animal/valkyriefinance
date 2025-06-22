@@ -93,3 +93,37 @@ export const ENV_KEYS = {
   CORS_ORIGIN: 'CORS_ORIGIN',
   GOOGLE_AI_API_KEY: 'GOOGLE_AI_API_KEY',
 } as const;
+
+// Redis Configuration
+export const REDIS_PREFIXES = {
+  SESSION: 'session:',
+  CACHE: 'cache:',
+  RATE_LIMIT: 'rate_limit:',
+  SECURITY: 'security:',
+  WALLET_SESSION: 'wallet_session:',
+} as const;
+
+// Security Configuration
+export const securityConfig = {
+  session: {
+    maxAge: 4 * 60 * 60 * 1000, // 4 hours in milliseconds
+  },
+  rateLimits: {
+    transaction: {
+      requests: 10,
+      window: 60000, // 1 minute
+    },
+    api: {
+      requests: 100,
+      window: 60000, // 1 minute
+    },
+    auth: {
+      requests: 5,
+      window: 300000, // 5 minutes
+    },
+    wallet: {
+      requests: 20,
+      window: 60000, // 1 minute
+    },
+  },
+} as const;

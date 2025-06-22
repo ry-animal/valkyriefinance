@@ -21,9 +21,6 @@ export interface VaultInfo {
 
 // Server-side data fetching functions with React.cache for deduplication
 export const getPortfolioStats = cache(async (address?: string): Promise<PortfolioStats> => {
-  // Simulate API call - replace with actual blockchain/API calls
-  await new Promise((resolve) => setTimeout(resolve, 800));
-
   // In production, this would call your backend API or blockchain
   // Example: const response = await fetch(`${process.env.API_URL}/portfolio/${address}`)
 
@@ -37,8 +34,8 @@ export const getPortfolioStats = cache(async (address?: string): Promise<Portfol
 });
 
 export const getVaultInfo = cache(async (vaultId: string): Promise<VaultInfo> => {
-  // Simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 600));
+  // In production, this would call your backend API
+  // Example: const response = await fetch(`${process.env.API_URL}/vault/${vaultId}`)
 
   return {
     id: vaultId,
@@ -52,8 +49,8 @@ export const getVaultInfo = cache(async (vaultId: string): Promise<VaultInfo> =>
 });
 
 export const getActiveVaults = cache(async (): Promise<VaultInfo[]> => {
-  // Simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  // In production, this would call your backend API
+  // Example: const response = await fetch(`${process.env.API_URL}/vaults/active`)
 
   return [
     {
@@ -94,4 +91,23 @@ export const getDashboardData = cache(async (userAddress?: string) => {
     portfolioStats,
     activeVaults,
   };
+});
+
+// Fast loading fallback data for immediate UI response
+export const getPortfolioStatsFallback = (): PortfolioStats => ({
+  totalValue: '$0.00',
+  totalYield: '0.0%',
+  activePositions: 0,
+  pendingRewards: '$0.00',
+  lastUpdated: new Date().toISOString(),
+});
+
+export const getVaultInfoFallback = (vaultId: string): VaultInfo => ({
+  id: vaultId,
+  name: 'Loading...',
+  symbol: '...',
+  apy: 0,
+  tvl: '$0',
+  userBalance: '$0.00',
+  isActive: false,
 });

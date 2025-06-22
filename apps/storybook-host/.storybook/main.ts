@@ -2,11 +2,7 @@ import type { StorybookConfig } from '@storybook/nextjs';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 
 const config: StorybookConfig = {
-  stories: [
-    '../../../packages/ui/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
-    '../../../packages/ui/src/**/*.mdx',
-    '../../../apps/web/src/components/**/*.stories.@(js|jsx|mjs|ts|tsx)',
-  ],
+  stories: ['../../../packages/ui/src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
   addons: [
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
@@ -26,6 +22,35 @@ const config: StorybookConfig = {
         }),
       ];
     }
+
+    // Bundle size optimizations
+    if (config.optimization) {
+      config.optimization.splitChunks = {
+        ...config.optimization.splitChunks,
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+            priority: 10,
+          },
+          framerMotion: {
+            test: /[\\/]node_modules[\\/]framer-motion[\\/]/,
+            name: 'framer-motion',
+            chunks: 'all',
+            priority: 20,
+          },
+          lucideReact: {
+            test: /[\\/]node_modules[\\/]lucide-react[\\/]/,
+            name: 'lucide-react',
+            chunks: 'all',
+            priority: 20,
+          },
+        },
+      };
+    }
+
     return config;
   },
   typescript: {

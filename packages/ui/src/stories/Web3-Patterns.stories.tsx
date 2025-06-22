@@ -47,10 +47,11 @@ function WalletConnectionFlow() {
 
   const handleConnect = () => {
     setIsConnecting(true);
+    // Use shorter timeout for better Chromatic compatibility
     setTimeout(() => {
       setIsConnecting(false);
       setIsConnected(true);
-    }, 2000);
+    }, 500);
   };
 
   if (isConnected) {
@@ -111,7 +112,8 @@ function TransactionConfirmation() {
 
   const handleConfirm = () => {
     setStep('pending');
-    setTimeout(() => setStep('success'), 3000);
+    // Use shorter timeout for better Chromatic compatibility
+    setTimeout(() => setStep('success'), 800);
   };
 
   if (step === 'success') {
