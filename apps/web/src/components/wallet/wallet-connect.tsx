@@ -1,8 +1,8 @@
 'use client';
 
+import { Button } from '@valkyrie/ui';
 import { Wallet } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Button } from '@valkyrie/ui';
 
 export function WalletConnect() {
   const [mounted, setMounted] = useState(false);

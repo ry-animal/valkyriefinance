@@ -1,9 +1,7 @@
 'use client';
 
+import { Badge, Card, CardContent, CardHeader, CardTitle, Progress } from '@valkyrie/ui';
 import { Activity, AlertTriangle, Shield, TrendingUp } from 'lucide-react';
-import { Badge } from '@valkyrie/ui';
-import { Card, CardContent, CardHeader, CardTitle } from '@valkyrie/ui';
-import { Progress } from '@valkyrie/ui';
 
 const riskMetrics = [
   {

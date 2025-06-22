@@ -12,7 +12,6 @@
 
 import { REDIS_PREFIXES, securityConfig } from '@valkyrie/config/constants';
 import { kv } from '@vercel/kv';
-import { env } from './env';
 
 /**
  * Enhanced Rate Limiter using Redis for distributed rate limiting
@@ -252,7 +251,7 @@ export class RedisCache {
     }
   }
 
-  async invalidatePattern(pattern: string): Promise<void> {
+  async invalidatePattern(_pattern: string): Promise<void> {
     // Note: Vercel KV doesn't support pattern deletion
     // You'd need to maintain key sets for pattern invalidation
     console.warn('Pattern invalidation not implemented for Vercel KV');

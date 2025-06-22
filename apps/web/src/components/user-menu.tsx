@@ -19,7 +19,6 @@ import { getAppKit } from '@/lib/wagmi-config';
 
 export default function UserMenu() {
   const [mounted, setMounted] = useState(false);
-  const _router = useRouter();
 
   useEffect(() => {
     setMounted(true);

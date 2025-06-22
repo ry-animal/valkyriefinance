@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, userEvent, within } from '@storybook/test';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '../components/alert';
 import { Avatar, AvatarFallback, AvatarImage } from '../components/avatar';
 import { Badge } from '../components/badge';
@@ -10,9 +10,6 @@ import { Checkbox } from '../components/checkbox';
 import { Input } from '../components/input';
 import { Label } from '../components/label';
 import { Progress } from '../components/progress';
-import { Skeleton } from '../components/skeleton';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/tabs';
 
 // Demo component that showcases interactive patterns
 function InteractiveVaultDashboard() {

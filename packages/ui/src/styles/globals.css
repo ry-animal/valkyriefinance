@@ -1,78 +1,145 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-/* DEBUG: This should make the body red if CSS is loading */
-body {
-  background-color: red !important;
+@theme {
+  /* Core color palette from design tokens */
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* Gray scale */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  --color-gray-950: #030712;
+
+  /* Blue scale */
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-200: #bfdbfe;
+  --color-blue-300: #93c5fd;
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+  --color-blue-800: #1e40af;
+  --color-blue-900: #1e3a8a;
+  --color-blue-950: #172554;
+
+  /* Semantic colors */
+  --color-background: hsl(0 0% 100%);
+  --color-foreground: hsl(222.2 84% 4.9%);
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(222.2 84% 4.9%);
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(222.2 84% 4.9%);
+  --color-primary: hsl(222.2 47.4% 11.2%);
+  --color-primary-foreground: hsl(210 40% 98%);
+  --color-secondary: hsl(210 40% 96%);
+  --color-secondary-foreground: hsl(222.2 84% 4.9%);
+  --color-muted: hsl(210 40% 96%);
+  --color-muted-foreground: hsl(215.4 16.3% 46.9%);
+  --color-accent: hsl(210 40% 96%);
+  --color-accent-foreground: hsl(222.2 84% 4.9%);
+  --color-destructive: hsl(0 84.2% 60.2%);
+  --color-destructive-foreground: hsl(210 40% 98%);
+  --color-border: hsl(214.3 31.8% 91.4%);
+  --color-input: hsl(214.3 31.8% 91.4%);
+  --color-ring: hsl(222.2 84% 4.9%);
+
+  /* Border radius */
+  --radius: 0.5rem;
+
+  /* Typography from design tokens */
+  --text-xs: 12px;
+  --text-xs--line-height: 16px;
+  --text-sm: 14px;
+  --text-sm--line-height: 20px;
+  --text-base: 16px;
+  --text-base--line-height: 24px;
+  --text-lg: 18px;
+  --text-lg--line-height: 28px;
+  --text-xl: 20px;
+  --text-xl--line-height: 28px;
+  --text-2xl: 24px;
+  --text-2xl--line-height: 32px;
+  --text-3xl: 30px;
+  --text-3xl--line-height: 36px;
+  --text-4xl: 36px;
+  --text-4xl--line-height: 40px;
+
+  /* Font families */
+  --font-family-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+
+  /* Spacing from design tokens */
+  --spacing-0: 0px;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-20: 80px;
+  --spacing-24: 96px;
+  --spacing-32: 128px;
+  --spacing-40: 160px;
+  --spacing-48: 192px;
+  --spacing-56: 224px;
+  --spacing-64: 256px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-base: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-brutal: 8px 8px 0px #000000;
+  --shadow-brutal-sm: 4px 4px 0px #000000;
+  --shadow-brutal-lg: 12px 12px 0px #000000;
+  --shadow-brutal-xl: 16px 16px 0px #000000;
 }
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-  }
+/* Dark mode color overrides */
+.dark {
+  --color-background: hsl(222.2 84% 4.9%);
+  --color-foreground: hsl(210 40% 98%);
+  --color-card: hsl(222.2 84% 4.9%);
+  --color-card-foreground: hsl(210 40% 98%);
+  --color-popover: hsl(222.2 84% 4.9%);
+  --color-popover-foreground: hsl(210 40% 98%);
+  --color-primary: hsl(210 40% 98%);
+  --color-primary-foreground: hsl(222.2 47.4% 11.2%);
+  --color-secondary: hsl(217.2 32.6% 17.5%);
+  --color-secondary-foreground: hsl(210 40% 98%);
+  --color-muted: hsl(217.2 32.6% 17.5%);
+  --color-muted-foreground: hsl(215 20.2% 65.1%);
+  --color-accent: hsl(217.2 32.6% 17.5%);
+  --color-accent-foreground: hsl(210 40% 98%);
+  --color-destructive: hsl(0 62.8% 30.6%);
+  --color-destructive-foreground: hsl(210 40% 98%);
+  --color-border: hsl(217.2 32.6% 17.5%);
+  --color-input: hsl(217.2 32.6% 17.5%);
+  --color-ring: hsl(212.7 26.8% 83.9%);
 }
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--color-border));
   }
 
   body {
-    @apply bg-background text-foreground;
-  }
-}
-
-@layer components {
-  /* Component-specific styles can be added here */
-  .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary-hover;
-  }
-
-  .btn-secondary {
-    @apply bg-secondary text-secondary-foreground hover:bg-secondary-hover;
-  }
-
-  .btn-destructive {
-    @apply bg-destructive text-destructive-foreground hover:bg-destructive-hover;
+    background-color: hsl(var(--color-background));
+    color: hsl(var(--color-foreground));
   }
 }

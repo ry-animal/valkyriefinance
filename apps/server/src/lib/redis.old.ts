@@ -4,7 +4,6 @@
  */
 
 import { kv } from '@vercel/kv';
-import { env } from './env';
 
 // Redis key prefixes for organized data structure
 export const REDIS_PREFIXES = {
@@ -256,7 +255,7 @@ export class RedisCache {
     }
   }
 
-  async invalidatePattern(pattern: string): Promise<void> {
+  async invalidatePattern(_pattern: string): Promise<void> {
     // Note: Vercel KV doesn't support pattern deletion
     // You'd need to maintain key sets for pattern invalidation
     console.warn('Pattern invalidation not implemented for Vercel KV');

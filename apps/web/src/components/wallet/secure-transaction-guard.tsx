@@ -1,10 +1,16 @@
 'use client';
 
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@valkyrie/ui';
 import { AlertTriangle, CheckCircle, ExternalLink, Shield, XCircle } from 'lucide-react';
 import { useCallback, useState } from 'react';
-import { Badge } from '@valkyrie/ui';
-import { Button } from '@valkyrie/ui';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@valkyrie/ui';
 import {
   isSafeExternalUrl,
   validateContractAddress,

@@ -1,12 +1,9 @@
 'use client';
 
+import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Progress } from '@valkyrie/ui';
 import { AlertTriangle, ArrowUpRight, CheckCircle, Clock, ExternalLink } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useChainId, useWaitForTransactionReceipt } from 'wagmi';
-import { Badge } from '@valkyrie/ui';
-import { Button } from '@valkyrie/ui';
-import { Card, CardContent, CardHeader, CardTitle } from '@valkyrie/ui';
-import { Progress } from '@valkyrie/ui';
 import { bt } from '@/lib/theme-utils';
 import { cn } from '@/lib/utils';
 import { useWeb3Store } from '@/stores/web3-store';

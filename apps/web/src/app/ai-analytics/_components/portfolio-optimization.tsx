@@ -1,12 +1,20 @@
 'use client';
 
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Progress,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@valkyrie/ui';
 import { Brain, PieChart, Target, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
-import { Badge } from '@valkyrie/ui';
-import { Button } from '@valkyrie/ui';
-import { Card, CardContent, CardHeader, CardTitle } from '@valkyrie/ui';
-import { Progress } from '@valkyrie/ui';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@valkyrie/ui';
 
 const currentAllocation = [
   { asset: 'ETH', percentage: 45, value: '$4,500', color: 'bg-blue-500' },

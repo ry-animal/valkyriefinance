@@ -1,69 +1,39 @@
 /**
- * Application constants and configurations
+ * Application-wide constants and configuration
  */
 
-import type { AppConstants, SecurityConfig } from './types.js';
-
-export const appConstants: AppConstants = {
-  app: {
-    name: 'Valkyrie Finance',
-    version: '1.0.0',
-    description: 'AI-Driven DeFi Platform',
-    url: 'https://valkyrie.finance',
-  },
-
-  api: {
-    timeout: 30000, // 30 seconds
-    retries: 3,
-    baseUrl: '/api',
-  },
-
-  ui: {
-    defaultTheme: 'system',
-    animationDuration: 200, // milliseconds
-    toastDuration: 5000, // 5 seconds
-  },
-
-  defi: {
-    slippageTolerance: 0.005, // 0.5%
-    maxGasPrice: BigInt(50_000_000_000), // 50 gwei
-    defaultDeadline: 1200, // 20 minutes
-  },
-};
-
-export const securityConfig: SecurityConfig = {
-  rateLimits: {
-    api: { requests: 30, window: 60000 }, // 30 per minute
-    transaction: { requests: 5, window: 60000 }, // 5 per minute
-    auth: { requests: 10, window: 300000 }, // 10 per 5 minutes
-    wallet: { requests: 20, window: 60000 }, // 20 per minute
-  },
-
-  session: {
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    renewThreshold: 30 * 60 * 1000, // 30 minutes before expiry
-  },
-
-  security: {
-    csp: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'",
-    hsts: true,
-    frameOptions: 'DENY',
-  },
-};
-
-// Redis key prefixes
-export const REDIS_PREFIXES = {
-  RATE_LIMIT: 'rl:',
-  SESSION: 'sess:',
-  CACHE: 'cache:',
-  SECURITY: 'sec:',
-  NONCE: 'nonce:',
-  WALLET_SESSION: 'wallet:',
-  API_CACHE: 'api:',
-  USER_PREFS: 'prefs:',
+// API Configuration
+export const API_CONFIG = {
+  DEFAULT_TIMEOUT: 10000,
+  MAX_RETRIES: 3,
+  RETRY_DELAY: 1000,
 } as const;
 
-// Common validation patterns
+// Blockchain Configuration
+export const BLOCKCHAIN_CONFIG = {
+  DEFAULT_CHAIN_ID: 1, // Ethereum Mainnet
+  SUPPORTED_CHAINS: [1, 10, 137, 42161, 8453] as const, // Ethereum, Optimism, Polygon, Arbitrum, Base
+  BLOCK_CONFIRMATIONS: 3,
+  GAS_LIMIT_BUFFER: 1.2,
+} as const;
+
+// UI Configuration
+export const UI_CONFIG = {
+  TOAST_DURATION: 5000,
+  ANIMATION_DURATION: 200,
+  DEBOUNCE_DELAY: 300,
+  PAGINATION_SIZE: 20,
+} as const;
+
+// Validation Constants
+export const VALIDATION = {
+  MIN_PASSWORD_LENGTH: 8,
+  MAX_NAME_LENGTH: 100,
+  MAX_DESCRIPTION_LENGTH: 500,
+  EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+} as const;
+
+// Validation Patterns for Web3 and common formats
 export const VALIDATION_PATTERNS = {
   ETHEREUM_ADDRESS: /^0x[a-fA-F0-9]{40}$/,
   TRANSACTION_HASH: /^0x[a-fA-F0-9]{64}$/,
@@ -71,11 +41,55 @@ export const VALIDATION_PATTERNS = {
   UUID: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
 } as const;
 
-// Feature flags
-export const FEATURE_FLAGS = {
-  AI_CHAT: 'NEXT_PUBLIC_ENABLE_AI_CHAT',
-  WEB3: 'NEXT_PUBLIC_ENABLE_WEB3',
-  TESTNETS: 'NEXT_PUBLIC_ENABLE_TESTNETS',
+// Feature Flags (for development)
+export const FEATURES = {
+  ENABLE_ANALYTICS: true,
+  ENABLE_DEBUG_MODE: false,
+  ENABLE_EXPERIMENTAL_FEATURES: false,
 } as const;
 
-export * from './types.js';
+// Error Messages
+export const ERROR_MESSAGES = {
+  NETWORK_ERROR: 'Network error occurred. Please try again.',
+  VALIDATION_ERROR: 'Please check your input and try again.',
+  UNAUTHORIZED: 'You are not authorized to perform this action.',
+  NOT_FOUND: 'The requested resource was not found.',
+  SERVER_ERROR: 'An internal server error occurred.',
+} as const;
+
+// Success Messages
+export const SUCCESS_MESSAGES = {
+  SAVE_SUCCESS: 'Changes saved successfully.',
+  DELETE_SUCCESS: 'Item deleted successfully.',
+  CREATE_SUCCESS: 'Item created successfully.',
+  UPDATE_SUCCESS: 'Item updated successfully.',
+} as const;
+
+// Routes
+export const ROUTES = {
+  HOME: '/',
+  DASHBOARD: '/dashboard',
+  VAULT: '/vault',
+  SWAP: '/swap',
+  AI_ANALYTICS: '/ai-analytics',
+  LOGIN: '/login',
+  SIGNUP: '/signup',
+} as const;
+
+// Environment Variable Keys
+export const ENV_KEYS = {
+  SERVER_URL: 'NEXT_PUBLIC_SERVER_URL',
+  WALLETCONNECT_PROJECT_ID: 'NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID',
+  REOWN_PROJECT_ID: 'NEXT_PUBLIC_REOWN_PROJECT_ID',
+  ALCHEMY_API_KEY: 'NEXT_PUBLIC_ALCHEMY_API_KEY',
+  DEFAULT_CHAIN: 'NEXT_PUBLIC_DEFAULT_CHAIN',
+  ENABLE_TESTNETS: 'NEXT_PUBLIC_ENABLE_TESTNETS',
+  GA_MEASUREMENT_ID: 'NEXT_PUBLIC_GA_MEASUREMENT_ID',
+
+  // Server-only
+  POSTGRES_URL: 'POSTGRES_URL',
+  BETTER_AUTH_SECRET: 'BETTER_AUTH_SECRET',
+  BETTER_AUTH_URL: 'BETTER_AUTH_URL',
+  CORS_ORIGIN: 'CORS_ORIGIN',
+  GOOGLE_AI_API_KEY: 'GOOGLE_AI_API_KEY',
+} as const;

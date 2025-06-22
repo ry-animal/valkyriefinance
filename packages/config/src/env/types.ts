@@ -24,10 +24,6 @@ export const clientEnvSchema = z.object({
   NEXT_PUBLIC_DEFAULT_CHAIN: z.coerce.number().default(1),
   NEXT_PUBLIC_ENABLE_TESTNETS: z.coerce.boolean().default(false),
 
-  // Feature Flags
-  NEXT_PUBLIC_ENABLE_AI_CHAT: z.coerce.boolean().default(true),
-  NEXT_PUBLIC_ENABLE_WEB3: z.coerce.boolean().default(true),
-
   // Analytics
   NEXT_PUBLIC_GA_MEASUREMENT_ID: z.string().optional(),
 });

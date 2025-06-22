@@ -1,11 +1,8 @@
 'use client';
 
+import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Input } from '@valkyrie/ui';
 import { Search, Star, TrendingDown, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
-import { Badge } from '@valkyrie/ui';
-import { Button } from '@valkyrie/ui';
-import { Card, CardContent, CardHeader, CardTitle } from '@valkyrie/ui';
-import { Input } from '@valkyrie/ui';
 
 const tokenData = [
   {

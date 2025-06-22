@@ -1,15 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Layout, Monitor, MousePointer, Palette, Smartphone, Tablet, Type } from 'lucide-react';
-import React from 'react';
-import { Alert, AlertDescription, AlertTitle } from '../components/alert';
-import { Avatar, AvatarFallback, AvatarImage } from '../components/avatar';
+import { Avatar, AvatarFallback } from '../components/avatar';
 import { Badge } from '../components/badge';
 import { Button } from '../components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/card';
 import { Input } from '../components/input';
 import { Label } from '../components/label';
 import { Progress } from '../components/progress';
-import { Skeleton } from '../components/skeleton';
 
 const meta = {
   title: 'Design System/Overview',

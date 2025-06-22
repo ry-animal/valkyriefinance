@@ -1,5 +1,4 @@
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
-import { env } from '../lib/env';
 import { db } from './index';
 
 async function main() {

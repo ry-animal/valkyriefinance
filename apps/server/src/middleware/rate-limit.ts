@@ -18,7 +18,7 @@ export interface RateLimitConfig {
  * Rate limiting middleware factory
  */
 export function createRateLimitMiddleware(config: RateLimitConfig) {
-  return async (request: NextRequest, identifier: string): Promise<NextResponse | null> => {
+  return async (_request: NextRequest, identifier: string): Promise<NextResponse | null> => {
     try {
       const limiter = rateLimiter[config.identifier];
       const result = await limiter.isAllowed(identifier);

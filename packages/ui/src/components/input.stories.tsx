@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Eye, EyeOff, Mail, Search } from 'lucide-react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button } from './button';
 import { Input } from './input';
 import { Label } from './label';

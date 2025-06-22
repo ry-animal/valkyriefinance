@@ -39,21 +39,42 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
+
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+
+    /* Test against mobile viewports. */
+    // {
+    //   name: 'Mobile Chrome',
+    //   use: { ...devices['Pixel 5'] },
+    // },
+    // {
+    //   name: 'Mobile Safari',
+    //   use: { ...devices['iPhone 12'] },
+    // },
+
+    /* Test against branded browsers. */
+    // {
+    //   name: 'Microsoft Edge',
+    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+    // },
+    // {
+    //   name: 'Google Chrome',
+    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+    // },
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: [
-    {
-      command:
-        'POSTGRES_URL="postgres://postgres:postgres@localhost:5432/postgres" BETTER_AUTH_SECRET="test-secret" BETTER_AUTH_URL="http://localhost:3000" CORS_ORIGIN="http://localhost:3001" pnpm run dev',
-      port: 3000,
-      cwd: '../server',
-    },
-    {
-      command:
-        'NEXT_PUBLIC_SERVER_URL="http://localhost:3000" NEXT_PUBLIC_ENABLE_AI_CHAT="true" NEXT_PUBLIC_ENABLE_WEB3="false" pnpm run dev',
-      port: 3001,
-      cwd: './',
-    },
-  ],
+  webServer: {
+    command: 'NEXT_PUBLIC_SERVER_URL="http://localhost:3000" pnpm run dev',
+    port: 3001,
+    reuseExistingServer: !process.env.CI,
+  },
 });

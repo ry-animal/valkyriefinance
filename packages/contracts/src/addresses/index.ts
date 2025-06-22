@@ -10,7 +10,7 @@
  * OLD FILE BACKED UP AS: index.old.ts
  */
 
-import { deployments, getContractAddress, isContractDeployed } from '@valkyrie/config/contracts';
+import { deployments, isContractDeployed } from '@valkyrie/config/contracts';
 
 // Re-export centralized contract addresses with legacy naming for backward compatibility
 export const CONTRACT_ADDRESSES = deployments;

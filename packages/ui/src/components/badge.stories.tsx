@@ -206,7 +206,7 @@ export const WithIcons: Story = {
 // Interactive Example
 export const AsLink: Story = {
   render: () => (
-    <a href="javascript:void(0)" className="inline-block" role="link">
+    <a href="javascript:void(0)" className="inline-block">
       <Badge asChild>
         <span>Clickable Badge</span>
       </Badge>

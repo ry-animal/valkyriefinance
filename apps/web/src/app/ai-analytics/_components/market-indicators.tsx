@@ -1,8 +1,7 @@
 'use client';
 
+import { Badge, Card, CardContent, CardHeader, CardTitle } from '@valkyrie/ui';
 import { Activity, DollarSign, TrendingDown, TrendingUp } from 'lucide-react';
-import { Badge } from '@valkyrie/ui';
-import { Card, CardContent, CardHeader, CardTitle } from '@valkyrie/ui';
 
 const marketData = [
   {

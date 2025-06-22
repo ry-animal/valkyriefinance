@@ -1,25 +1,23 @@
 'use client';
 
-import { useState } from 'react';
-import { useDebounce } from 'use-debounce';
-import { useAccount, useSendTransaction } from 'wagmi';
-import { Button } from '@valkyrie/ui';
 import {
+  Button,
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@valkyrie/ui';
-import { Input } from '@valkyrie/ui';
-import {
+  Input,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@valkyrie/ui';
+import { useState } from 'react';
+import { useDebounce } from 'use-debounce';
+import { useAccount, useSendTransaction } from 'wagmi';
 import { trpc } from '@/utils/trpc';
 
 // Mock data for now

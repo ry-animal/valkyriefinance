@@ -1,13 +1,22 @@
 'use client';
 
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Progress,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@valkyrie/ui';
 import { Brain, DollarSign, Shield, TrendingDown, TrendingUp, Zap } from 'lucide-react';
 import { useState } from 'react';
 import { formatEther } from 'viem';
-import { Badge } from '@valkyrie/ui';
-import { Button } from '@valkyrie/ui';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@valkyrie/ui';
-import { Progress } from '@valkyrie/ui';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@valkyrie/ui';
 import { useVaultBalance, useVaultInfo } from '@/hooks/use-valkyrie-vault';
 import { bt } from '@/lib/theme-utils';
 import { cn } from '@/lib/utils';
