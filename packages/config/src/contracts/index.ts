@@ -2,7 +2,7 @@
  * Contract addresses and deployment configurations
  */
 
-import type { ContractAddresses, DeploymentConfig } from './types.js';
+import type { Address, ContractAddresses, DeploymentConfig } from './types.js';
 
 // Ethereum Mainnet deployments
 export const mainnetContracts: ContractAddresses = {
@@ -79,7 +79,10 @@ export const deployments: DeploymentConfig = {
 };
 
 // Helper functions
-export function getContractAddress(chainId: number, contractName: keyof ContractAddresses): string {
+export function getContractAddress(
+  chainId: number,
+  contractName: keyof ContractAddresses
+): Address {
   const deployment = deployments[chainId];
   const address = deployment?.[contractName];
 
@@ -87,7 +90,7 @@ export function getContractAddress(chainId: number, contractName: keyof Contract
     throw new Error(`Contract ${contractName} not deployed on chain ${chainId}`);
   }
 
-  return address;
+  return address as Address;
 }
 
 export function getContractAddresses(chainId: number): Partial<ContractAddresses> {

@@ -2,12 +2,14 @@
  * Contract address types and configurations
  */
 
+export type Address = `0x${string}`;
+
 export interface ContractAddresses {
-  valkyrieToken: string;
-  valkyrieVault: string;
-  valkyriePriceOracle: string;
-  valkyrieAutomation?: string;
-  valkyrieGovernance?: string;
+  valkyrieToken: Address;
+  valkyrieVault: Address;
+  valkyriePriceOracle: Address;
+  valkyrieAutomation?: Address;
+  valkyrieGovernance?: Address;
 }
 
 export type ContractName = keyof ContractAddresses;

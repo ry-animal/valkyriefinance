@@ -74,7 +74,8 @@ export function VaultAnalytics() {
 
   const currentPerformance =
     analyticsData.performance[selectedPeriod as keyof typeof analyticsData.performance];
-  const totalUserValue = formatEther(userBalance.assetsFromShares);
+  // Use the formatted shares value directly since we don't have conversion to assets yet
+  const totalUserValue = userBalance.formattedShares;
 
   return (
     <div className={cn('space-y-8', bt.page)}>

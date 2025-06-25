@@ -1,14 +1,15 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
-  darkMode: 'class',
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    // Include UI package components so Tailwind can discover their classes
+    '../../packages/ui/src/**/*.{js,ts,jsx,tsx}',
   ],
-  // Theme configuration is now in globals.css using @theme directive
-  // Only keep essential config that requires JavaScript logic
+  // In Tailwind v4, theme configuration is done via @theme directive in CSS
+  // No theme configuration needed here
 } satisfies Config;
 
 export default config;

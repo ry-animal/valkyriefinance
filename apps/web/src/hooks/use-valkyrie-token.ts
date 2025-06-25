@@ -1,277 +1,161 @@
-import { getContractAddress, VALKYRIE_TOKEN_ABI } from '@valkyrie/contracts';
+import { getContractAddress } from '@valkyrie/config';
+import { VALKYRIE_TOKEN_ABI } from '@valkyrie/contracts';
 import { formatUnits, parseUnits } from 'viem';
 import { useAccount, useChainId, useReadContract, useWriteContract } from 'wagmi';
-import { useWeb3Store } from '@/stores/web3-store';
+
+// Helper to get typed contract address
+function useValkyrieTokenAddress() {
+  const chainId = useChainId();
+
+  try {
+    const address = getContractAddress(chainId, 'valkyrieToken');
+    return address as `0x${string}`;
+  } catch {
+    // Return zero address if contract not deployed on current chain
+    return '0x0000000000000000000000000000000000000000' as `0x${string}`;
+  }
+}
 
 // Basic token information
 export function useValkyrieTokenInfo() {
-  const chainId = useChainId();
-  const tokenAddress = getContractAddress(chainId, 'valkyrieToken');
+  const tokenAddress = useValkyrieTokenAddress();
 
   const { data: name } = useReadContract({
     address: tokenAddress,
     abi: VALKYRIE_TOKEN_ABI,
     functionName: 'name',
-    query: { enabled: !!tokenAddress },
   });
 
   const { data: symbol } = useReadContract({
     address: tokenAddress,
     abi: VALKYRIE_TOKEN_ABI,
     functionName: 'symbol',
-    query: { enabled: !!tokenAddress },
   });
 
   const { data: decimals } = useReadContract({
     address: tokenAddress,
     abi: VALKYRIE_TOKEN_ABI,
     functionName: 'decimals',
-    query: { enabled: !!tokenAddress },
   });
 
   const { data: totalSupply } = useReadContract({
     address: tokenAddress,
     abi: VALKYRIE_TOKEN_ABI,
     functionName: 'totalSupply',
-    query: { enabled: !!tokenAddress },
   });
 
   return {
     tokenAddress,
-    name,
-    symbol,
-    decimals,
+    name: name || 'Valkyrie Token',
+    symbol: symbol || 'VLK',
+    decimals: decimals || 18,
     totalSupply,
-    formattedTotalSupply: totalSupply ? formatUnits(totalSupply, 18) : '0',
+    formattedTotalSupply: totalSupply ? formatUnits(totalSupply, decimals || 18) : '0',
   };
 }
 
-// User's token balance and staking info
+// User's token balance
 export function useValkyrieTokenBalance() {
   const { address } = useAccount();
-  const chainId = useChainId();
-  const tokenAddress = getContractAddress(chainId, 'valkyrieToken');
+  const tokenAddress = useValkyrieTokenAddress();
 
   const { data: balance } = useReadContract({
     address: tokenAddress,
     abi: VALKYRIE_TOKEN_ABI,
     functionName: 'balanceOf',
-    args: [address!],
-    query: { enabled: !!tokenAddress && !!address },
+    args: address ? [address] : undefined,
+    query: {
+      enabled: !!address,
+    },
   });
 
-  const { data: stakedBalance } = useReadContract({
+  const { data: decimals } = useReadContract({
     address: tokenAddress,
     abi: VALKYRIE_TOKEN_ABI,
-    functionName: 'stakedBalance',
-    args: [address!],
-    query: { enabled: !!tokenAddress && !!address },
-  });
-
-  const { data: pendingRewards } = useReadContract({
-    address: tokenAddress,
-    abi: VALKYRIE_TOKEN_ABI,
-    functionName: 'pendingRewards',
-    args: [address!],
-    query: { enabled: !!tokenAddress && !!address },
+    functionName: 'decimals',
   });
 
   return {
     balance,
-    stakedBalance,
-    pendingRewards,
-    formattedBalance: balance ? formatUnits(balance, 18) : '0',
-    formattedStakedBalance: stakedBalance ? formatUnits(stakedBalance, 18) : '0',
-    formattedPendingRewards: pendingRewards ? formatUnits(pendingRewards, 18) : '0',
+    formattedBalance: balance ? formatUnits(balance, decimals || 18) : '0',
   };
 }
 
 // Governance information
 export function useValkyrieGovernance() {
   const { address } = useAccount();
-  const chainId = useChainId();
-  const tokenAddress = getContractAddress(chainId, 'valkyrieToken');
+  const tokenAddress = useValkyrieTokenAddress();
 
   const { data: delegates } = useReadContract({
     address: tokenAddress,
     abi: VALKYRIE_TOKEN_ABI,
     functionName: 'delegates',
-    args: [address!],
-    query: { enabled: !!tokenAddress && !!address },
+    args: address ? [address] : undefined,
+    query: {
+      enabled: !!address,
+    },
   });
 
   const { data: votes } = useReadContract({
     address: tokenAddress,
     abi: VALKYRIE_TOKEN_ABI,
     functionName: 'getVotes',
-    args: [address!],
-    query: { enabled: !!tokenAddress && !!address },
+    args: address ? [address] : undefined,
+    query: {
+      enabled: !!address,
+    },
   });
 
-  const isDelegated = delegates !== address;
-  const hasDelegated = delegates && delegates !== '0x0000000000000000000000000000000000000000';
+  const { data: decimals } = useReadContract({
+    address: tokenAddress,
+    abi: VALKYRIE_TOKEN_ABI,
+    functionName: 'decimals',
+  });
 
   return {
     delegates,
     votes,
-    isDelegated,
-    hasDelegated,
-    formattedVotes: votes ? formatUnits(votes, 18) : '0',
+    isDelegated: delegates !== address,
+    hasDelegated: !!delegates,
+    formattedVotes: votes ? formatUnits(votes, decimals || 18) : '0',
   };
 }
 
 // Token operations
 export function useValkyrieTokenOperations() {
-  const { address } = useAccount();
-  const chainId = useChainId();
-  const tokenAddress = getContractAddress(chainId, 'valkyrieToken');
-  const { writeContractAsync, isPending, error } = useWriteContract();
-  const { addTransaction } = useWeb3Store();
+  const { writeContract, isPending, error } = useWriteContract();
+  const tokenAddress = useValkyrieTokenAddress();
 
-  const stake = async (amount: string) => {
-    if (!tokenAddress || !address) throw new Error('Wallet not connected');
+  // Get decimals at hook level
+  const { data: decimals } = useReadContract({
+    address: tokenAddress,
+    abi: VALKYRIE_TOKEN_ABI,
+    functionName: 'decimals',
+  });
 
-    const amountWei = parseUnits(amount, 18);
+  const approve = async (spender: `0x${string}`, amount: string) => {
+    const parsedAmount = parseUnits(amount, decimals || 18);
 
-    try {
-      const hash = await writeContractAsync({
-        address: tokenAddress,
-        abi: VALKYRIE_TOKEN_ABI,
-        functionName: 'stake',
-        args: [amountWei],
-      });
-
-      addTransaction({
-        hash,
-        type: 'deposit',
-        status: 'pending',
-        chainId,
-        amount: formatUnits(amountWei, 18),
-        token: 'VLKR',
-      });
-
-      return hash;
-    } catch (error) {
-      console.error('Token stake failed:', error);
-      throw error;
-    }
-  };
-
-  const unstake = async (amount: string) => {
-    if (!tokenAddress || !address) throw new Error('Wallet not connected');
-
-    const amountWei = parseUnits(amount, 18);
-
-    try {
-      const hash = await writeContractAsync({
-        address: tokenAddress,
-        abi: VALKYRIE_TOKEN_ABI,
-        functionName: 'unstake',
-        args: [amountWei],
-      });
-
-      addTransaction({
-        hash,
-        type: 'withdrawal',
-        status: 'pending',
-        chainId,
-        amount: formatUnits(amountWei, 18),
-        token: 'VLKR',
-      });
-
-      return hash;
-    } catch (error) {
-      console.error('Token unstake failed:', error);
-      throw error;
-    }
-  };
-
-  const claimRewards = async () => {
-    if (!tokenAddress || !address) throw new Error('Wallet not connected');
-
-    try {
-      const hash = await writeContractAsync({
-        address: tokenAddress,
-        abi: VALKYRIE_TOKEN_ABI,
-        functionName: 'claimRewards',
-      });
-
-      addTransaction({
-        hash,
-        type: 'withdrawal',
-        status: 'pending',
-        chainId,
-        token: 'VLKR Rewards',
-      });
-
-      return hash;
-    } catch (error) {
-      console.error('Claim rewards failed:', error);
-      throw error;
-    }
+    return writeContract({
+      address: tokenAddress,
+      abi: VALKYRIE_TOKEN_ABI,
+      functionName: 'approve',
+      args: [spender, parsedAmount],
+    });
   };
 
   const delegate = async (delegatee: `0x${string}`) => {
-    if (!tokenAddress || !address) throw new Error('Wallet not connected');
-
-    try {
-      const hash = await writeContractAsync({
-        address: tokenAddress,
-        abi: VALKYRIE_TOKEN_ABI,
-        functionName: 'delegate',
-        args: [delegatee],
-      });
-
-      addTransaction({
-        hash,
-        type: 'approve',
-        status: 'pending',
-        chainId,
-        token: 'Governance',
-      });
-
-      return hash;
-    } catch (error) {
-      console.error('Delegate failed:', error);
-      throw error;
-    }
-  };
-
-  const approve = async (spender: `0x${string}`, amount: string) => {
-    if (!tokenAddress) throw new Error('Token address not found');
-
-    const amountWei = parseUnits(amount, 18);
-
-    try {
-      const hash = await writeContractAsync({
-        address: tokenAddress,
-        abi: VALKYRIE_TOKEN_ABI,
-        functionName: 'approve',
-        args: [spender, amountWei],
-      });
-
-      addTransaction({
-        hash,
-        type: 'approve',
-        status: 'pending',
-        chainId,
-        amount: formatUnits(amountWei, 18),
-        token: 'VLKR',
-      });
-
-      return hash;
-    } catch (error) {
-      console.error('Token approval failed:', error);
-      throw error;
-    }
+    return writeContract({
+      address: tokenAddress,
+      abi: VALKYRIE_TOKEN_ABI,
+      functionName: 'delegate',
+      args: [delegatee],
+    });
   };
 
   return {
-    stake,
-    unstake,
-    claimRewards,
-    delegate,
     approve,
+    delegate,
     isPending,
     error,
   };

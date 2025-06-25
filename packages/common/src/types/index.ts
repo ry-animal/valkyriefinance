@@ -6,6 +6,9 @@ export interface ApiResponse<T = unknown> {
   message?: string;
 }
 
+// Re-export AppRouter from api.ts
+export type { AppRouter } from './api';
+
 // User Types
 export interface User {
   id: string;

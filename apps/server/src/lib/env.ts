@@ -11,7 +11,7 @@
  * OLD FILE BACKED UP AS: env.old.ts
  */
 
-import { serverEnv } from '@valkyrie/config/env';
+import { env as serverEnv } from '@valkyrie/config/env';
 
 // All validation, types, and fallbacks are handled centrally in @valkyrie/config
 export { serverEnv as env };

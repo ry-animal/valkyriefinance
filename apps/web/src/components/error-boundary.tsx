@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@valkyrie/ui';
+// import { Button } from '@valkyrie/ui';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import React from 'react';
 
@@ -11,10 +11,10 @@ interface ErrorBoundaryState {
 }
 
 export class ErrorBoundary extends React.Component<
-  React.PropsWithChildren<{}>,
+  React.PropsWithChildren<object>,
   ErrorBoundaryState
 > {
-  constructor(props: React.PropsWithChildren<{}>) {
+  constructor(props: React.PropsWithChildren<object>) {
     super(props);
     this.state = { hasError: false };
   }
@@ -51,15 +51,15 @@ export class ErrorBoundary extends React.Component<
     if (this.state.hasError) {
       return (
         <div className="flex flex-col items-center justify-center min-h-[400px] p-8">
-          <AlertTriangle className="h-12 w-12 text-destructive mb-4" />
+          <AlertTriangle className="h-12 w-12 text-red-500 mb-4" />
           <h2 className="text-2xl font-semibold mb-2">Something went wrong</h2>
-          <p className="text-muted-foreground mb-6 text-center max-w-md">
+          <p className="text-gray-500 mb-6 text-center max-w-md">
             An unexpected error occurred. Please try refreshing the page or contact support if the
             problem persists.
           </p>
 
           {process.env.NODE_ENV === 'development' && this.state.error && (
-            <details className="mb-6 p-4 bg-muted rounded-lg text-sm max-w-2xl w-full">
+            <details className="mb-6 p-4 bg-gray-100 rounded-lg text-sm max-w-2xl w-full">
               <summary className="cursor-pointer font-medium mb-2">
                 Error Details (Development Only)
               </summary>
@@ -75,13 +75,21 @@ export class ErrorBoundary extends React.Component<
           )}
 
           <div className="flex gap-2">
-            <Button onClick={this.handleReset} variant="outline">
+            <button
+              onClick={this.handleReset}
+              className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+              type="button"
+            >
               Try Again
-            </Button>
-            <Button onClick={this.handleRefresh} className="flex items-center gap-2">
+            </button>
+            <button
+              onClick={this.handleRefresh}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2"
+              type="button"
+            >
               <RefreshCw className="h-4 w-4" />
               Refresh Page
-            </Button>
+            </button>
           </div>
         </div>
       );

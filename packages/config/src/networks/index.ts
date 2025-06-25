@@ -118,6 +118,23 @@ export const baseSepolia: NetworkConfig = {
   multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11',
 };
 
+export const hyperliquid: NetworkConfig = {
+  id: 998,
+  name: 'hyperliquid',
+  displayName: 'HyperLiquid',
+  rpcUrl: 'https://api.hyperliquid.xyz/evm',
+  blockExplorer: 'https://app.hyperliquid.xyz/explorer',
+  nativeCurrency: {
+    name: 'USDC',
+    symbol: 'USDC',
+    decimals: 6,
+  },
+  testnet: false,
+  isHyperLiquid: true,
+  apiEndpoint: 'https://api.hyperliquid.xyz',
+  wsEndpoint: 'wss://api.hyperliquid.xyz/ws',
+};
+
 // Chain configurations map
 export const chains: ChainConfig = {
   [ethereum.id]: ethereum,
@@ -127,6 +144,7 @@ export const chains: ChainConfig = {
   [base.id]: base,
   [sepolia.id]: sepolia,
   [baseSepolia.id]: baseSepolia,
+  [hyperliquid.id]: hyperliquid,
 };
 
 // Helper functions
@@ -145,6 +163,15 @@ export function getTestnetChains(): NetworkConfig[] {
 export function isTestnet(chainId: number): boolean {
   const chain = getChain(chainId);
   return chain?.testnet ?? false;
+}
+
+export function isHyperLiquid(chainId: number): boolean {
+  const chain = getChain(chainId);
+  return chain?.isHyperLiquid ?? false;
+}
+
+export function getHyperLiquidChains(): NetworkConfig[] {
+  return Object.values(chains).filter((chain) => chain.isHyperLiquid);
 }
 
 export function getBlockExplorerUrl(

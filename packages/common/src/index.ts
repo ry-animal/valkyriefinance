@@ -1,5 +1,7 @@
 // Export all types
 
+// Export HyperLiquid integration
+export * from './hyperliquid';
 // Export all schemas
 export * from './schemas';
 export * from './types';

@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@valkyrie/ui';
+// import { Button } from '@valkyrie/ui';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
@@ -11,13 +11,13 @@ interface NavigationProps {
 }
 
 const baseLinkClasses =
-  'px-6 py-3 font-brutal font-black uppercase text-lg tracking-widest transition-colors duration-100 border-r-4 border-black dark:border-white';
+  'px-6 py-3 font-black uppercase text-lg tracking-widest transition-colors duration-100 border-r-4 border-black dark:border-white';
 const activeLinkClasses = 'bg-black dark:bg-white text-white dark:text-black';
 const inactiveLinkClasses =
   'bg-white dark:bg-black text-black dark:text-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black';
 
 const baseMobileLinkClasses =
-  'px-6 py-4 font-brutal font-black uppercase text-lg tracking-widest transition-colors duration-100 border-b-4 border-black dark:border-white';
+  'px-6 py-4 font-black uppercase text-lg tracking-widest transition-colors duration-100 border-b-4 border-black dark:border-white';
 
 export function HeaderNavigation({ links }: NavigationProps) {
   const pathname = usePathname();
@@ -48,14 +48,14 @@ export function HeaderNavigation({ links }: NavigationProps) {
       </nav>
 
       {/* Mobile Menu Toggle */}
-      <Button
-        variant="ghost"
-        className="md:hidden font-brutal font-black text-xl text-black dark:text-white"
+      <button
+        type="button"
+        className="md:hidden font-black text-xl text-black dark:text-white px-4 py-2"
         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         aria-label="Toggle mobile menu"
       >
         MENU
-      </Button>
+      </button>
 
       {/* Mobile Navigation */}
       {mobileMenuOpen && (

@@ -275,9 +275,11 @@ export const createStaggeredAnimation = (
   baseAnimation = slideInVariants
 ) => ({
   visible: {
-    ...baseAnimation.visible,
+    ...(typeof baseAnimation.visible === 'object' ? baseAnimation.visible : {}),
     transition: {
-      ...baseAnimation.visible.transition,
+      ...(typeof baseAnimation.visible === 'object' && baseAnimation.visible.transition
+        ? baseAnimation.visible.transition
+        : {}),
       staggerChildren: staggerDelay,
       delayChildren: 0.1,
     },
@@ -287,9 +289,11 @@ export const createStaggeredAnimation = (
 export const createDelayedAnimation = (delay: number, baseAnimation = fadeInVariants) => ({
   ...baseAnimation,
   visible: {
-    ...baseAnimation.visible,
+    ...(typeof baseAnimation.visible === 'object' ? baseAnimation.visible : {}),
     transition: {
-      ...baseAnimation.visible.transition,
+      ...(typeof baseAnimation.visible === 'object' && baseAnimation.visible.transition
+        ? baseAnimation.visible.transition
+        : {}),
       delay,
     },
   },

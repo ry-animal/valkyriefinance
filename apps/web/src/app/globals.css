@@ -1,125 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
-@import "tailwindcss";
-@import "tw-animate-css";
 
-/* Theme configuration using v4 @theme directive */
-@theme {
-  /* Color system using semantic naming */
-  --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(0 0% 0%);
-  --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(0 0% 0%);
-  --color-popover: hsl(0 0% 100%);
-  --color-popover-foreground: hsl(0 0% 0%);
-  --color-primary: hsl(0 0% 0%);
-  --color-primary-foreground: hsl(0 0% 100%);
-  --color-secondary: hsl(0 0% 100%);
-  --color-secondary-foreground: hsl(0 0% 0%);
-  --color-muted: hsl(0 0% 96%);
-  --color-muted-foreground: hsl(0 0% 0%);
-  --color-accent: hsl(0 0% 0%);
-  --color-accent-foreground: hsl(0 0% 100%);
-  --color-destructive: hsl(0 0% 0%);
-  --color-destructive-foreground: hsl(0 0% 100%);
-  --color-border: hsl(0 0% 0%);
-  --color-input: hsl(0 0% 0%);
-  --color-ring: hsl(0 0% 0%);
+/* Import design system styles from UI package */
+@import "@valkyrie/ui/styles";
 
-  /* Brutal design system colors */
-  --color-brutal-black: #000000;
-  --color-brutal-white: #ffffff;
-  --color-brutal-gray: #808080;
-
-  /* Typography scale with line heights */
-  --text-mega: 8rem;
-  --text-mega--line-height: 0.8;
-  --text-mega--letter-spacing: -0.05em;
-
-  --text-giant: 6rem;
-  --text-giant--line-height: 0.8;
-  --text-giant--letter-spacing: -0.05em;
-
-  --text-massive: 4rem;
-  --text-massive--line-height: 0.9;
-  --text-massive--letter-spacing: -0.02em;
-
-  --text-huge: 3rem;
-  --text-huge--line-height: 0.9;
-  --text-huge--letter-spacing: -0.02em;
-
-  /* Font families */
-  --font-family-sans: var(--font-geist-sans), monospace;
-  --font-family-mono: var(--font-geist-mono), 'Courier New', monospace;
-  --font-family-serif: 'Times New Roman', serif;
-  --font-family-brutal: 'Impact', 'Arial Black', sans-serif;
-
-  /* Spacing scale */
-  --spacing-grid: 2rem;
-  --spacing-grid-sm: 1rem;
-  --spacing-grid-lg: 4rem;
-  --spacing-brutal: 8px;
-  --spacing-18: 4.5rem;
-  --spacing-22: 5.5rem;
-  --spacing-26: 6.5rem;
-  --spacing-30: 7.5rem;
-
-  /* Border radius (brutal design = no radius) */
-  --radius: 0px;
-
-  /* Shadows */
-  --shadow-brutal: 8px 8px 0px 0px #000000;
-  --shadow-brutal-lg: 16px 16px 0px 0px #000000;
-  --shadow-brutal-xl: 24px 24px 0px 0px #000000;
-  --shadow-brutal-sm: 4px 4px 0px 0px #000000;
-
-  /* Grid columns */
-  --grid-cols-brutal: repeat(12, 1fr);
-  --grid-cols-brutal-auto: repeat(auto-fit, minmax(200px, 1fr));
-  --grid-cols-16: repeat(16, minmax(0, 1fr));
-  --grid-cols-20: repeat(20, minmax(0, 1fr));
-  --grid-cols-24: repeat(24, minmax(0, 1fr));
-
-  /* Animations */
-  --animate-slide-brutal: slide-brutal 0.2s ease-out;
-  --animate-accordion-down: accordion-down 0.2s ease-out;
-  --animate-accordion-up: accordion-up 0.2s ease-out;
-}
-
-/* Dark mode color overrides */
-.dark {
-  --color-background: hsl(0 0% 0%);
-  --color-foreground: hsl(0 0% 100%);
-  --color-card: hsl(0 0% 0%);
-  --color-card-foreground: hsl(0 0% 100%);
-  --color-popover: hsl(0 0% 0%);
-  --color-popover-foreground: hsl(0 0% 100%);
-  --color-primary: hsl(0 0% 100%);
-  --color-primary-foreground: hsl(0 0% 0%);
-  --color-secondary: hsl(0 0% 0%);
-  --color-secondary-foreground: hsl(0 0% 100%);
-  --color-muted: hsl(0 0% 20%);
-  --color-muted-foreground: hsl(0 0% 100%);
-  --color-accent: hsl(0 0% 100%);
-  --color-accent-foreground: hsl(0 0% 0%);
-  --color-destructive: hsl(0 0% 100%);
-  --color-destructive-foreground: hsl(0 0% 0%);
-  --color-border: hsl(0 0% 100%);
-  --color-input: hsl(0 0% 100%);
-  --color-ring: hsl(0 0% 100%);
-}
-
-/* Base styles - minimal use of @apply */
+/* Additional web app specific styles */
 @layer base {
-  * {
-    border-color: hsl(var(--color-border));
-  }
-
   body {
-    background-color: hsl(var(--color-background));
-    color: hsl(var(--color-foreground));
     font-family: var(--font-family-mono);
-    background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.1) 1px, transparent 0);
-    background-size: 20px 20px;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -146,22 +33,6 @@
     background-size: 20px 20px;
     pointer-events: none;
   }
-}
-
-/* Keyframes for animations */
-@keyframes slide-brutal {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(0); }
-}
-
-@keyframes accordion-down {
-  from { height: 0; }
-  to { height: var(--radix-accordion-content-height); }
-}
-
-@keyframes accordion-up {
-  from { height: var(--radix-accordion-content-height); }
-  to { height: 0; }
 }
 
 /* Utility classes - following v4 best practices */

@@ -48,9 +48,8 @@ export function VaultDashboard() {
   const [withdrawShares, setWithdrawShares] = useState('');
   const [activeTab, setActiveTab] = useState('deposit');
 
-  const { address, isConnected } = useAccount();
+  const { isConnected } = useAccount();
   const _chainId = useChainId();
-  const { addNotification } = useUIStore();
 
   // Contract data hooks
   const vaultInfo = useVaultInfo();
@@ -64,12 +63,14 @@ export function VaultDashboard() {
 
   // Get asset balance
   const assetBalance =
-    balances.tokenBalances.find(
-      (token: SimpleTokenBalance) => token.address.toLowerCase() === assetAddress?.toLowerCase()
-    )?.balance || 0n;
+    (assetAddress &&
+      balances.tokenBalances.find(
+        (token: SimpleTokenBalance) => token.address.toLowerCase() === assetAddress.toLowerCase()
+      )?.balance) ||
+    0n;
 
-  // Calculate derived values
-  const userAssetValue = userBalance.assetsFromShares;
+  // Calculate derived values - use shares directly since we don't have conversion yet
+  const userAssetValue = userBalance.shares;
 
   const depositAmountWei = depositAmount ? parseEther(depositAmount) : 0n;
   const withdrawSharesWei = withdrawShares ? parseEther(withdrawShares) : 0n;

@@ -4,8 +4,10 @@ import { aiRouter } from './ai';
 import { analyticsRouter } from './analytics';
 import { authRouter } from './auth';
 import { bridgeRouter } from './bridge';
+import { governanceRouter } from './governance';
 import { healthRouter } from './health';
 import { portfolioRouter } from './portfolio';
+import { stakingRouter } from './staking';
 import { vaultRouter } from './vault';
 
 export const appRouter = router({
@@ -20,5 +22,7 @@ export const appRouter = router({
   ai: aiRouter,
   bridge: bridgeRouter,
   admin: adminRouter,
+  staking: stakingRouter,
+  governance: governanceRouter,
 });
 export type AppRouter = typeof appRouter;

@@ -1,19 +1,19 @@
 'use client';
 
-import {
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  Skeleton,
-} from '@valkyrie/ui';
+// import {
+//   Button,
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuLabel,
+//   DropdownMenuSeparator,
+//   DropdownMenuTrigger,
+//   Skeleton,
+// } from '@valkyrie/ui';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAccount, useDisconnect } from 'wagmi';
-import { bt } from '@/lib/theme-utils';
+// import { bt } from '@/lib/theme-utils';
 import { cn } from '@/lib/utils';
 import { getAppKit } from '@/lib/wagmi-config';
 
@@ -26,7 +26,7 @@ export default function UserMenu() {
 
   // Don't render anything until after client-side hydration
   if (!mounted) {
-    return <Skeleton className="h-9 w-24" />;
+    return <div className="h-9 w-24 bg-gray-200 rounded animate-pulse"></div>;
   }
 
   return <UserMenuClient />;
@@ -45,66 +45,47 @@ function UserMenuClient() {
   };
 
   if (isConnecting) {
-    return <Skeleton className="h-9 w-24" />;
+    return <div className="h-9 w-24 bg-gray-200 rounded animate-pulse"></div>;
   }
 
   if (!isConnected) {
     return (
-      <Button
-        variant="outline"
+      <button
+        type="button"
         onClick={handleConnect}
         data-testid="connect-button"
-        className={cn(
-          'border-4 border-black dark:border-white',
-          'bg-white dark:bg-black text-black dark:text-white',
-          'hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black',
-          'font-brutal font-black uppercase tracking-widest'
-        )}
+        className="px-4 py-2 border-4 border-black bg-white text-black hover:bg-black hover:text-white font-bold uppercase"
       >
         CONNECT
-      </Button>
+      </button>
     );
   }
 
   const truncatedAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : '';
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          className={cn(
-            'border-4 border-black dark:border-white',
-            'bg-white dark:bg-black text-black dark:text-white',
-            'hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black',
-            'font-mono'
-          )}
+    <div className="relative">
+      <button
+        type="button"
+        className="px-4 py-2 border-4 border-black bg-white text-black hover:bg-black hover:text-white font-mono"
+      >
+        {truncatedAddress}
+      </button>
+      <div className="hidden absolute right-0 mt-2 w-48 bg-white border-4 border-black shadow-lg">
+        <div className="p-2 font-bold">WALLET</div>
+        <div className="border-t border-black"></div>
+        <div className="p-2 text-xs font-mono">{address}</div>
+        <button
+          type="button"
+          className="w-full p-2 border-4 border-red-500 bg-red-500 text-white hover:bg-red-600 font-bold uppercase"
+          onClick={() => {
+            disconnect();
+            router.push('/');
+          }}
         >
-          {truncatedAddress}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className={cn('border-4', bt.border, bt.section)}>
-        <DropdownMenuLabel className={cn('font-brutal font-black', bt.heading)}>
-          WALLET
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator className={bt.border} />
-        <DropdownMenuItem className={cn('font-mono text-xs', bt.body)}>{address}</DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Button
-            variant="destructive"
-            className={cn(
-              'w-full border-4 border-red-500 bg-red-500 text-white',
-              'hover:bg-red-600 font-brutal font-black uppercase'
-            )}
-            onClick={() => {
-              disconnect();
-              router.push('/');
-            }}
-          >
-            DISCONNECT
-          </Button>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          DISCONNECT
+        </button>
+      </div>
+    </div>
   );
 }

@@ -17,9 +17,13 @@ export interface NetworkConfig {
   testnet: boolean;
   chainlinkPriceFeed?: string;
   multicallAddress?: string;
+  // HyperLiquid-specific fields
+  isHyperLiquid?: boolean;
+  apiEndpoint?: string;
+  wsEndpoint?: string;
 }
 
-export type SupportedChain = 1 | 11155111 | 10 | 42161 | 137 | 8453 | 84532;
+export type SupportedChain = 1 | 11155111 | 10 | 42161 | 137 | 8453 | 84532 | 998;
 
 export interface ChainConfig {
   [chainId: number]: NetworkConfig;

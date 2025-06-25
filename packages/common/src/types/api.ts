@@ -4,3 +4,7 @@ export type ApiResponse<T = any> = {
   data?: T;
   error?: string;
 };
+
+// Re-export the AppRouter type from the generated file
+// This enables proper type sharing between server and client
+export type { AppRouter } from './router.generated';
