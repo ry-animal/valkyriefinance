@@ -1,57 +1,32 @@
+import { TestTRPCConnection } from './_components/test-trpc-connection';
+
 export default function StakingPage() {
   return (
     <div className="container mx-auto p-6 space-y-8">
       <div className="text-center space-y-4">
-        <h1 className="text-6xl font-black uppercase tracking-tighter">STAKING VAULT</h1>
+        <h1 className="text-6xl font-black uppercase tracking-tighter">STAKING CENTER</h1>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          LIQUID STAKING. MAXIMUM REWARDS. ZERO LOCKUP PERIODS.
+          STAKE VLK TOKENS. EARN REWARDS. PARTICIPATE IN GOVERNANCE. MAXIMIZE YIELDS.
         </p>
       </div>
+
+      <TestTRPCConnection />
 
       <div className="grid gap-6 md:grid-cols-2">
         <div className="border rounded-lg bg-white shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Liquid Staking</h2>
-          <p className="text-gray-600 mb-4">
-            Stake your tokens and receive liquid staking derivatives that can be used across DeFi
-            while earning rewards.
+          <h2 className="text-xl font-semibold mb-4">Staking Components</h2>
+          <p className="text-gray-600">
+            Staking interface components will be displayed here once the Web3 integration is
+            complete.
           </p>
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span>Current APY:</span>
-              <span className="font-semibold">12.5%</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Total Staked:</span>
-              <span className="font-semibold">$0.00</span>
-            </div>
-          </div>
         </div>
 
         <div className="border rounded-lg bg-white shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Locked Staking</h2>
-          <p className="text-gray-600 mb-4">
-            Lock your tokens for higher rewards. Choose from multiple lock periods for optimized
-            returns.
+          <h2 className="text-xl font-semibold mb-4">Portfolio Analytics</h2>
+          <p className="text-gray-600">
+            Real-time portfolio and staking analytics will be shown here.
           </p>
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span>30 Day Lock APY:</span>
-              <span className="font-semibold">15.2%</span>
-            </div>
-            <div className="flex justify-between">
-              <span>90 Day Lock APY:</span>
-              <span className="font-semibold">18.7%</span>
-            </div>
-          </div>
         </div>
-      </div>
-
-      <div className="border rounded-lg bg-white shadow p-6">
-        <h2 className="text-xl font-semibold mb-4">Staking Interface</h2>
-        <p className="text-gray-600">
-          Advanced staking interface coming soon. Stake, unstake, and manage your positions with
-          ease.
-        </p>
       </div>
     </div>
   );
