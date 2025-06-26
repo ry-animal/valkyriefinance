@@ -97,11 +97,9 @@ export function PortfolioOptimizer() {
             <div className="space-y-1">
               <h5 className="text-xs font-medium">Recommended Actions:</h5>
               <div className="text-xs text-gray-600">
-                {optimizeMutation.data.recommendations
-                  .slice(0, 3)
-                  .map((rec: string, idx: number) => (
-                    <div key={idx}>• {rec}</div>
-                  ))}
+                {optimizeMutation.data.recommendations.slice(0, 3).map((rec: string) => (
+                  <div key={rec}>• {rec}</div>
+                ))}
               </div>
             </div>
           </div>
