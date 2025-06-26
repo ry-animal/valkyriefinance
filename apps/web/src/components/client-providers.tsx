@@ -2,9 +2,9 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { useState } from 'react';
-// import { WagmiProvider } from 'wagmi';
-// import { initializeAppKit, wagmiConfig } from '@/lib/wagmi-config';
+import { useEffect, useState } from 'react';
+import { WagmiProvider } from 'wagmi';
+import { initializeAppKit, wagmiConfig } from '@/lib/wagmi-config';
 import { trpc, trpcClient } from '@/utils/trpc';
 
 export default function ClientProviders({ children }: { children: React.ReactNode }) {
@@ -26,19 +26,19 @@ export default function ClientProviders({ children }: { children: React.ReactNod
       })
   );
 
-  // useEffect(() => {
-  //   // Initialize AppKit after component mounts
-  //   initializeAppKit();
-  // }, []);
+  useEffect(() => {
+    // Initialize AppKit after component mounts
+    initializeAppKit();
+  }, []);
 
   return (
-    // <WagmiProvider config={wagmiConfig}>
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        {children}
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </trpc.Provider>
-    // </WagmiProvider>
+    <WagmiProvider config={wagmiConfig}>
+      <trpc.Provider client={trpcClient} queryClient={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          {children}
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+      </trpc.Provider>
+    </WagmiProvider>
   );
 }

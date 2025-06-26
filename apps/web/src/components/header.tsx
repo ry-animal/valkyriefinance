@@ -3,6 +3,7 @@
 import NextImage from 'next/image';
 import Link from 'next/link';
 import { HeaderNavigation } from '@/components/header-navigation';
+import { WalletButton } from '@/components/wallet/wallet-button';
 
 // import { ModeToggle } from '@/components/mode-toggle';
 
@@ -44,8 +45,8 @@ export default function Header() {
 
           <div className="hidden md:flex items-center gap-4">
             {/* <ModeToggle /> */}
+            <WalletButton />
             {/* <UserMenu /> */}
-            <div className="text-sm text-gray-500">Coming Soon</div>
           </div>
         </div>
       </div>

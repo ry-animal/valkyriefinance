@@ -1,3 +1,5 @@
+import { ValkyrieTokenInfo } from '@/components/wallet/valkyrie-token-info';
+import { WalletStatus } from '@/components/wallet/wallet-status';
 import { PortfolioStatus } from './_components/portfolio-status';
 
 export default function DashboardPage() {
@@ -11,10 +13,13 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-6">
-        <PortfolioOverview />
+        <div className="grid gap-6 md:grid-cols-2">
+          <PortfolioOverview />
+          <Web3Status />
+        </div>
         <div className="grid gap-6 md:grid-cols-2">
           <StakingOverview />
-          <VaultOverview />
+          <ValkyrieTokenInfo />
         </div>
       </div>
     </div>
@@ -25,21 +30,31 @@ function PortfolioOverview() {
   return (
     <div className="border rounded-lg bg-white shadow p-6">
       <h2 className="text-xl font-semibold mb-4">Portfolio Overview</h2>
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="text-center p-4 bg-gray-50 rounded">
-          <div className="text-2xl font-bold">$0.00</div>
-          <div className="text-sm text-gray-600">Total Value</div>
+      <div className="space-y-3">
+        <div className="flex justify-between">
+          <span className="text-gray-600">Total Value</span>
+          <span className="font-bold">$0.00</span>
         </div>
-        <div className="text-center p-4 bg-gray-50 rounded">
-          <div className="text-2xl font-bold">$0.00</div>
-          <div className="text-sm text-gray-600">Staked Amount</div>
+        <div className="flex justify-between">
+          <span className="text-gray-600">24h Change</span>
+          <span className="font-bold text-green-600">+0.00%</span>
         </div>
-        <div className="text-center p-4 bg-gray-50 rounded">
-          <div className="text-2xl font-bold">$0.00</div>
-          <div className="text-sm text-gray-600">Pending Rewards</div>
+        <div className="flex justify-between">
+          <span className="text-gray-600">Active Strategies</span>
+          <span className="font-bold">0</span>
         </div>
       </div>
+
       <PortfolioStatus />
+    </div>
+  );
+}
+
+function Web3Status() {
+  return (
+    <div className="border rounded-lg bg-white shadow p-6">
+      <h2 className="text-xl font-semibold mb-4">Wallet Connection</h2>
+      <WalletStatus />
     </div>
   );
 }
@@ -50,38 +65,16 @@ function StakingOverview() {
       <h2 className="text-xl font-semibold mb-4">Staking Overview</h2>
       <div className="space-y-3">
         <div className="flex justify-between">
-          <span>Active Positions:</span>
-          <span className="font-semibold">0</span>
+          <span className="text-gray-600">Staked VLK</span>
+          <span className="font-bold">0.00</span>
         </div>
         <div className="flex justify-between">
-          <span>Current APY:</span>
-          <span className="font-semibold text-green-600">12.5%</span>
+          <span className="text-gray-600">Pending Rewards</span>
+          <span className="font-bold text-green-600">0.00</span>
         </div>
         <div className="flex justify-between">
-          <span>Total Rewards:</span>
-          <span className="font-semibold">$0.00</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function VaultOverview() {
-  return (
-    <div className="border rounded-lg bg-white shadow p-6">
-      <h2 className="text-xl font-semibold mb-4">Vault Overview</h2>
-      <div className="space-y-3">
-        <div className="flex justify-between">
-          <span>Vault Balance:</span>
-          <span className="font-semibold">$0.00</span>
-        </div>
-        <div className="flex justify-between">
-          <span>Current Yield:</span>
-          <span className="font-semibold text-green-600">8.2%</span>
-        </div>
-        <div className="flex justify-between">
-          <span>AI Strategy:</span>
-          <span className="font-semibold text-blue-600">Active</span>
+          <span className="text-gray-600">APY</span>
+          <span className="font-bold">0.00%</span>
         </div>
       </div>
     </div>
