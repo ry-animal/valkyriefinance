@@ -36,9 +36,7 @@ export default function DashboardPage() {
           REAL-TIME ANALYTICS. AI-POWERED INSIGHTS. MAXIMUM YIELD OPTIMIZATION.
         </p>
       </div>
-
       /* <DashboardStats /> */
-
       <div className="grid gap-6">
         <div className="border rounded-lg bg-white shadow p-6">
           <h2 className="text-xl font-semibold mb-4">Portfolio Overview</h2>

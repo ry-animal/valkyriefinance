@@ -24,7 +24,14 @@ export default function HomePage() {
             AI-POWERED DEFI PLATFORM. MAXIMUM YIELD. ZERO COMPROMISE.
           </p>
 
-          {mounted && <button className="px-6 py-3 bg-black text-white font-bold uppercase border-4 border-black hover:bg-white hover:text-black transition-colors">Test Button</button>}
+          {mounted && (
+            <button
+              type="button"
+              className="px-6 py-3 bg-black text-white font-bold uppercase border-4 border-black hover:bg-white hover:text-black transition-colors"
+            >
+              Test Button
+            </button>
+          )}
         </div>
 
         <div className="mt-16 grid gap-8 md:grid-cols-3">
