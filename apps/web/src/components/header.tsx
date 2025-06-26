@@ -1,6 +1,5 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import NextImage from 'next/image';
 import Link from 'next/link';
 import { HeaderNavigation } from '@/components/header-navigation';

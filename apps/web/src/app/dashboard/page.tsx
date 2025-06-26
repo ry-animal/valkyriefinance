@@ -37,7 +37,7 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* <DashboardStats /> */}
+      /* <DashboardStats /> */
 
       <div className="grid gap-6">
         <div className="border rounded-lg bg-white shadow p-6">

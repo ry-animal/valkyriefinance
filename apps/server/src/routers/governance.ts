@@ -318,7 +318,7 @@ export const governanceRouter = router({
 
   // Get user's voting power at current block
   getVotingPower: protectedProcedure.query(async ({ ctx }) => {
-    const userId = ctx.user.id;
+    const _userId = ctx.user.id;
 
     // This would query the user's veVLK positions to calculate current voting power
     // For now, return a placeholder

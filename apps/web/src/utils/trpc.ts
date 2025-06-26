@@ -1,14 +1,10 @@
 'use client';
 
-import { httpBatchLink } from '@trpc/client';
-import { createTRPCReact } from '@trpc/react-query';
-import { env } from '@/lib/env';
-
 // Placeholder for tRPC client - will be properly typed when server router is ready
 export const trpc = {
   staking: {
     getStakingOverview: {
-      useQuery: (input?: any, options?: any) => ({
+      useQuery: (_input?: any, _options?: any) => ({
         data: undefined,
         isLoading: false,
         error: null,

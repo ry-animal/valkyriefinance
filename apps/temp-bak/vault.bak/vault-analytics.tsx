@@ -16,7 +16,6 @@ import {
 } from '@valkyrie/ui';
 import { Brain, DollarSign, Shield, TrendingDown, TrendingUp, Zap } from 'lucide-react';
 import { useState } from 'react';
-import { formatEther } from 'viem';
 import { useVaultBalance, useVaultInfo } from '@/hooks/use-valkyrie-vault';
 import { bt } from '@/lib/theme-utils';
 import { cn } from '@/lib/utils';

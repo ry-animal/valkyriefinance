@@ -111,7 +111,7 @@ export class HyperLiquidClient {
 
     return this.makeRequest('/info', {
       type: 'clearinghouseState',
-      user: this.signer!.getAddress(),
+      user: this.signer?.getAddress(),
     });
   }
 
@@ -123,7 +123,7 @@ export class HyperLiquidClient {
 
     return this.makeRequest('/info', {
       type: 'userState',
-      user: this.signer!.getAddress(),
+      user: this.signer?.getAddress(),
     });
   }
 
@@ -135,7 +135,7 @@ export class HyperLiquidClient {
 
     return this.makeRequest('/info', {
       type: 'openOrders',
-      user: this.signer!.getAddress(),
+      user: this.signer?.getAddress(),
     });
   }
 
@@ -224,7 +224,7 @@ export class HyperLiquidClient {
   async transfer(
     amount: string,
     fromAccount: 'spot' | 'perp',
-    toAccount: 'spot' | 'perp'
+    _toAccount: 'spot' | 'perp'
   ): Promise<any> {
     this.requireConnection();
 
@@ -232,7 +232,7 @@ export class HyperLiquidClient {
       type: 'spotSend',
       hyperliquidChain: fromAccount === 'spot' ? 'Mainnet' : 'Mainnet',
       signatureChainId: '0xa4b1', // Arbitrum
-      destination: this.signer!.getAddress(),
+      destination: this.signer?.getAddress(),
       amount,
       time: Date.now(),
     };
@@ -275,7 +275,7 @@ export class HyperLiquidClient {
   private async makeAuthenticatedRequest(action: any): Promise<any> {
     this.requireConnection();
 
-    const signedPayload = await this.signer!.createSignedPayload(action);
+    const signedPayload = await this.signer?.createSignedPayload(action);
 
     return this.makeRequest('/exchange', signedPayload);
   }

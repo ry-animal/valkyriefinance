@@ -1,10 +1,5 @@
 'use client';
 
-import {
-  HyperLiquidWebSocket,
-  type MarketData,
-  type OrderBook,
-} from '@valkyrie/common/hyperliquid';
 // import { Badge, Card } from '@valkyrie/ui';
 import { TrendingDown, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';

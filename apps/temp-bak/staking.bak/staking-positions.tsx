@@ -1,8 +1,7 @@
 'use client';
 
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@valkyrie/ui';
+import { Badge, Button, Card, CardContent } from '@valkyrie/ui';
 import { Clock, DollarSign, Lock, TrendingUp, Unlock } from 'lucide-react';
-import { formatEther } from 'viem';
 import { useAccount } from 'wagmi';
 
 // Mock data for demonstration

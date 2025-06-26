@@ -41,7 +41,6 @@ import {
 } from '@/hooks/use-valkyrie-vault';
 import { bt } from '@/lib/theme-utils';
 import { cn } from '@/lib/utils';
-import { useUIStore } from '@/stores/ui-store';
 
 export function VaultDashboard() {
   const [depositAmount, setDepositAmount] = useState('');

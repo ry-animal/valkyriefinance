@@ -13,8 +13,6 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAccount, useDisconnect } from 'wagmi';
-// import { bt } from '@/lib/theme-utils';
-import { cn } from '@/lib/utils';
 import { getAppKit } from '@/lib/wagmi-config';
 
 export default function UserMenu() {

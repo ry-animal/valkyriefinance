@@ -3,7 +3,6 @@
 import {
   type AccountState,
   HyperLiquidClient,
-  type Order,
   type OrderType,
   type Position,
 } from '@valkyrie/common/hyperliquid';

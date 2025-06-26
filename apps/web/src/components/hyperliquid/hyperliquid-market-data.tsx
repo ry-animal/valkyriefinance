@@ -1,6 +1,6 @@
 'use client';
 
-import { HyperLiquidClient, type MarketData } from '@valkyrie/common/hyperliquid';
+import { HyperLiquidClient } from '@valkyrie/common/hyperliquid';
 // import { Badge, Button, Card } from '@valkyrie/ui';
 import { RotateCcw, TrendingDown, TrendingUp } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
@@ -33,7 +33,7 @@ export function HyperLiquidMarketData({ className }: MarketDataProps) {
       const allMids = await client.getAllMids();
 
       // Get BTC price from the response
-      const btcPrice = allMids['BTC'] ? parseFloat(allMids['BTC']) : 0;
+      const btcPrice = allMids.BTC ? parseFloat(allMids.BTC) : 0;
 
       // Create mock data structure for now - will be replaced with real API calls
       const data: SimpleMarketData = {
