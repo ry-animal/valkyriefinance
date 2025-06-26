@@ -1,20 +1,7 @@
-'use client';
-
 // import { Button } from '@valkyrie/ui';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-
-// Force dynamic rendering to avoid SSR issues
-export const dynamic = 'force-dynamic';
-export const fetchCache = 'force-no-store';
 
 export default function HomePage() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
       <div className="container mx-auto px-4 py-16">
@@ -24,14 +11,12 @@ export default function HomePage() {
             AI-POWERED DEFI PLATFORM. MAXIMUM YIELD. ZERO COMPROMISE.
           </p>
 
-          {mounted && (
-            <button
-              type="button"
-              className="px-6 py-3 bg-black text-white font-bold uppercase border-4 border-black hover:bg-white hover:text-black transition-colors"
-            >
-              Test Button
-            </button>
-          )}
+          <button
+            type="button"
+            className="px-6 py-3 bg-black text-white font-bold uppercase border-4 border-black hover:bg-white hover:text-black transition-colors"
+          >
+            Test Button
+          </button>
         </div>
 
         <div className="mt-16 grid gap-8 md:grid-cols-3">

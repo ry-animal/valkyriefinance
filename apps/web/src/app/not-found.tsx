@@ -1,28 +1,6 @@
-'use client';
-
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 
 export default function NotFound() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Show loading skeleton during SSR
-  if (!mounted) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="text-center space-y-4">
-          <div className="h-16 bg-gray-200 rounded animate-pulse mx-auto w-32"></div>
-          <div className="h-8 bg-gray-200 rounded animate-pulse mx-auto w-64"></div>
-          <div className="h-12 bg-gray-200 rounded animate-pulse mx-auto w-48"></div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black text-black dark:text-white">
       <div className="text-center space-y-8 p-8">
