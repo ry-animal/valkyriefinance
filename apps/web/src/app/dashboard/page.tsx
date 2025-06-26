@@ -1,5 +1,3 @@
-// import { DashboardStats } from '@/components/dashboard/dashboard-stats';
-
 export default function DashboardPage() {
   return (
     <div className="container mx-auto p-6 space-y-8">
@@ -9,7 +7,6 @@ export default function DashboardPage() {
           REAL-TIME ANALYTICS. AI-POWERED INSIGHTS. MAXIMUM YIELD OPTIMIZATION.
         </p>
       </div>
-      {/* <DashboardStats /> */}
       <div className="grid gap-6">
         <div className="border rounded-lg bg-white shadow p-6">
           <h2 className="text-xl font-semibold mb-4">Portfolio Overview</h2>

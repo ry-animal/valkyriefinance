@@ -1,8 +1,3 @@
-// import { MarketIndicators } from './_components/market-indicators';
-// import { PortfolioOptimization } from './_components/portfolio-optimization';
-// import { RiskAssessment } from './_components/risk-assessment';
-// import { TokenAnalysis } from './_components/token-analysis';
-
 export default function AIAnalyticsPage() {
   return (
     <div className="container mx-auto p-6 space-y-8">
@@ -14,11 +9,6 @@ export default function AIAnalyticsPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* <MarketIndicators />
-        <TokenAnalysis />
-        <PortfolioOptimization />
-        <RiskAssessment /> */}
-
         <div className="border rounded-lg bg-white shadow p-6">
           <h2 className="text-xl font-semibold mb-4">AI Analytics Components</h2>
           <p className="text-gray-600">
