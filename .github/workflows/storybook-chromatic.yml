@@ -6,9 +6,17 @@ on:
   pull_request:
     branches: [ main ]
 
+# Set minimal permissions for GITHUB_TOKEN (security hardening)
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write # Required for GitHub Pages deployment
+      id-token: write # Required for GitHub Pages deployment
 
     steps:
       - name: Checkout repository
@@ -19,7 +27,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '20' # Updated to Node 20 for better security
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -81,6 +89,8 @@ jobs:
   accessibility-testing:
     runs-on: ubuntu-latest
     needs: test
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -89,7 +99,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '20' # Updated to Node 20 for better security
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4

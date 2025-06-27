@@ -6,9 +6,15 @@ on:
   pull_request:
     branches: [main, develop]
 
+# Set minimal permissions for GITHUB_TOKEN (security hardening)
+permissions:
+  contents: read
+
 jobs:
   changes:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       packages: ${{ steps.filter.outputs.packages }}
       web: ${{ steps.filter.outputs.web }}
@@ -16,7 +22,7 @@ jobs:
       contracts: ${{ steps.filter.outputs.contracts }}
     steps:
       - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v2
+      - uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
@@ -36,6 +42,9 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.packages == 'true' || needs.changes.outputs.web == 'true' || needs.changes.outputs.server == 'true' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write # Required for uploading SARIF results
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -46,7 +55,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20' # Updated to Node 20 for better security
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -64,7 +73,7 @@ jobs:
           args: --severity-threshold=high --file=package.json
 
       - name: Upload Snyk results to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: snyk.sarif
@@ -74,6 +83,8 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.packages == 'true' || needs.changes.outputs.web == 'true' || needs.changes.outputs.server == 'true' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -90,7 +101,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: 'pnpm'
 
       - run: pnpm install --frozen-lockfile
@@ -110,12 +121,14 @@ jobs:
     needs: [changes, biome-check]
     if: ${{ needs.changes.outputs.packages == 'true' || needs.changes.outputs.web == 'true' || needs.changes.outputs.server == 'true' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - name: Build packages
@@ -131,12 +144,14 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.contracts == 'true' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - name: Build packages
@@ -150,12 +165,14 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.web == 'true' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - name: Build packages
