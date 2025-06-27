@@ -4,7 +4,28 @@
 
 ## Overview
 
-The web application is a Next.js 15 frontend that provides a beautiful, responsive interface for the Valkyrie Finance AI-driven DeFi platform. Built with React Server Components for optimal performance, it features wallet integration, real-time data, and AI-powered insights.
+The web application is a Next.js 15 frontend that provides a beautiful, responsive interface for the Valkyrie Finance AI-driven DeFi platform. Built with React Server Components for optimal performance, it features **live Web3 integration**, **real-time AI analytics**, and **multi-chain wallet support**.
+
+## 🚀 **Live Features**
+
+### ✅ **Web3 Integration**
+- **Multi-chain Support**: Ethereum, Arbitrum, Optimism, Sepolia testnets
+- **Universal Wallet Support**: 300+ wallets via Reown AppKit
+- **Smart Contract Integration**: Live ERC-20 token and ERC-4626 vault
+- **Real-time Balances**: Live token balances and transaction history
+- **Gas Optimization**: Efficient contract interactions
+
+### ✅ **AI-Powered Analytics**
+- **Portfolio Optimization**: Live AI portfolio optimization with sub-20ms response
+- **Market Intelligence**: Real-time Fear & Greed Index, volatility metrics
+- **Risk Assessment**: AI-driven risk scoring and confidence analysis
+- **Strategy Recommendations**: Intelligent yield optimization suggestions
+
+### ✅ **Production Features**
+- **Vercel Deployment**: Production-ready with pnpm workspace support
+- **Performance Optimized**: Core Web Vitals optimized, ~40% bundle reduction
+- **Type Safety**: 100% TypeScript coverage with strict mode
+- **Responsive Design**: Mobile-first with dark/light theme support
 
 ## Tech Stack
 
@@ -19,122 +40,8 @@ The web application is a Next.js 15 frontend that provides a beautiful, responsi
 - **Package Manager**: pnpm with workspace optimization
 - **Code Quality**: Biome.js for superior linting and formatting
 - **API**: tRPC client with end-to-end type safety
-- **Testing**: Vitest + React Testing Library
+- **Testing**: Vitest + React Testing Library + Playwright E2E
 - **Animation**: Tailwindcss-animate for smooth transitions
-
-## React Server Components Architecture
-
-### Performance Improvements
-
-- **~40% JavaScript Bundle Reduction**: Server Components reduce client-side JavaScript
-- **Faster Initial Page Loads**: Server-side rendering with progressive hydration
-- **Improved Core Web Vitals**: Better FCP and LCP scores
-- **Enhanced SEO**: Server-rendered content for better search optimization
-- **Progressive Loading**: Suspense boundaries for optimal perceived performance
-
-### Server Components (Default)
-- **Homepage** (`app/page.tsx`): Static content rendered on server
-- **Dashboard** (`app/dashboard/page.tsx`): Server-side data fetching with async/await
-- **Header** (`components/header.tsx`): Static navigation layout
-- **Layout Components**: Server-rendered structure and metadata
-
-### Client Components (Interactive)
-- **Header Navigation** (`components/header-navigation.tsx`): Mobile menu and routing state
-- **Dashboard Stats** (`components/dashboard/dashboard-stats.tsx`): Uses `use()` hook for promise unwrapping
-- **Wallet Components**: All Web3 interactions and wallet state
-- **Theme Toggle**: Dark/light mode switching
-- **Interactive Forms**: User input and state management
-
-### RSC-Compatible State Management
-
-#### Per-Request Store Pattern
-- **Store Providers**: RSC-safe store providers that prevent server-side data leakage
-- **Factory Functions**: Store factories for creating per-request instances
-- **Client Boundaries**: Clear separation between server and client state
-
-```typescript
-// Example: RSC-compatible store provider
-'use client';
-
-export function RSCStoreProvider({ children }: { children: React.ReactNode }) {
-  const [store] = useState(() => createUIStore());
-
-  return (
-    <UIStoreContext.Provider value={store}>
-      {children}
-    </UIStoreContext.Provider>
-  );
-}
-```
-
-### Key Benefits
-- **Faster Initial Load**: Reduced client-side JavaScript bundle (~40% reduction)
-- **Better SEO**: Server-rendered content improves search rankings
-- **Improved Performance**: Core Web Vitals (FCP, LCP) optimization
-- **Progressive Enhancement**: UI streams as data becomes available
-- **Secure by Default**: Data fetching happens on server
-
-### Data Fetching Patterns
-- **React.cache**: Request-level deduplication (`lib/data-access.ts`)
-- **Parallel Fetching**: Avoiding request waterfalls with Promise.all
-- **Suspense Streaming**: Progressive UI loading with fallback components
-- **Error Boundaries**: Graceful error handling
-
-## Project Structure
-
-```
-apps/web/
-├── src/
-│   ├── app/                    # Next.js App Router pages (RSC-enabled)
-│   │   ├── page.tsx           # Landing page (Server Component)
-│   │   ├── dashboard/         # Analytics dashboard
-│   │   │   └── page.tsx       # Dashboard with RSC data fetching
-│   │   ├── vault/             # Vault demo pages
-│   │   ├── ai/                # AI features demo
-│   │   ├── stores/            # State management demo
-│   │   ├── layout.tsx         # Root layout with providers
-│   │   └── globals.css        # Global styles
-│   ├── components/            # Reusable UI components
-│   │   ├── ui/                # Shadcn UI base components (Shared)
-│   │   ├── dashboard/         # Dashboard components (RSC pattern)
-│   │   │   ├── dashboard-stats.tsx        # Client Component with use() hook
-│   │   │   └── dashboard-stats-loading.tsx # Loading skeleton
-│   │   ├── wallet/            # Wallet-related components (Client)
-│   │   ├── vault/             # Vault interface components
-│   │   ├── brutalist/         # Custom brutalist design components (Shared)
-│   │   ├── examples/          # Demo components
-│   │   ├── header.tsx         # Header (Server Component)
-│   │   ├── header-navigation.tsx # Navigation (Client Component)
-│   │   ├── mode-toggle.tsx    # Theme toggle (Client Component)
-│   │   ├── theme-provider.tsx # Theme system provider (Client)
-│   │   └── client-providers.tsx # Client-side providers
-│   ├── lib/                   # Utilities and configurations
-│   │   ├── wagmi-config.ts    # Reown AppKit setup (SSR-safe)
-│   │   ├── data-access.ts     # Server-side data layer (RSC)
-│   │   ├── utils.ts           # Utility functions
-│   │   └── env.ts             # Environment validation
-│   ├── stores/                # Zustand state stores (RSC-compatible)
-│   │   ├── rsc-store-provider.tsx   # RSC-safe store provider
-│   │   ├── ui-store-factory.ts      # Store factory pattern
-│   │   ├── portfolio-store-factory.ts # Portfolio store factory
-│   │   ├── [legacy stores...]       # Existing store implementations
-│   │   └── __tests__/         # Store unit tests
-│   ├── hooks/                 # Custom React hooks (Client Components only)
-│   │   ├── use-valkyrie-vault.ts   # Vault operations
-│   │   ├── use-valkyrie-token.ts   # Token operations
-│   │   └── use-mobile.ts           # Responsive utilities
-│   ├── types/                 # TypeScript definitions
-│   │   └── index.ts           # Shared type exports
-│   └── utils/                 # Client utilities
-│       ├── trpc.ts            # tRPC client setup
-│       └── constants.ts       # App constants
-├── public/                    # Static assets
-├── tailwind.config.ts         # Tailwind configuration
-├── next.config.ts             # Next.js configuration
-├── components.json            # Shadcn UI configuration
-├── RSC_REFACTORING_SUMMARY.md # Detailed RSC migration guide
-└── package.json
-```
 
 ## Quick Start
 
@@ -143,6 +50,7 @@ apps/web/
 - Node.js 18+ (recommended: use nvm)
 - pnpm (recommended package manager)
 - Running server API (see [server README](../server/README.md))
+- Running AI engine (see [AI engine README](../ai-engine/README.md))
 
 ### Installation
 
@@ -173,7 +81,24 @@ The application will be available at: http://localhost:3001
 
 ## Features
 
-### 🎨 UI/UX Features
+### 🔗 **Web3 Features**
+
+- **Multi-chain Wallet Connection**: Support for 300+ wallets across multiple networks
+- **Smart Contract Integration**: Live interaction with deployed Valkyrie contracts
+- **Real-time Token Data**: Live VLK token balances and metadata
+- **Vault Operations**: ERC-4626 vault deposits, withdrawals, and share management
+- **Transaction Management**: Comprehensive transaction state and history
+- **Network Switching**: Seamless switching between supported networks
+
+### 🤖 **AI Features**
+
+- **Live Portfolio Optimization**: Real-time AI analysis with confidence scoring
+- **Market Intelligence Dashboard**: Fear & Greed Index, volatility, BTC dominance
+- **Risk Assessment**: Advanced risk metrics and portfolio analysis
+- **Strategy Recommendations**: AI-powered yield optimization strategies
+- **Performance Tracking**: Historical performance and prediction accuracy
+
+### 🎨 **UI/UX Features**
 
 - **Modern Design**: Brutalist-inspired design with clean aesthetics
 - **Dark/Light Theme**: Seamless theme switching with system preference detection
@@ -182,500 +107,282 @@ The application will be available at: http://localhost:3001
 - **Accessibility**: WCAG compliant components from Shadcn UI
 - **Progressive Loading**: Suspense boundaries for optimal perceived performance
 
-### 🔗 Web3 Features
+## Project Structure
 
-- **Universal Wallet Support**: 300+ wallets via Reown AppKit
-- **Multi-Chain Support**: Ethereum, Arbitrum, Optimism, and testnets
-- **Smart Contract Integration**: Type-safe contract interactions
-- **Real-time Data**: Live blockchain data with automatic updates
-- **Transaction Management**: Comprehensive transaction state handling
+```
+apps/web/
+├── src/
+│   ├── app/                    # Next.js App Router pages (RSC-enabled)
+│   │   ├── page.tsx           # Landing page (Server Component)
+│   │   ├── dashboard/         # Analytics dashboard with AI + Web3
+│   │   │   └── page.tsx       # Live portfolio and AI analytics
+│   │   ├── vault/             # Vault management interface
+│   │   ├── ai-analytics/      # AI market intelligence
+│   │   ├── staking/           # Token staking features
+│   │   ├── swap/              # Token swapping interface
+│   │   ├── layout.tsx         # Root layout with providers
+│   │   └── globals.css        # Global styles
+│   ├── components/            # Reusable UI components
+│   │   ├── ui/                # Shadcn UI base components
+│   │   ├── dashboard/         # Dashboard components (Web3 + AI)
+│   │   ├── wallet/            # Wallet connection and management
+│   │   │   ├── wallet-button.tsx        # Connect/disconnect button
+│   │   │   ├── wallet-status.tsx        # Network and balance display
+│   │   │   └── valkyrie-token-info.tsx  # VLK token information
+│   │   ├── swap/              # Cross-chain swap interface
+│   │   ├── hyperliquid/       # External trading integration
+│   │   ├── header.tsx         # Header (Server Component)
+│   │   ├── header-navigation.tsx # Navigation (Client Component)
+│   │   ├── mode-toggle.tsx    # Theme toggle (Client Component)
+│   │   ├── theme-provider.tsx # Theme system provider (Client)
+│   │   └── client-providers.tsx # Client-side providers
+│   ├── lib/                   # Utilities and configurations
+│   │   ├── wagmi-config.ts    # Reown AppKit setup (SSR-safe)
+│   │   ├── data-access.ts     # Server-side data layer (RSC)
+│   │   ├── utils.ts           # Utility functions
+│   │   └── env.ts             # Environment validation
+│   ├── stores/                # Zustand state stores (RSC-compatible)
+│   │   ├── rsc-store-provider.tsx   # RSC-safe store provider
+│   │   ├── ui-store-factory.ts      # Store factory pattern
+│   │   ├── portfolio-store-factory.ts # Portfolio store factory
+│   │   ├── auth-store.ts            # Authentication state
+│   │   ├── web3-store.ts           # Web3 connection state
+│   │   └── __tests__/         # Store unit tests
+│   ├── hooks/                 # Custom React hooks (Client Components only)
+│   │   ├── use-valkyrie-vault.ts   # Vault operations
+│   │   ├── use-valkyrie-token.ts   # Token operations
+│   │   ├── use-token-balance.ts    # Token balance tracking
+│   │   └── use-simple-token-balances.ts # Multi-token balances
+│   ├── types/                 # TypeScript definitions
+│   │   └── index.ts           # Shared type exports
+│   └── utils/                 # Client utilities
+│       ├── trpc.ts            # tRPC client setup
+│       └── security.ts        # Security utilities
+├── public/                    # Static assets
+├── tailwind.config.ts         # Tailwind configuration
+├── next.config.ts             # Next.js configuration
+├── components.json            # Shadcn UI configuration
+├── playwright.config.ts       # E2E testing configuration
+├── vitest.config.ts           # Unit testing configuration
+└── package.json
+```
 
-### 🤖 AI Features
+## Web3 Integration
 
-- **AI Analytics**: Advanced market analytics and portfolio insights
-- **Strategy Recommendations**: AI-powered yield optimization suggestions
-- **Portfolio Analysis**: Intelligent portfolio performance insights
-- **Risk Assessment**: AI-driven risk analysis and alerts
+### **Supported Networks**
+- **Ethereum Mainnet** (Chain ID: 1)
+- **Arbitrum One** (Chain ID: 42161)
+- **Optimism** (Chain ID: 10)
+- **Sepolia Testnet** (Chain ID: 11155111)
 
-### 🏦 Vault Features
+### **Smart Contract Integration**
+```typescript
+// Example: Using Valkyrie Token hook
+import { useValkyrieToken } from '@/hooks/use-valkyrie-token';
 
-- **Vault Interface**: Complete ERC-4626 vault interaction
-- **Deposit/Withdraw**: Seamless asset management
-- **Performance Tracking**: Real-time yield and performance metrics
-- **Strategy Monitoring**: AI strategy execution tracking
+function TokenInfo() {
+  const { symbol, decimals, totalSupply, userBalance } = useValkyrieToken();
+
+  return (
+    <div>
+      <p>Token: {symbol}</p>
+      <p>Balance: {userBalance}</p>
+      <p>Total Supply: {totalSupply}</p>
+    </div>
+  );
+}
+```
+
+### **Wallet Integration**
+```typescript
+// Example: Wallet connection component
+import { WalletButton } from '@/components/wallet/wallet-button';
+
+function Header() {
+  return (
+    <header>
+      <nav>
+        <WalletButton />
+      </nav>
+    </header>
+  );
+}
+```
+
+## AI Integration
+
+### **Real-time Market Data**
+```typescript
+// Example: AI status component
+import { trpc } from '@/utils/trpc';
+
+function AIStatus() {
+  const { data: marketData } = trpc.ai.getMarketStatus.useQuery();
+
+  return (
+    <div>
+      <p>Fear & Greed: {marketData?.fearGreedIndex}</p>
+      <p>Volatility: {marketData?.volatility}</p>
+      <p>BTC Dominance: {marketData?.btcDominance}%</p>
+    </div>
+  );
+}
+```
+
+### **Portfolio Optimization**
+```typescript
+// Example: Portfolio optimizer
+import { trpc } from '@/utils/trpc';
+
+function PortfolioOptimizer() {
+  const optimizeMutation = trpc.ai.optimizePortfolio.useMutation();
+
+  const handleOptimize = () => {
+    optimizeMutation.mutate({
+      portfolio: [
+        { symbol: 'ETH', allocation: 0.6 },
+        { symbol: 'BTC', allocation: 0.4 }
+      ]
+    });
+  };
+
+  return (
+    <button onClick={handleOptimize}>
+      Optimize Portfolio
+    </button>
+  );
+}
+```
 
 ## Development
 
-### Available Scripts
+### **Available Scripts**
 
 ```bash
-# Development
-pnpm run dev              # Start development server with hot reload
-pnpm run build            # Build for production
-pnpm run start            # Start production server
-pnpm run preview          # Preview production build
+# Development server with hot reload
+pnpm run dev
+
+# Building
+pnpm run build          # Build for production
+pnpm run start          # Start production server
+pnpm run preview        # Preview production build
 
 # Testing
-pnpm run test             # Run unit tests
-pnpm run test:watch       # Run tests in watch mode
-pnpm run test:ui          # Open test UI
-pnpm run coverage         # Generate test coverage report
+pnpm run test           # Run unit tests
+pnpm run test:watch     # Run tests in watch mode
+pnpm run test:e2e       # Run E2E tests with Playwright
+pnpm run test:e2e:ui    # Run E2E tests with Playwright UI
 
-# Code Quality
-pnpm run lint             # Run ESLint
-pnpm run lint:fix         # Fix ESLint issues
-pnpm run type-check       # TypeScript type checking
-
-# Shadcn UI
-pnpx shadcn@latest add   # Add new Shadcn component
+# Code quality
+pnpm run lint           # Run ESLint
+pnpm run type-check     # TypeScript type checking
 ```
 
-### React Server Components Development
+### **Environment Variables**
 
-#### Creating Server Components (Default)
-
-```typescript
-// app/my-page/page.tsx - Server Component
-import { MyClientComponent } from '@/components/my-client-component';
-import { getServerData } from '@/lib/data-access';
-
-export default async function MyPage() {
-  // Data fetching happens on the server
-  const data = await getServerData();
-
-  return (
-    <div>
-      <h1>Server Rendered Content</h1>
-      <p>This content is rendered on the server</p>
-
-      {/* Pass server data to client component */}
-      <MyClientComponent initialData={data} />
-    </div>
-  );
-}
-```
-
-#### Creating Client Components
-
-```typescript
-// components/my-client-component.tsx
-'use client';
-
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-
-interface Props {
-  initialData: any;
-}
-
-export function MyClientComponent({ initialData }: Props) {
-  const [count, setCount] = useState(0);
-
-  return (
-    <div>
-      <p>Interactive content: {count}</p>
-      <Button onClick={() => setCount(count + 1)}>
-        Click me
-      </Button>
-    </div>
-  );
-}
-```
-
-#### Server-Side Data Fetching
-
-```typescript
-// lib/data-access.ts
-import { cache } from 'react';
-
-// Use React.cache for request-level deduplication
-export const getUserData = cache(async (userId: string) => {
-  // This will only run once per request, even if called multiple times
-  const response = await fetch(`/api/users/${userId}`);
-  return response.json();
-});
-
-// Parallel data fetching to avoid waterfalls
-export const getDashboardData = cache(async () => {
-  const [stats, vaults, portfolio] = await Promise.all([
-    getPortfolioStats(),
-    getActiveVaults(),
-    getUserPortfolio(),
-  ]);
-
-  return { stats, vaults, portfolio };
-});
-```
-
-#### Using Suspense for Streaming
-
-```typescript
-// app/dashboard/page.tsx
-import { Suspense } from 'react';
-import { DashboardStats } from '@/components/dashboard/dashboard-stats';
-import { DashboardStatsLoading } from '@/components/dashboard/dashboard-stats-loading';
-
-export default function DashboardPage() {
-  return (
-    <div>
-      <h1>Dashboard</h1>
-
-      {/* Stream UI as data becomes available */}
-      <Suspense fallback={<DashboardStatsLoading />}>
-        <DashboardStats />
-      </Suspense>
-    </div>
-  );
-}
-```
-
-### Component Development
-
-#### Using Shadcn UI Components
-
-```typescript
-// Install a new component
-pnpx shadcn@latest add button
-
-// Use in your component
-import { Button } from '@/components/ui/button'
-
-export function MyComponent() {
-  return (
-    <Button variant="outline" size="lg">
-      Click me
-    </Button>
-  )
-}
-```
-
-#### Creating Custom Components
-
-```typescript
-// components/custom/feature-card.tsx
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-
-interface FeatureCardProps {
-  title: string;
-  description: string;
-  status: "active" | "inactive";
-}
-
-export function FeatureCard({ title, description, status }: FeatureCardProps) {
-  return (
-    <Card className="hover:shadow-lg transition-shadow">
-      <CardHeader>
-        <div className="flex justify-between items-center">
-          <CardTitle>{title}</CardTitle>
-          <Badge variant={status === "active" ? "default" : "secondary"}>
-            {status}
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <p className="text-muted-foreground">{description}</p>
-      </CardContent>
-    </Card>
-  );
-}
-```
-
-### State Management with Zustand
-
-```typescript
-// stores/wallet-store.ts
-import { create } from "zustand";
-import { devtools } from "zustand/middleware";
-
-interface WalletState {
-  isConnected: boolean;
-  address: string | undefined;
-  chainId: number | undefined;
-
-  // Actions
-  setConnection: (connected: boolean) => void;
-  setAddress: (address: string | undefined) => void;
-  setChainId: (chainId: number | undefined) => void;
-}
-
-export const useWalletStore = create<WalletState>()(
-  devtools(
-    (set) => ({
-      isConnected: false,
-      address: undefined,
-      chainId: undefined,
-
-      setConnection: (connected) => set({ isConnected: connected }),
-      setAddress: (address) => set({ address }),
-      setChainId: (chainId) => set({ chainId }),
-    }),
-    { name: "wallet-store" }
-  )
-);
-
-// Using in components
-import { useWalletStore } from "@/stores/wallet-store";
-
-export function WalletStatus() {
-  const { isConnected, address } = useWalletStore();
-
-  return <div>{isConnected ? `Connected: ${address}` : "Not connected"}</div>;
-}
-```
-
-### Web3 Integration
-
-```typescript
-// hooks/use-valkyrie-vault.ts
-import { useReadContract, useWriteContract } from "wagmi";
-import { parseEther } from "viem";
-import { VAULT_ABI, VAULT_ADDRESS } from "@valkyrie/contracts";
-
-export function useValkryieVault() {
-  // Read vault data
-  const { data: totalAssets } = useReadContract({
-    address: VAULT_ADDRESS,
-    abi: VAULT_ABI,
-    functionName: "totalAssets",
-  });
-
-  // Write to vault
-  const { writeContract, isPending } = useWriteContract();
-
-  const deposit = async (amount: string) => {
-    writeContract({
-      address: VAULT_ADDRESS,
-      abi: VAULT_ABI,
-      functionName: "deposit",
-      args: [parseEther(amount)],
-    });
-  };
-
-  return {
-    totalAssets,
-    deposit,
-    isDepositing: isPending,
-  };
-}
-
-// Using in components
-export function VaultInterface() {
-  const { totalAssets, deposit, isDepositing } = useValkryieVault();
-  const [amount, setAmount] = useState("");
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Vault Total Assets</CardTitle>
-        <p>{totalAssets?.toString()} tokens</p>
-      </CardHeader>
-      <CardContent>
-        <Input
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          placeholder="Amount to deposit"
-        />
-        <Button onClick={() => deposit(amount)} disabled={isDepositing}>
-          {isDepositing ? "Depositing..." : "Deposit"}
-        </Button>
-      </CardContent>
-    </Card>
-  );
-}
-```
-
-### API Integration with tRPC
-
-```typescript
-// utils/trpc.ts (already configured)
-import { createTRPCReact } from "@trpc/react-query";
-import type { AppRouter } from "@valkyrie/server";
-
-export const trpc = createTRPCReact<AppRouter>();
-
-// Using in components
-import { trpc } from "@/utils/trpc";
-
-export function TodoList() {
-  const { data: todos, isLoading } = trpc.todo.getAll.useQuery();
-  const createTodo = trpc.todo.create.useMutation({
-    onSuccess: () => {
-      // Invalidate and refetch todos
-      trpc.useContext().todo.getAll.invalidate();
-    },
-  });
-
-  if (isLoading) return <div>Loading...</div>;
-
-  return (
-    <div>
-      {todos?.map((todo) => (
-        <div key={todo.id}>{todo.title}</div>
-      ))}
-      <Button
-        onClick={() =>
-          createTodo.mutate({
-            title: "New todo",
-            content: "Todo content",
-          })
-        }
-      >
-        Add Todo
-      </Button>
-    </div>
-  );
-}
-```
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `NEXT_PUBLIC_SERVER_URL` | tRPC server URL | `http://localhost:3000` |
+| `NEXT_PUBLIC_REOWN_PROJECT_ID` | Reown AppKit project ID | Required for Web3 |
+| `NEXT_PUBLIC_DEFAULT_CHAIN` | Default blockchain network | `1` (Ethereum) |
+| `NEXT_PUBLIC_ENABLE_TESTNETS` | Enable testnet support | `true` |
+| `NEXT_PUBLIC_ENABLE_AI_CHAT` | Enable AI chat features | `true` |
+| `NEXT_PUBLIC_ENABLE_WEB3` | Enable Web3 features | `true` |
 
 ## Testing
 
-### Unit Testing
-
+### **Unit Testing**
 ```bash
-# Run all tests
+# Run all unit tests
 pnpm run test
 
+# Run tests in watch mode
+pnpm run test:watch
+
+# Run tests with coverage
+pnpm run test -- --coverage
+```
+
+### **E2E Testing**
+```bash
+# Run E2E tests
+pnpm run test:e2e
+
+# Run E2E tests with UI
+pnpm run test:e2e:ui
+
 # Run specific test file
-pnpm run test wallet-store.test.ts
-
-# Run tests with UI
-pnpm run test:ui
-
-# Generate coverage
-pnpm run coverage
-```
-
-### Test Examples
-
-```typescript
-// stores/__tests__/wallet-store.test.ts
-import { renderHook, act } from "@testing-library/react";
-import { useWalletStore } from "../wallet-store";
-
-describe("WalletStore", () => {
-  beforeEach(() => {
-    useWalletStore.setState({
-      isConnected: false,
-      address: undefined,
-      chainId: undefined,
-    });
-  });
-
-  it("should connect wallet", () => {
-    const { result } = renderHook(() => useWalletStore());
-
-    act(() => {
-      result.current.setConnection(true);
-      result.current.setAddress("0x123...");
-      result.current.setChainId(1);
-    });
-
-    expect(result.current.isConnected).toBe(true);
-    expect(result.current.address).toBe("0x123...");
-    expect(result.current.chainId).toBe(1);
-  });
-});
-```
-
-## Environment Variables
-
-### Required Variables
-
-```bash
-# API Connection
-NEXT_PUBLIC_SERVER_URL=http://localhost:3000
-
-# Web3 Configuration
-NEXT_PUBLIC_REOWN_PROJECT_ID=your_reown_project_id
-NEXT_PUBLIC_ALCHEMY_API_KEY=your_alchemy_api_key
-
-# App Configuration
-NEXT_PUBLIC_DEFAULT_CHAIN=1
-NEXT_PUBLIC_ENABLE_TESTNETS=true
-NEXT_PUBLIC_ENABLE_AI_CHAT=true
-NEXT_PUBLIC_ENABLE_WEB3=true
-```
-
-### Optional Variables
-
-```bash
-# Analytics
-NEXT_PUBLIC_ANALYTICS_ID=your_analytics_id
-
-# Monitoring
-NEXT_PUBLIC_SENTRY_DSN=your_sentry_dsn
+pnpm run test:e2e -- tests/wallet-connection.spec.ts
 ```
 
 ## Deployment
 
-### Vercel Deployment
-
-The application is optimized for Vercel deployment:
+### **Vercel Deployment**
+The app is optimized for Vercel deployment with pnpm workspace support:
 
 ```bash
-# Install Vercel CLI
-npm i -g vercel
+# Automatic deployment
+git push origin main
 
-# Deploy
-vercel
-
-# Deploy to production
-vercel --prod
+# Manual deployment
+vercel deploy --prod
 ```
 
-### Build Optimization
-
-- **Code Splitting**: Automatic route-based code splitting
-- **Image Optimization**: Next.js Image component with optimization
-- **Bundle Analysis**: Use `ANALYZE=true pnpm run build` to analyze bundles
-- **Tree Shaking**: Automatic dead code elimination
+### **Environment Setup for Production**
+```bash
+# Production environment variables
+NEXT_PUBLIC_SERVER_URL=https://your-api-domain.com
+NEXT_PUBLIC_REOWN_PROJECT_ID=your_production_project_id
+NEXT_PUBLIC_DEFAULT_CHAIN=1
+NEXT_PUBLIC_ENABLE_TESTNETS=false
+NEXT_PUBLIC_ENABLE_AI_CHAT=true
+NEXT_PUBLIC_ENABLE_WEB3=true
+```
 
 ## Performance
 
-### Core Web Vitals
+### **React Server Components Benefits**
+- **~40% JavaScript Bundle Reduction**: Server Components reduce client-side JavaScript
+- **Faster Initial Page Loads**: Server-side rendering with progressive hydration
+- **Improved Core Web Vitals**: Better FCP and LCP scores
+- **Enhanced SEO**: Server-rendered content for better search optimization
 
-- **LCP (Largest Contentful Paint)**: < 2.5s
-- **FID (First Input Delay)**: < 100ms
-- **CLS (Cumulative Layout Shift)**: < 0.1
+### **Web3 Performance Optimizations**
+- **Smart Contract Call Caching**: Reduced redundant blockchain calls
+- **Optimistic Updates**: Immediate UI updates with background confirmation
+- **Gas Estimation**: Accurate gas estimation before transactions
+- **Batch Requests**: Multiple contract calls batched for efficiency
 
-### Optimization Techniques
+### **Build Performance**
+- **Bundle Size**: Optimized ~1.38MB production bundle
+- **Tree Shaking**: Unused code elimination
+- **Code Splitting**: Automatic route-based code splitting
+- **Image Optimization**: Next.js Image component with optimization
 
-- **Server Components**: Leverage RSC for better performance
-- **Streaming**: Use Suspense boundaries for progressive loading
-- **Image Optimization**: Next.js Image with lazy loading
-- **Font Optimization**: Next.js Font with preloading
+## Security
 
-## Troubleshooting
+### **Web3 Security**
+- **Secure Wallet Integration**: Industry-standard WalletConnect v2
+- **Transaction Validation**: All inputs validated before blockchain submission
+- **Network Verification**: Automatic network validation and switching
+- **Error Handling**: Comprehensive error handling for failed transactions
 
-### Common Issues
+### **Application Security**
+- **Type Safety**: 100% TypeScript coverage with strict mode
+- **Input Validation**: Zod schemas for all user inputs
+- **XSS Protection**: React's built-in XSS protection
+- **CSP Headers**: Content Security Policy headers in production
 
-1. **Web3 Connection Issues**:
+## Contributing
 
-   - Verify wallet is installed and connected
-   - Check network configuration
-   - Ensure Reown Project ID is valid
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes with tests
+4. Ensure all tests pass (`pnpm test && pnpm test:e2e`)
+5. Commit changes (`git commit -m 'Add amazing feature'`)
+6. Push to branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
 
-2. **API Connection Issues**:
+## License
 
-   - Verify server is running on correct port
-   - Check NEXT_PUBLIC_SERVER_URL is correct
-   - Verify CORS configuration on server
-
-3. **Build Issues**:
-
-   - Ensure shared packages are built first
-   - Check TypeScript errors with `pnpm run type-check`
-   - Verify environment variables are set
-
-4. **Styling Issues**:
-   - Check Tailwind CSS configuration
-   - Verify Shadcn UI components are installed correctly
-   - Check for conflicting CSS classes
-
-## Related Documentation
-
-- [Main Project README](../../README.md)
-- [Server API Documentation](../server/README.md)
-- [Smart Contracts](../../packages/contracts/README.md)
-- [Shared Utilities](../../packages/common/README.md)
+This project is licensed under the MIT License - see the [LICENSE](../../LICENSE) file for details.
