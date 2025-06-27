@@ -378,6 +378,9 @@ importers:
       '@valkyrie/config':
         specifier: workspace:^
         version: link:../config
+      viem:
+        specifier: ^2.31.4
+        version: 2.31.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.67)
       ws:
         specifier: ^8.16.0
         version: 8.18.2(bufferutil@4.0.9)(utf-8-validate@5.0.10)

@@ -38,10 +38,11 @@
     "check": "biome check --write ."
   },
   "dependencies": {
-    "@valkyrie/config": "workspace:^",
-    "zod": "^3.22.4",
     "@nktkas/hyperliquid": "^0.22.2",
-    "ws": "^8.16.0"
+    "@valkyrie/config": "workspace:^",
+    "viem": "^2.31.4",
+    "ws": "^8.16.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

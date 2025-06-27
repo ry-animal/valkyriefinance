@@ -23,7 +23,7 @@ Valkyrie Finance combines cutting-edge AI technology with DeFi protocols to deli
 ```bash
 # Clone and setup (one-time)
 git clone <repository-url>
-cd valkryiefinance
+cd valkyriefinance
 pnpm install
 
 # Start all services (development)
