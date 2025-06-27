@@ -3,7 +3,7 @@
 import { ArrowRight, Brain, Clock, Star, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { restoreNavigationState, trackNavigation } from '@/lib/store-persistence';
 import { cn } from '@/lib/utils';
 
@@ -232,7 +232,7 @@ export function AINavigationSuggestions({
           <span>Loading AI suggestions...</span>
         </div>
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="h-12 bg-muted animate-pulse rounded-lg" />
+          <div key={`loading-${i}`} className="h-12 bg-muted animate-pulse rounded-lg" />
         ))}
       </div>
     );

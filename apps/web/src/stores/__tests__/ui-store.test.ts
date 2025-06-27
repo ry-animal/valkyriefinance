@@ -2,7 +2,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useUIStore } from '../ui-store';
 
 // Mock setTimeout for notification auto-removal
-vi.useFakeTimers();
+beforeEach(() => {
+  vi.useFakeTimers();
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe('UI Store', () => {
   beforeEach(() => {

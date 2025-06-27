@@ -173,12 +173,7 @@ export function EnhancedNavigation({ links, className }: NavigationProps) {
   );
 
   return (
-    <div
-      className={cn('relative', className)}
-      onKeyDown={handleKeyDown}
-      tabIndex={-1}
-      role="navigation"
-    >
+    <nav className={cn('relative', className)} onKeyDown={handleKeyDown} tabIndex={-1}>
       {/* Desktop Navigation */}
       <nav className="hidden md:flex items-center" aria-label="Main navigation">
         <div className="flex">
@@ -226,7 +221,7 @@ export function EnhancedNavigation({ links, className }: NavigationProps) {
           inactiveLinkClasses={inactiveLinkClasses}
         />
       )}
-    </div>
+    </nav>
   );
 }
 

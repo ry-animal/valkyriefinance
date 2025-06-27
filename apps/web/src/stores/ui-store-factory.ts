@@ -1,11 +1,6 @@
 import { createStore } from 'zustand';
 import { devtools, subscribeWithSelector } from 'zustand/middleware';
-import {
-  checkRateLimit,
-  type ModalDataSchema,
-  sanitizeModalData,
-  validateCSRFToken,
-} from '@/lib/security-validation';
+import { checkRateLimit, sanitizeModalData, validateCSRFToken } from '@/lib/security-validation';
 import { type PersistedUIState, persistUIState, restoreUIState } from '@/lib/store-persistence';
 
 export type ModalType =
