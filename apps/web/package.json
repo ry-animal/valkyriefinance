@@ -2,15 +2,14 @@
   "name": "web",
   "version": "0.1.0",
   "private": true,
+  "description": "Valkyrie Finance Web Application - Production Ready",
   "scripts": {
-    "dev": "next dev --turbopack --port=3001",
+    "dev": "next dev --port 3001",
     "build": "next build",
-    "start": "next start",
+    "start": "next start --port 3001",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
     "check-types": "tsc --noEmit",
-    "lint": "biome lint --write .",
-    "lint:check": "biome lint .",
-    "format": "biome format --write .",
-    "format:check": "biome format .",
     "check": "biome check --write .",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -19,7 +18,9 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
-    "test:e2e:debug": "playwright test --debug"
+    "test:e2e:debug": "playwright test --debug",
+    "format": "biome format --write .",
+    "format:check": "biome format ."
   },
   "dependencies": {
     "@ai-sdk/react": "^1.2.12",
