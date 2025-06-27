@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, type ReactNode, useContext, useRef } from 'react';
+import { createContext, type ReactNode, useContext, useEffect, useMemo, useRef } from 'react';
 import { type StoreApi, useStore } from 'zustand';
 import {
   createPortfolioStore,
@@ -34,6 +34,15 @@ export function RSCStoreProvider({ children, initialData }: StoreProviderProps) 
     portfolioStoreRef.current = createPortfolioStore(initialData?.portfolio || {});
   }
 
+  // Handle hydration on client-side
+  useEffect(() => {
+    if (uiStoreRef.current && typeof window !== 'undefined') {
+      const store = uiStoreRef.current;
+      const { hydrate } = store.getState();
+      hydrate();
+    }
+  }, []);
+
   return (
     <UIStoreContext.Provider value={uiStoreRef.current || null}>
       <PortfolioStoreContext.Provider value={portfolioStoreRef.current || null}>
@@ -43,7 +52,7 @@ export function RSCStoreProvider({ children, initialData }: StoreProviderProps) 
   );
 }
 
-// Custom hooks for consuming stores
+// Enhanced hook with error handling
 export const useUIStore = <T,>(selector: (store: UIStore) => T): T => {
   const storeContext = useContext(UIStoreContext);
 
@@ -64,18 +73,66 @@ export const usePortfolioStore = <T,>(selector: (store: PortfolioStore) => T): T
   return useStore(storeContext, selector);
 };
 
-// Convenience selectors
-export const useActiveModal = () => useUIStore((state) => state.activeModal);
-export const useNotifications = () => useUIStore((state) => state.notifications);
-export const useIsDarkMode = () => useUIStore((state) => state.isDarkMode);
-export const useSidebarState = () =>
-  useUIStore((state) => ({
-    open: state.sidebarOpen,
-    collapsed: state.sidebarCollapsed,
-  }));
+// Memoized convenience selectors for performance
+export const useActiveModal = () =>
+  useUIStore(useMemo(() => (state: UIStore) => state.activeModal, []));
 
-export const usePortfolios = () => usePortfolioStore((state) => state.portfolios);
-export const useSelectedPortfolio = () =>
-  usePortfolioStore((state) =>
-    state.portfolios.find((p: Portfolio) => p.id === state.selectedPortfolioId)
+export const useNotifications = () =>
+  useUIStore(useMemo(() => (state: UIStore) => state.notifications, []));
+
+export const useIsDarkMode = () =>
+  useUIStore(useMemo(() => (state: UIStore) => state.isDarkMode, []));
+
+export const useIsHydrated = () =>
+  useUIStore(useMemo(() => (state: UIStore) => state.isHydrated, []));
+
+export const useSidebarState = () =>
+  useUIStore(
+    useMemo(
+      () => (state: UIStore) => ({
+        open: state.sidebarOpen,
+        collapsed: state.sidebarCollapsed,
+      }),
+      []
+    )
   );
+
+export const useLoadingState = () =>
+  useUIStore(
+    useMemo(
+      () => (state: UIStore) => ({
+        global: state.globalLoading,
+        page: state.pageLoading,
+      }),
+      []
+    )
+  );
+
+export const useFeatureFlags = () =>
+  useUIStore(
+    useMemo(
+      () => (state: UIStore) => ({
+        advanced: state.showAdvancedFeatures,
+        animations: state.enableAnimations,
+      }),
+      []
+    )
+  );
+
+export const usePortfolios = () =>
+  usePortfolioStore(useMemo(() => (state: PortfolioStore) => state.portfolios, []));
+
+export const useSelectedPortfolio = () =>
+  usePortfolioStore(
+    useMemo(
+      () => (state: PortfolioStore) =>
+        state.portfolios.find((p: Portfolio) => p.id === state.selectedPortfolioId),
+      []
+    )
+  );
+
+// SSR-safe hydration status
+export const useSSRSafeValue = <T,>(value: T, defaultValue: T): T => {
+  const isHydrated = useIsHydrated();
+  return isHydrated ? value : defaultValue;
+};

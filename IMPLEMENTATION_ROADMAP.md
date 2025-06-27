@@ -42,8 +42,76 @@ Based on brainstorming session, implementing multiple revenue streams:
 
 ---
 
+## Phase 0.5: Foundation Improvements 🛠️
+**Timeline**: Week 1
+**Priority**: 🔴 Critical Foundation
+
+### 0.5.1 Scale & Performance Improvements
+- [ ] **Server-Side State Hydration**
+  - Implement SSR-compatible state hydration for navigation
+  - Reduce client-side rendering work for better scale
+  - Add hydration error handling and recovery
+
+- [ ] **State Persistence Layer**
+  - Add localStorage/sessionStorage for navigation preferences
+  - Persist sidebar states and user UI preferences
+  - Implement data migration for state schema changes
+
+- [ ] **Navigation Performance Optimization**
+  - Add intelligent prefetching based on user behavior
+  - Implement lazy rendering for mobile menu
+  - Add state batching to reduce re-renders
+  - Implement selector memoization for store
+
+### 0.5.2 Security Hardening
+- [ ] **Navigation State Validation**
+  - Implement Zod schemas for navigation links
+  - Prevent malicious route injection attacks
+  - Add runtime validation for all navigation state
+
+- [ ] **CSRF Protection for State Changes**
+  - Add token validation for modal state changes
+  - Protect sensitive UI store operations
+  - Implement state change audit logging
+
+- [ ] **Input Sanitization**
+  - Sanitize all modal and notification data
+  - Follow established security patterns from SECURITY.md
+  - Add XSS protection for dynamic content
+
+### 0.5.3 UX & Accessibility Foundation
+- [ ] **Enhanced Navigation UX**
+  - Add breadcrumb navigation and context
+  - Implement progressive disclosure for mobile
+  - Add smooth state transitions and animations
+  - Improve keyboard navigation support
+
+- [ ] **Accessibility Compliance**
+  - Add comprehensive ARIA attributes
+  - Implement screen reader support
+  - Ensure keyboard-only navigation works
+  - Add focus management for modals
+
+- [ ] **Offline State Management**
+  - Implement offline-aware navigation
+  - Handle connectivity issues gracefully
+  - Add offline indicators and recovery
+
+### 0.5.4 AI-Enhanced Navigation (Basic)
+- [ ] **Intelligent Navigation Suggestions**
+  - Basic AI-powered navigation recommendations
+  - User behavior pattern analysis
+  - Portfolio-context aware suggestions
+
+- [ ] **Smart Notification System**
+  - AI-driven notification prioritization
+  - Context-aware filtering
+  - User preference learning
+
+---
+
 ## Phase 1: Testnet Foundation 🚀
-**Timeline**: Weeks 1-2
+**Timeline**: Weeks 2-3
 **Priority**: 🔴 High
 
 ### 1.1 Enhanced Authentication & Security
@@ -125,7 +193,7 @@ Based on brainstorming session, implementing multiple revenue streams:
 ---
 
 ## Phase 2: Core Feature Enhancement 🔧
-**Timeline**: Weeks 3-4
+**Timeline**: Weeks 4-5
 **Priority**: 🟡 Medium
 
 ### 2.1 Beginner-Friendly AI Integration
@@ -194,7 +262,7 @@ Based on brainstorming session, implementing multiple revenue streams:
 ---
 
 ## Phase 3: Advanced Features 🚀
-**Timeline**: Weeks 5-8
+**Timeline**: Weeks 6-9
 **Priority**: 🟢 Low
 
 ### 3.1 AI Engine Enhancement
