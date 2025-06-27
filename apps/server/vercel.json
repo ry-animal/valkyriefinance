@@ -1,9 +1,8 @@
 {
-  "buildCommand": "turbo build",
+  "buildCommand": "cd ../.. && turbo build --filter=server",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "installCommand": "pnpm install --frozen-lockfile",
-  "rootDirectory": "apps/server",
+  "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
   "functions": {
     "src/app/api/**/*.ts": {
       "runtime": "nodejs20.x"
