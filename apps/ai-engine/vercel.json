@@ -1,0 +1,24 @@
+{
+  "functions": {
+    "api/handler.go": {
+      "runtime": "go1.x"
+    }
+  },
+  "routes": [
+    {
+      "src": "/health",
+      "dest": "/api/handler.go"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/handler.go"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/handler.go"
+    }
+  ],
+  "env": {
+    "LOG_LEVEL": "info"
+  }
+}
