@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd apps/web && node prepare-deploy.js && npm install --legacy-peer-deps && npm run build",
+  "buildCommand": "cd apps/web && pnpm run build",
   "outputDirectory": "apps/web/.next",
   "framework": "nextjs",
   "ignoreCommand": "git diff --quiet HEAD^ HEAD -- apps/web/",
