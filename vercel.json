@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm run build --filter=web",
+  "buildCommand": "cd packages/common && pnpm run build && cd ../contracts && pnpm run build && cd ../../apps/web && pnpm run build",
   "outputDirectory": "apps/web/.next",
   "framework": "nextjs",
   "installCommand": "pnpm install --frozen-lockfile",
