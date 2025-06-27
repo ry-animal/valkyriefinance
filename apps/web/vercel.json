@@ -1,0 +1,19 @@
+{
+  "buildCommand": "turbo build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "rootDirectory": "apps/web",
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "env": {
+    "NODE_ENV": "production",
+    "NEXT_PUBLIC_SERVER_URL": "https://valkyrie-finance-server.vercel.app",
+    "NEXT_PUBLIC_REOWN_PROJECT_ID": "1a91f40c774bfe7c56b13d36dc0fe7a6",
+    "NEXT_PUBLIC_DEFAULT_CHAIN": "1",
+    "NEXT_PUBLIC_ENABLE_TESTNETS": "false"
+  }
+}
