@@ -17,8 +17,5 @@
       "src": "/(.*)",
       "dest": "/api/handler.go"
     }
-  ],
-  "env": {
-    "LOG_LEVEL": "info"
-  }
+  ]
 }
