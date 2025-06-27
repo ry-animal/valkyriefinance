@@ -69,7 +69,7 @@ export function OfflineBanner({ className }: OfflineBannerProps) {
           <div className="flex items-center justify-between max-w-7xl mx-auto">
             <div className="flex items-center gap-2">
               <WifiOff className="h-4 w-4" />
-              <span className="font-medium">You're currently offline</span>
+              <span className="font-medium">You&apos;re currently offline</span>
               <span className="hidden sm:inline">- Some features may not be available</span>
             </div>
 

@@ -8,7 +8,7 @@ export default function NotFound() {
           <h1 className="text-8xl font-black uppercase tracking-tighter">404</h1>
           <h2 className="text-4xl font-black uppercase">PAGE NOT FOUND</h2>
           <p className="text-xl text-gray-600 max-w-md mx-auto">
-            THE PAGE YOU'RE LOOKING FOR HAS VANISHED INTO THE VOID.
+            THE PAGE YOU&apos;RE LOOKING FOR HAS VANISHED INTO THE VOID.
           </p>
         </div>
 

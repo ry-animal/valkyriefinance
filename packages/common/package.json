@@ -31,11 +31,11 @@
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
     "check-types": "tsc --noEmit",
-    "lint": "biome lint --write .",
-    "lint:check": "biome lint .",
-    "format": "biome format --write .",
-    "format:check": "biome format .",
-    "check": "biome check --write ."
+    "lint": "biome lint --write src/",
+    "lint:check": "biome lint src/",
+    "format": "biome format --write src/",
+    "format:check": "biome format src/",
+    "check": "biome check --write src/"
   },
   "dependencies": {
     "@nktkas/hyperliquid": "^0.22.2",
