@@ -16,8 +16,8 @@ export const PortfolioStoreContext = createContext<StoreApi<PortfolioStore> | nu
 interface StoreProviderProps {
   children: ReactNode;
   initialData?: {
-    portfolio?: any;
-    ui?: any;
+    portfolio?: unknown;
+    ui?: unknown;
   };
 }
 

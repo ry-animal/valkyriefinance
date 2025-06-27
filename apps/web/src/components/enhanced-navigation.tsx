@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { useSecurityValidation, validateRoute } from '@/lib/security-validation';
 import { restoreNavigationState, trackNavigation } from '@/lib/store-persistence';
 import { cn } from '@/lib/utils';
 import { useSSRSafeValue } from '@/stores/rsc-store-provider';
@@ -110,6 +111,7 @@ export function EnhancedNavigation({ links, className }: NavigationProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { validateNavigationLink, checkRateLimit } = useSecurityValidation();
   const [prefetchedPaths, setPrefetchedPaths] = useState<Set<string>>(new Set());
 
   // SSR-safe mobile menu state
@@ -173,7 +175,7 @@ export function EnhancedNavigation({ links, className }: NavigationProps) {
   );
 
   return (
-    <div className={cn('relative', className)} onKeyDown={handleKeyDown} role="presentation">
+    <div className={cn('relative', className)} onKeyDown={handleKeyDown} tabIndex={-1}>
       {/* Desktop Navigation */}
       <nav className="hidden md:flex items-center" aria-label="Main navigation">
         <div className="flex">
