@@ -135,7 +135,7 @@ async function detectAnomalies(healthData, storage) {
   console.log('🤖 Running AI anomaly detection...');
 
   const anomalies = [];
-  const { totalAssets, totalSupply, sharePrice, previousMetrics, isPaused } = healthData;
+  const { totalAssets, sharePrice, previousMetrics, isPaused } = healthData;
 
   // 1. Sudden asset changes (potential exploit or large withdrawal)
   if (previousMetrics.totalAssets) {

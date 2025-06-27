@@ -337,10 +337,18 @@ export function useHyperLiquidWebSocket() {
   // This would integrate with your React state management
   // Return WebSocket instance and connection status
   return {
-    connect: () => {}, // Implementation would use React state
-    disconnect: () => {},
-    subscribeToMarketData: () => {},
-    subscribeToOrderBook: () => {},
+    connect: () => {
+      // TODO: Implementation would use React state to manage connection
+    },
+    disconnect: () => {
+      // TODO: Implementation would use React state to manage disconnection
+    },
+    subscribeToMarketData: () => {
+      // TODO: Implementation would use React state to manage market data subscription
+    },
+    subscribeToOrderBook: () => {
+      // TODO: Implementation would use React state to manage order book subscription
+    },
     isConnected: false,
   };
 }

@@ -12,6 +12,8 @@
       "**/.turbo/**",
       "**/coverage/**",
       "**/.vercel/**",
+      "**/storybook-static/**",
+      "**/.storybook/**",
       "**/*.config.js",
       "**/*.config.mjs",
       "pnpm-lock.yaml",

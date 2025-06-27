@@ -75,7 +75,9 @@ export const WithIcon: Story = {
           stroke="currentColor"
           strokeWidth="2"
           aria-label="Check icon"
+          role="img"
         >
+          <title>Check icon</title>
           <circle cx="12" cy="12" r="10" />
           <path d="m9 12 2 2 4-4" />
         </svg>
@@ -155,6 +157,7 @@ export const WithIcons: Story = {
           stroke="currentColor"
           strokeWidth="2"
           aria-label="Success icon"
+          role="img"
         >
           <circle cx="12" cy="12" r="10" />
           <path d="m9 12 2 2 4-4" />
@@ -170,6 +173,7 @@ export const WithIcons: Story = {
           stroke="currentColor"
           strokeWidth="2"
           aria-label="Time icon"
+          role="img"
         >
           <circle cx="12" cy="12" r="10" />
           <path d="M12 8v4l3 3" />
@@ -185,6 +189,7 @@ export const WithIcons: Story = {
           stroke="currentColor"
           strokeWidth="2"
           aria-label="Error icon"
+          role="img"
         >
           <circle cx="12" cy="12" r="10" />
           <path d="m15 9-6 6" />
@@ -206,16 +211,16 @@ export const WithIcons: Story = {
 // Interactive Example
 export const AsLink: Story = {
   render: () => (
-    <a href="javascript:void(0)" className="inline-block">
+    <button type="button" className="inline-block border-none bg-transparent p-0 cursor-pointer">
       <Badge asChild>
         <span>Clickable Badge</span>
       </Badge>
-    </a>
+    </button>
   ),
   parameters: {
     docs: {
       description: {
-        story: 'Badge rendered as a link using the asChild prop.',
+        story: 'Badge rendered as a clickable button using the asChild prop.',
       },
     },
   },
