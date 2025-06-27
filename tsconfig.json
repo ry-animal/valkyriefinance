@@ -1,38 +1,34 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "lib": ["dom", "dom.iterable", "es6"],
+    "target": "es2019",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["apps/web/src/*"],
-      "@valkyrie/ui": ["packages/ui/src"],
-      "@valkyrie/ui/*": ["packages/ui/src/*"],
-      "@valkyrie/common": ["packages/common/src"],
-      "@valkyrie/common/*": ["packages/common/src/*"],
-      "@valkyrie/config": ["packages/config"],
-      "@valkyrie/config/*": ["packages/config/*"]
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/tokens/*": ["./src/tokens/*"],
+      "@/styles/*": ["./src/styles/*"]
     }
   },
-  "include": [],
-  "exclude": ["node_modules", "dist", ".next", "storybook-static"],
-  "references": [
-    { "path": "./apps/web" },
-    { "path": "./apps/server" },
-    { "path": "./apps/storybook-host" },
-    { "path": "./packages/ui" },
-    { "path": "./packages/common" },
-    { "path": "./packages/config" }
-  ]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.json"],
+  "exclude": ["node_modules", "dist", "**/*.stories.tsx", "../../packages/ui/src/stories/**/*"]
 }
