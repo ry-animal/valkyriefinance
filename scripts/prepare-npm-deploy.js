@@ -10,29 +10,59 @@ const _rootPackageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const webPackageJsonPath = 'apps/web/package.json';
 const webPackageJson = JSON.parse(fs.readFileSync(webPackageJsonPath, 'utf8'));
 
-// Read common package.json
-const _commonPackageJson = JSON.parse(fs.readFileSync('packages/common/package.json', 'utf8'));
+// Read server app package.json
+const serverPackageJsonPath = 'apps/server/package.json';
+const serverPackageJson = JSON.parse(fs.readFileSync(serverPackageJsonPath, 'utf8'));
 
-// Read contracts package.json
-const _contractsPackageJson = JSON.parse(
-  fs.readFileSync('packages/contracts/package.json', 'utf8')
-);
+// Workspace dependency mappings
+const workspaceMappings = {
+  '@valkyrie/common': 'file:../../packages/common',
+  '@valkyrie/contracts': 'file:../../packages/contracts',
+  '@valkyrie/ui': 'file:../../packages/ui',
+  '@valkyrie/config': 'file:../../packages/config',
+};
 
-// Replace workspace dependencies with file paths
-if (webPackageJson.dependencies) {
-  Object.keys(webPackageJson.dependencies).forEach((dep) => {
-    if (webPackageJson.dependencies[dep] === 'workspace:*') {
-      if (dep === '@valkyrie/common') {
-        webPackageJson.dependencies[dep] = 'file:../../packages/common';
-      } else if (dep === '@valkyrie/contracts') {
-        webPackageJson.dependencies[dep] = 'file:../../packages/contracts';
+// Function to replace workspace dependencies
+function replaceWorkspaceDependencies(packageJson) {
+  let modified = false;
+
+  if (packageJson.dependencies) {
+    Object.keys(packageJson.dependencies).forEach((dep) => {
+      if (
+        packageJson.dependencies[dep] === 'workspace:*' ||
+        packageJson.dependencies[dep] === 'workspace:^'
+      ) {
+        if (workspaceMappings[dep]) {
+          packageJson.dependencies[dep] = workspaceMappings[dep];
+          modified = true;
+          console.log(`  ✓ ${dep}: workspace:* → ${workspaceMappings[dep]}`);
+        }
       }
-    }
-  });
+    });
+  }
+
+  return modified;
 }
 
-// Write the modified package.json
-fs.writeFileSync(webPackageJsonPath, JSON.stringify(webPackageJson, null, 2));
+// Process web app package.json
+console.log('🔧 Processing apps/web/package.json...');
+const webModified = replaceWorkspaceDependencies(webPackageJson);
+if (webModified) {
+  fs.writeFileSync(webPackageJsonPath, JSON.stringify(webPackageJson, null, 2));
+  console.log('✅ Updated apps/web/package.json');
+} else {
+  console.log('ℹ️  No workspace dependencies found in web package.json');
+}
 
-console.log('✅ Prepared package.json for npm deployment');
-console.log('📦 Workspace dependencies converted to file: paths');
+// Process server app package.json
+console.log('🔧 Processing apps/server/package.json...');
+const serverModified = replaceWorkspaceDependencies(serverPackageJson);
+if (serverModified) {
+  fs.writeFileSync(serverPackageJsonPath, JSON.stringify(serverPackageJson, null, 2));
+  console.log('✅ Updated apps/server/package.json');
+} else {
+  console.log('ℹ️  No workspace dependencies found in server package.json');
+}
+
+console.log('✅ Prepared package.json files for npm deployment');
+console.log('📦 All workspace dependencies converted to file: paths');
