@@ -1,5 +1,5 @@
-import { useAccount, useChainId } from 'wagmi';
-import { TOKENS_BY_CHAIN, useTokenBalance } from './use-token-balance';
+import { useChainId } from 'wagmi';
+import { TOKENS_BY_CHAIN } from './use-token-balance';
 
 export interface SimpleTokenBalance {
   address: `0x${string}`;
