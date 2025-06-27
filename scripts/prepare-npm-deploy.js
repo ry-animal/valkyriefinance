@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('node:fs');
-const _path = require('node:path');
+const path = require('node:path');
 
 // Read the root package.json
 const _rootPackageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
@@ -21,6 +21,33 @@ const workspaceMappings = {
   '@valkyrie/ui': 'file:../../packages/ui',
   '@valkyrie/config': 'file:../../packages/config',
 };
+
+// Function to copy directory recursively
+function copyDir(src, dest) {
+  if (!fs.existsSync(src)) {
+    console.log(`⚠️  Source directory not found: ${src}`);
+    return;
+  }
+
+  if (!fs.existsSync(dest)) {
+    fs.mkdirSync(dest, { recursive: true });
+  }
+
+  const entries = fs.readdirSync(src);
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry);
+    const destPath = path.join(dest, entry);
+
+    if (fs.statSync(srcPath).isDirectory()) {
+      // Skip node_modules and .turbo directories
+      if (entry !== 'node_modules' && entry !== '.turbo' && entry !== '.next') {
+        copyDir(srcPath, destPath);
+      }
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
 
 // Function to replace workspace dependencies
 function replaceWorkspaceDependencies(packageJson) {
@@ -43,6 +70,24 @@ function replaceWorkspaceDependencies(packageJson) {
 
   return modified;
 }
+
+// Copy workspace packages to make them available
+console.log('📦 Copying workspace packages...');
+const packageDirs = [
+  { src: 'packages/common', dest: 'apps/web/packages/common' },
+  { src: 'packages/contracts', dest: 'apps/web/packages/contracts' },
+  { src: 'packages/ui', dest: 'apps/web/packages/ui' },
+  { src: 'packages/config', dest: 'apps/web/packages/config' },
+  { src: 'packages/common', dest: 'apps/server/packages/common' },
+  { src: 'packages/config', dest: 'apps/server/packages/config' },
+];
+
+packageDirs.forEach(({ src, dest }) => {
+  if (fs.existsSync(src)) {
+    console.log(`  📁 Copying ${src} → ${dest}`);
+    copyDir(src, dest);
+  }
+});
 
 // Process web app package.json
 console.log('🔧 Processing apps/web/package.json...');
