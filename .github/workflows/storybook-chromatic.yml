@@ -40,8 +40,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build packages
-        run: pnpm build
+      - name: Build shared packages first
+        run: |
+          pnpm --filter @valkyrie/config build
+          pnpm --filter @valkyrie/common build
+          pnpm --filter @valkyrie/contracts build
+          pnpm --filter @valkyrie/ui build
+
+      - name: Build applications
+        run: |
+          pnpm --filter web build
+          pnpm --filter server build
+          pnpm --filter storybook-host build
 
       - name: Run linting
         run: pnpm lint
