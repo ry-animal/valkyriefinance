@@ -184,3 +184,47 @@ jobs:
       - name: Run E2E tests
         working-directory: ./apps/web
         run: pnpm run test:e2e
+
+  # Build web application
+  build-web:
+    needs: [changes, lint-and-typecheck]
+    if: ${{ needs.changes.outputs.web == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - name: Build packages
+        run: |
+          cd packages/common && pnpm run build
+          cd ../contracts && pnpm run build
+      - name: Build web application
+        run: pnpm --filter web build
+
+  # Build server application
+  build-server:
+    needs: [changes, lint-and-typecheck]
+    if: ${{ needs.changes.outputs.server == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - name: Build packages
+        run: |
+          cd packages/common && pnpm run build
+          cd ../contracts && pnpm run build
+      - name: Build server application
+        run: pnpm --filter server build
