@@ -5,6 +5,7 @@
 [![Development Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen.svg)](https://github.com/valkyrie-finance)
 [![Build Status](https://img.shields.io/badge/Build-Passing-green.svg)](https://github.com/valkyrie-finance)
 [![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue.svg)](https://www.typescriptlang.org/)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ry-animal/valkyriefinance)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Valkyrie Finance combines cutting-edge AI technology with DeFi protocols to deliver automated, intelligent yield optimization. **Now featuring live Web3 integration and production-ready AI engine.**
