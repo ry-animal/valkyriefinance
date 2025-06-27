@@ -35,7 +35,7 @@ const NavigationLinkComponent = memo(
     className: string;
   }) => (
     <Link
-      href={link.to}
+      href={link.to as any}
       prefetch={link.prefetch}
       className={className}
       onClick={onClick}
@@ -135,7 +135,7 @@ export function EnhancedNavigation({ links, className }: NavigationProps) {
         const shouldPrefetch = navigationState?.prefetchOnHover !== false;
 
         if (shouldPrefetch) {
-          router.prefetch(path);
+          router.prefetch(path as any);
           setPrefetchedPaths((prev) => new Set([...prev, path]));
         }
       } catch (error) {

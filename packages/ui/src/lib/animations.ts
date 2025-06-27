@@ -299,13 +299,13 @@ export const createDelayedAnimation = (delay: number, baseAnimation = fadeInVari
   },
 });
 
-// DeFi-specific animations
+// DeFi-specific animations - using proper Variants type
 export const defiAnimations = {
-  priceChange: (isPositive: boolean) => ({
+  priceChange: (isPositive: boolean): Variants => ({
     animate: {
       color: isPositive ? '#10b981' : '#ef4444',
       scale: [1, 1.1, 1],
-      transition: { duration: 0.3, ease: 'easeOut' },
+      transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] },
     },
   }),
 
@@ -319,10 +319,10 @@ export const defiAnimations = {
       transition: {
         duration: 2,
         repeat: Infinity,
-        ease: 'easeInOut',
+        ease: [0.4, 0, 0.6, 1],
       },
     },
-  },
+  } as Variants,
 
   lossGlow: {
     animate: {
@@ -334,10 +334,10 @@ export const defiAnimations = {
       transition: {
         duration: 2,
         repeat: Infinity,
-        ease: 'easeInOut',
+        ease: [0.4, 0, 0.6, 1],
       },
     },
-  },
+  } as Variants,
 
   stakingPulse: {
     animate: {
@@ -349,10 +349,10 @@ export const defiAnimations = {
       transition: {
         duration: 3,
         repeat: Infinity,
-        ease: 'easeInOut',
+        ease: [0.4, 0, 0.6, 1],
       },
     },
-  },
+  } as Variants,
 };
 
 // Shimmer effect utility for loading states
