@@ -23,7 +23,7 @@ const projectId = env.NEXT_PUBLIC_REOWN_PROJECT_ID;
 const metadata = {
   name: 'Valkyrie Finance',
   description: 'AI-powered DeFi yield optimization platform',
-  url: 'https://valkryie.finance',
+  url: 'https://valkyrie.finance',
   icons: ['https://assets.reown.com/reown-profile-pic.png'],
 };
 

@@ -1,5 +1,5 @@
 
-> storybook-host@0.1.0 build-storybook /Users/rvan/repos/valkryiefinance/apps/storybook-host
+> storybook-host@0.1.0 build-storybook /Users/rvan/repos/valkyriefinance/apps/storybook-host
 > storybook build "--output-dir=/var/folders/74/hb77y19d6cz_gt4_rtsxkqtm0000gn/T/chromatic--2645-4UjFSKfnX7tv"
 
 [1m@storybook/core v8.6.14
@@ -18,7 +18,7 @@ info => Using default Webpack5 setup
 info Using tsconfig paths for react-docgen
 WARN asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
 WARN This can impact web performance.
-WARN Assets: 
+WARN Assets:
 WARN   7151.d66f7d2a.iframe.bundle.js (362 KiB)
 WARN   2690.55213a3a.iframe.bundle.js (826 KiB)
 WARN   7761.f271f216.iframe.bundle.js (1.99 MiB)
@@ -30,6 +30,6 @@ WARN   main (2.1 MiB)
 WARN       runtime~main.6a8897e7.iframe.bundle.js
 WARN       7761.f271f216.iframe.bundle.js
 WARN       main.9de38a29.iframe.bundle.js
-WARN 
+WARN
 info => Preview built ([38;2;181;126;229m15 s[39m)
 info => Output directory: /var/folders/74/hb77y19d6cz_gt4_rtsxkqtm0000gn/T/chromatic--2645-4UjFSKfnX7tv

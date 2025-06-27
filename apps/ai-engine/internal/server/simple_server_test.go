@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/valkryiefinance/ai-engine/internal/models"
+	"github.com/valkyriefinance/ai-engine/internal/models"
 )
 
 // MockAIEngine implements AIEngine for testing

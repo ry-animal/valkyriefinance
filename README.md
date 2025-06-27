@@ -63,7 +63,7 @@ cd apps/ai-engine && go run main.go
 
 ### **Monorepo Structure**
 ```
-valkryiefinance/
+valkyriefinance/
 ├── apps/
 │   ├── web/              # Next.js frontend (port 3001) ✅ Web3 + AI
 │   ├── server/           # tRPC API server (port 3000) ✅ Database + Auth

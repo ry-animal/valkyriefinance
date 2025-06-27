@@ -1,6 +1,6 @@
-# Valkryie Finance Documentation
+# Valkyrie Finance Documentation
 
-This folder contains the consolidated documentation for the Valkryie Finance platform. The documentation has been streamlined into 4 core documents that are continuously updated.
+This folder contains the consolidated documentation for the Valkyrie Finance platform. The documentation has been streamlined into 4 core documents that are continuously updated.
 
 ## Core Documentation
 
@@ -114,6 +114,6 @@ When updating documentation:
 
 ---
 
-**Consolidated**: December 2024  
-**Documents**: 4 core files (down from 19)  
+**Consolidated**: December 2024
+**Documents**: 4 core files (down from 19)
 **Maintenance**: Continuous updates before each push

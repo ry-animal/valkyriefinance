@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/valkryiefinance/ai-engine/internal/models"
+	"github.com/valkyriefinance/ai-engine/internal/models"
 )
 
 // DataCollector handles real-time market data collection from multiple sources

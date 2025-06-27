@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/valkryiefinance/ai-engine/internal/models"
+	"github.com/valkyriefinance/ai-engine/internal/models"
 )
 
 // MockMarketDataCollector implements MarketDataCollector for testing

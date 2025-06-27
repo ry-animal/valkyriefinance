@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 
-	"github.com/valkryiefinance/ai-engine/internal/models"
+	"github.com/valkyriefinance/ai-engine/internal/models"
 )
 
 // AIEngine defines the interface for AI-powered portfolio analysis

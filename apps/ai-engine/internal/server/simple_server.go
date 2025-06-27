@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/valkryiefinance/ai-engine/internal/models"
-	"github.com/valkryiefinance/ai-engine/internal/services"
+	"github.com/valkyriefinance/ai-engine/internal/models"
+	"github.com/valkyriefinance/ai-engine/internal/services"
 )
 
 // ValidationError represents a validation error with structured information

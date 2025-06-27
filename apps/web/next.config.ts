@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
 
   // Transpile packages for monorepo support
-  transpilePackages: ['@valkyrie/ui', '@valkyrie/common'],
+  transpilePackages: ['@valkyrie/ui', '@valkyrie/common', '@valkyrie/contracts'],
 
   // Compiler optimizations
   compiler: {

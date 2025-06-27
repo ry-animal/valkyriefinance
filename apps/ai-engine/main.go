@@ -49,8 +49,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/valkryiefinance/ai-engine/internal/server"
-	"github.com/valkryiefinance/ai-engine/internal/services"
+	"github.com/valkyriefinance/ai-engine/internal/server"
+	"github.com/valkyriefinance/ai-engine/internal/services"
 )
 
 // main is the entry point for the AI Engine service.

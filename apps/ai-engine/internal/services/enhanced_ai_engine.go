@@ -8,7 +8,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/valkryiefinance/ai-engine/internal/models"
+	"github.com/valkyriefinance/ai-engine/internal/models"
 )
 
 // EnhancedAIEngine provides improved AI capabilities

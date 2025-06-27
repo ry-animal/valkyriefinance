@@ -1,8 +1,8 @@
-# Valkryie Finance - Deployment Guide
+# Valkyrie Finance - Deployment Guide
 
 ## Overview
 
-This guide covers the complete deployment process for Valkryie Finance, from local development setup to production deployment and monitoring.
+This guide covers the complete deployment process for Valkyrie Finance, from local development setup to production deployment and monitoring.
 
 ## Prerequisites
 
@@ -25,7 +25,7 @@ Create production environment files for each application:
 # Database
 DATABASE_URL="postgresql://user:password@host:port/database"
 
-# Authentication  
+# Authentication
 BETTER_AUTH_SECRET="your-super-secure-32-character-secret"
 BETTER_AUTH_URL="https://your-api-domain.com"
 
@@ -194,7 +194,7 @@ cp apps/web/.env.example apps/web/.env.local
 pnpm dev
 
 # Available development commands:
-pnpm dev:web      # Frontend (http://localhost:3001)  
+pnpm dev:web      # Frontend (http://localhost:3001)
 pnpm dev:server   # Backend (http://localhost:3000)
 pnpm lint         # Run Biome.js linting
 pnpm format       # Run Biome.js formatting

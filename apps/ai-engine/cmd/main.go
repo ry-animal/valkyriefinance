@@ -6,8 +6,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/valkryiefinance/ai-engine/internal/server"
-	"github.com/valkryiefinance/ai-engine/internal/services"
+	"github.com/valkyriefinance/ai-engine/internal/server"
+	"github.com/valkyriefinance/ai-engine/internal/services"
 )
 
 func main() {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/valkryiefinance/ai-engine/internal/models"
+	"github.com/valkyriefinance/ai-engine/internal/models"
 )
 
 // SimpleAIEngine is a simplified AI engine for initial implementation

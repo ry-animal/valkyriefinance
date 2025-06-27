@@ -104,7 +104,7 @@ pnpm install
 cp .env.example .env.local
 
 # Configure your .env.local:
-DATABASE_URL=postgresql://username:password@localhost:5432/valkryie_db
+DATABASE_URL=postgresql://username:password@localhost:5432/valkyrie_db
 GOOGLE_AI_API_KEY=your_google_ai_api_key
 BETTER_AUTH_SECRET=your_super_secret_auth_key_here_minimum_32_characters
 BETTER_AUTH_URL=http://localhost:3000

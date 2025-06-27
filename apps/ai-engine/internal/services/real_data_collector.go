@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/valkryiefinance/ai-engine/internal/models"
+	"github.com/valkyriefinance/ai-engine/internal/models"
 )
 
 // RealDataCollector fetches actual market data from live APIs

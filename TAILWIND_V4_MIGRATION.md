@@ -1,4 +1,4 @@
-# Tailwind CSS v4 Migration - Valkryie Finance
+# Tailwind CSS v4 Migration - Valkyrie Finance
 
 This document outlines the migration to Tailwind CSS v4 and the best practices implemented across the monorepo.
 

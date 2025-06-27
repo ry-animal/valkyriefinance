@@ -8,7 +8,7 @@ Valkyrie Finance is a next-generation DeFi platform that combines AI-powered yie
 
 ### **Project Structure**
 ```
-valkryiefinance/
+valkyriefinance/
 ├── apps/
 │   ├── web/              # Next.js frontend application (port 3001)
 │   ├── server/           # tRPC API server with database (port 3000)

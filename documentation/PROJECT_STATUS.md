@@ -1,4 +1,4 @@
-# Valkryie Finance - Project Status
+# Valkyrie Finance - Project Status
 
 ## Current Status: ✅ **Phase 2+ Complete - Component System & Monorepo Infrastructure Optimized**
 
@@ -58,7 +58,7 @@
 
 ### **Monorepo Structure**
 ```
-valkryiefinance/
+valkyriefinance/
 ├── apps/
 │   ├── web/              # Next.js frontend (port 3001) ✅
 │   ├── server/           # tRPC API server (port 3000) ✅

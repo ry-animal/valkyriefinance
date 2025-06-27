@@ -168,7 +168,7 @@ export const bridgeQuoteSchema = z.object({
   dstTokenAddress: z.string(),
   dstTokenBlockchain: z.string(),
   slippage: z.number().optional().default(1),
-  referrer: z.string().optional().default('valkryie'),
+  referrer: z.string().optional().default('valkyrie'),
 });
 
 export type BridgeQuoteInput = z.infer<typeof bridgeQuoteSchema>;

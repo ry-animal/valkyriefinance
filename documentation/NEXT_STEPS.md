@@ -24,8 +24,8 @@
 
 ```bash
 # Target: Deploy all smart contracts to mainnet
-- ValkryieToken (VLK) governance token
-- ValkryieVault (ERC-4626) yield optimization vault
+- ValkyrieToken (VLK) governance token
+- ValkyrieVault (ERC-4626) yield optimization vault
 - Supporting infrastructure contracts
 - Comprehensive testing and verification
 ```
@@ -33,8 +33,8 @@
 **Tasks:**
 
 - [ ] Final smart contract audits and security review
-- [ ] Deploy ValkryieToken to Ethereum mainnet
-- [ ] Deploy ValkryieVault with optimized strategies
+- [ ] Deploy ValkyrieToken to Ethereum mainnet
+- [ ] Deploy ValkyrieVault with optimized strategies
 - [ ] Verify contracts on Etherscan
 - [ ] Configure production-ready access controls
 - [ ] Test all contract interactions in production environment

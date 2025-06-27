@@ -39,7 +39,7 @@ A high-performance, AI-driven portfolio optimization service for DeFi applicatio
 
 ```bash
 # Clone the repository
-git clone https://github.com/valkryiefinance/valkyrie-finance
+git clone https://github.com/valkyriefinance/valkyrie-finance
 cd valkyrie-finance/apps/ai-engine
 
 # Install dependencies
@@ -343,9 +343,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/valkryiefinance/valkyrie-finance/issues)
-- **Documentation**: [Docs Site](https://docs.valkryiefinance.com)
-- **Community**: [Discord](https://discord.gg/valkryiefinance)
+- **Issues**: [GitHub Issues](https://github.com/valkyriefinance/valkyrie-finance/issues)
+- **Documentation**: [Docs Site](https://docs.valkyriefinance.com)
+- **Community**: [Discord](https://discord.gg/valkyriefinance)
 
 ---
 
