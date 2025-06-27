@@ -1,7 +1,8 @@
 {
-  "buildCommand": "node scripts/prepare-npm-deploy.js && npm install --legacy-peer-deps && npm run build",
+  "buildCommand": "cd apps/web && node prepare-deploy.js && npm install --legacy-peer-deps && npm run build",
   "outputDirectory": "apps/web/.next",
   "framework": "nextjs",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- apps/web/",
   "functions": {
     "apps/web/src/app/api/**/*.ts": {
       "runtime": "nodejs20.x"
