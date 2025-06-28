@@ -215,7 +215,7 @@ jobs:
           cd ../common && pnpm run build
           cd ../contracts && pnpm run build
       - name: Build web application
-        run: turbo run build --filter=web
+        run: pnpm build --filter=web
 
   # Build server application
   build-server:
@@ -238,4 +238,4 @@ jobs:
           cd ../common && pnpm run build
           cd ../contracts && pnpm run build
       - name: Build server application
-        run: turbo run build --filter=server
+        run: pnpm build --filter=server
