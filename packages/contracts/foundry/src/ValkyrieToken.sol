@@ -26,39 +26,37 @@ contract ValkyrieToken is ERC20, ERC20Votes, ERC20Permit, Ownable, ReentrancyGua
     error InsufficientStakedAmount();
     error NoRewardsToClaim();
     error RewardRateTooHigh();
-    
-    // Staking state
+
+    // Staking state (packed for maximum gas efficiency)
     struct StakeInfo {
-        uint256 amount;           // Amount staked
-        uint256 rewardDebt;       // Reward debt for accurate calculation
-        uint256 lastStakeTime;    // When the stake was last updated
-        uint256 stakingPeriod;    // Chosen staking period (in months)
-        uint256 unlockTime;       // When tokens can be withdrawn penalty-free
-        uint256 governancePower;  // Voting power multiplier (basis points)
+        uint96 amount;           // Amount staked
+        uint32 unlockTime;       // When tokens can be withdrawn penalty-free
+        uint32 stakingPeriod;    // Chosen staking period (in months)
+        uint32 lastRewardTime;   // Last time rewards were claimed
+        uint32 governancePower;  // Voting power multiplier
     }
-    
-    // Staking tier configuration
+
+    // Staking tier configuration (packed)
     struct StakingTier {
-        uint256 periodMonths;     // Staking period in months
-        uint256 rewardMultiplier; // Reward multiplier (basis points)
-        uint256 governanceMultiplier; // Governance power multiplier (basis points)
-        uint256 penaltyRate;      // Early withdrawal penalty (basis points)
+        uint32 periodMonths;     // Staking period in months
+        uint32 rewardMultiplier; // Reward multiplier (basis points)
+        uint32 governanceMultiplier; // Governance power multiplier (basis points)
+        uint32 penaltyRate;      // Early withdrawal penalty (basis points)
     }
-    
+
     mapping(address => StakeInfo) public stakes;
     mapping(uint256 => StakingTier) public stakingTiers;
-    
+
     // Staking configuration
     uint256 public totalStaked;
     uint256 public rewardRate = 100; // Base reward rate in basis points per year (1% = 100 bp)
-    uint256 public accRewardPerShare; // Accumulated rewards per share
     uint256 public lastRewardTime;
     uint256 public penaltyPool; // Pool of penalty fees
-    
+
     // Governance integration
     mapping(address => uint256) private _governanceBalances;
     uint256 private _totalGovernanceSupply;
-    
+
     // Events
     event Staked(address indexed user, uint256 amount, uint256 tier, uint256 unlockTime);
     event Unstaked(address indexed user, uint256 amount, uint256 penalty);
@@ -66,7 +64,7 @@ contract ValkyrieToken is ERC20, ERC20Votes, ERC20Permit, Ownable, ReentrancyGua
     event RewardRateUpdated(uint256 newRate);
     event EarlyWithdrawalPenalty(address indexed user, uint256 penalty);
     event StakingTierAdded(uint256 indexed tierId, uint256 periodMonths, uint256 rewardMultiplier);
-    
+
     /**
      * @dev Constructor
      * @param _name Token name
@@ -79,21 +77,21 @@ contract ValkyrieToken is ERC20, ERC20Votes, ERC20Permit, Ownable, ReentrancyGua
         string memory _symbol,
         uint256 _initialSupply,
         address _owner
-    ) 
+    )
         ERC20(_name, _symbol)
         ERC20Permit(_name)
         Ownable(_owner)
     {
         _mint(_owner, _initialSupply);
         lastRewardTime = block.timestamp;
-        
+
         // Initialize staking tiers as recommended in tokenomics review
         stakingTiers[1] = StakingTier(3, 10000, 10000, 2000);   // 3 months: 1x rewards, 1x governance, 20% penalty
-        stakingTiers[2] = StakingTier(6, 12500, 12500, 1500);   // 6 months: 1.25x rewards, 1.25x governance, 15% penalty  
+        stakingTiers[2] = StakingTier(6, 12500, 12500, 1500);   // 6 months: 1.25x rewards, 1.25x governance, 15% penalty
         stakingTiers[3] = StakingTier(12, 15000, 20000, 1000);  // 12 months: 1.5x rewards, 2x governance, 10% penalty
         stakingTiers[4] = StakingTier(24, 20000, 30000, 500);   // 24 months: 2x rewards, 3x governance, 5% penalty
     }
-    
+
     /**
      * @notice Stake tokens for a specific period to earn tiered rewards
      * @dev Enhanced staking with tiers and governance power
@@ -102,46 +100,46 @@ contract ValkyrieToken is ERC20, ERC20Votes, ERC20Permit, Ownable, ReentrancyGua
      */
     function stakeWithTier(uint256 amount, uint256 tierId) external nonReentrant {
         if (amount == 0) revert ZeroAmount();
+        if (amount > type(uint96).max) revert("Amount too large");
         if (balanceOf(msg.sender) < amount) revert InsufficientBalance();
         if (tierId == 0 || tierId > 4) revert("Invalid tier");
-        
+
+        // Cache storage values
         StakingTier memory tier = stakingTiers[tierId];
-        _updatePool();
-        
         StakeInfo storage userStake = stakes[msg.sender];
-        
-        // Claim any pending rewards from previous stake
+        uint256 currentTime = block.timestamp;
+
+        // Handle pending rewards if any
         if (userStake.amount > 0) {
-            uint256 pending = _pendingRewards(msg.sender);
-            if (pending > 0) {
-                _claimRewards(msg.sender, pending);
+            uint256 rewards = _calculateRewards(msg.sender);
+            if (rewards > 0) {
+                _mint(msg.sender, rewards);
+                emit RewardClaimed(msg.sender, rewards);
             }
         }
-        
-        // Transfer tokens to contract
+
+        unchecked {
+            // Update governance power
+            uint256 governanceAmount = (amount * tier.governanceMultiplier) / 10000;
+            _governanceBalances[msg.sender] += governanceAmount;
+            _totalGovernanceSupply += governanceAmount;
+
+            // Update stake info (packed into a single storage slot)
+            userStake.amount = uint96(amount);
+            userStake.stakingPeriod = uint32(tier.periodMonths);
+            userStake.unlockTime = uint32(currentTime + (tier.periodMonths * 30 days));
+            userStake.governancePower = uint32(tier.governanceMultiplier);
+            userStake.lastRewardTime = uint32(currentTime);
+
+            totalStaked += amount;
+        }
+
+        // Transfer tokens
         _transfer(msg.sender, address(this), amount);
-        
-        // Calculate unlock time
-        uint256 unlockTime = block.timestamp + (tier.periodMonths * 30 days);
-        
-        // Update stake info
-        userStake.amount += amount;
-        userStake.stakingPeriod = tier.periodMonths;
-        userStake.unlockTime = unlockTime;
-        userStake.rewardDebt = (userStake.amount * accRewardPerShare) / 1e12;
-        userStake.lastStakeTime = block.timestamp;
-        userStake.governancePower = tier.governanceMultiplier;
-        
-        // Update governance balances for enhanced voting power
-        uint256 governanceAmount = (amount * tier.governanceMultiplier) / 10000;
-        _governanceBalances[msg.sender] += governanceAmount;
-        _totalGovernanceSupply += governanceAmount;
-        
-        totalStaked += amount;
-        
-        emit Staked(msg.sender, amount, tierId, unlockTime);
+
+        emit Staked(msg.sender, amount, tierId, userStake.unlockTime);
     }
-    
+
     /**
      * @notice Unstake tokens with potential early withdrawal penalty
      * @dev Enhanced unstaking with penalty mechanism
@@ -150,9 +148,7 @@ contract ValkyrieToken is ERC20, ERC20Votes, ERC20Permit, Ownable, ReentrancyGua
     function unstakeWithPenalty(uint256 amount) external nonReentrant {
         StakeInfo storage userStake = stakes[msg.sender];
         if (userStake.amount < amount) revert InsufficientStakedAmount();
-        
-        _updatePool();
-        
+
         // Calculate penalty for early withdrawal
         uint256 penalty = 0;
         if (block.timestamp < userStake.unlockTime) {
@@ -161,31 +157,34 @@ contract ValkyrieToken is ERC20, ERC20Votes, ERC20Permit, Ownable, ReentrancyGua
             penaltyPool += penalty;
             emit EarlyWithdrawalPenalty(msg.sender, penalty);
         }
-        
-        // Claim any pending rewards
-        uint256 pending = _pendingRewards(msg.sender);
-        if (pending > 0) {
-            _claimRewards(msg.sender, pending);
+
+        // Handle rewards
+        uint256 rewards = _calculateRewards(msg.sender);
+        if (rewards > 0) {
+            _mint(msg.sender, rewards);
+            emit RewardClaimed(msg.sender, rewards);
         }
-        
-        // Calculate governance power reduction
-        uint256 governanceReduction = (amount * userStake.governancePower) / 10000;
-        _governanceBalances[msg.sender] -= governanceReduction;
-        _totalGovernanceSupply -= governanceReduction;
-        
-        // Update stake info
-        userStake.amount -= amount;
-        userStake.rewardDebt = (userStake.amount * accRewardPerShare) / 1e12;
-        
-        totalStaked -= amount;
-        
+
+        unchecked {
+            // Update governance power
+            uint256 governanceReduction = (amount * userStake.governancePower) / 10000;
+            _governanceBalances[msg.sender] -= governanceReduction;
+            _totalGovernanceSupply -= governanceReduction;
+
+            // Update stake info
+            userStake.amount = uint96(uint256(userStake.amount) - amount);
+            userStake.lastRewardTime = uint32(block.timestamp);
+
+            totalStaked -= amount;
+        }
+
         // Transfer tokens back to user (minus penalty)
         uint256 withdrawAmount = amount - penalty;
         _transfer(address(this), msg.sender, withdrawAmount);
-        
+
         emit Unstaked(msg.sender, amount, penalty);
     }
-    
+
     /**
      * @notice Get the amount of tokens currently staked by an account
      * @dev Get staked balance of an account
@@ -195,7 +194,7 @@ contract ValkyrieToken is ERC20, ERC20Votes, ERC20Permit, Ownable, ReentrancyGua
     function stakedBalance(address account) external view returns (uint256) {
         return stakes[account].amount;
     }
-    
+
     /**
      * @notice Calculate pending staking rewards for an account without claiming them
      * @dev Get pending rewards for an account
@@ -203,116 +202,62 @@ contract ValkyrieToken is ERC20, ERC20Votes, ERC20Permit, Ownable, ReentrancyGua
      * @return Pending reward amount in token units
      */
     function getPendingRewards(address account) external view returns (uint256) {
-        // Cache totalStaked to avoid multiple reads
-        uint256 _totalStaked = totalStaked;
-        if (_totalStaked == 0) return 0;
-        
-        uint256 accRewardPerShareTemp = accRewardPerShare;
-        
-        // Calculate time-based rewards - cache block.timestamp
-        uint256 currentTime = block.timestamp;
-        if (currentTime > lastRewardTime) {
-            unchecked {
-                uint256 timeElapsed = currentTime - lastRewardTime;
-                uint256 reward = (_totalStaked * rewardRate * timeElapsed) / (365 days * 10000);
-                accRewardPerShareTemp += (reward * 1e12) / _totalStaked;
-            }
-        }
-        
-        StakeInfo storage userStake = stakes[account];
-        unchecked {
-            return ((userStake.amount * accRewardPerShareTemp) / 1e12) - userStake.rewardDebt;
-        }
+        return _calculateRewards(account);
     }
-    
+
     /**
      * @dev Update reward rate (owner only)
      * @param newRate New reward rate in basis points
      */
     function setRewardRate(uint256 newRate) external onlyOwner {
         if (newRate > 10000) revert RewardRateTooHigh();
-        _updatePool();
         rewardRate = newRate;
         emit RewardRateUpdated(newRate);
     }
-    
+
     /**
-     * @dev Internal function to update reward pool
+     * @dev Internal function to calculate rewards
      */
-    function _updatePool() internal {
-        if (block.timestamp <= lastRewardTime || totalStaked == 0) {
-            lastRewardTime = block.timestamp;
-            return;
-        }
-        
-        uint256 timeElapsed = block.timestamp - lastRewardTime;
-        uint256 reward = (totalStaked * rewardRate * timeElapsed) / (365 days * 10000);
-        
-        // Only mint and update if there are actual rewards to mint
-        if (reward > 0) {
-            _mint(address(this), reward);
-            accRewardPerShare += (reward * 1e12) / totalStaked;
-        }
-        
-        lastRewardTime = block.timestamp;
-    }
-    
-    /**
-     * @dev Internal function to calculate pending rewards
-     */
-    function _pendingRewards(address account) internal view returns (uint256) {
+    function _calculateRewards(address account) internal view returns (uint256) {
         StakeInfo memory userStake = stakes[account];
-        return ((userStake.amount * accRewardPerShare) / 1e12) - userStake.rewardDebt;
+        if (userStake.amount == 0) return 0;
+
+        uint256 timeElapsed = block.timestamp - userStake.lastRewardTime;
+        if (timeElapsed == 0) return 0;
+
+        unchecked {
+            uint256 baseReward = (uint256(userStake.amount) * rewardRate * timeElapsed) / (365 days * 10000);
+            return (baseReward * stakingTiers[_getTierFromPeriod(userStake.stakingPeriod)].rewardMultiplier) / 10000;
+        }
     }
-    
-    /**
-     * @dev Internal function to claim rewards
-     */
-    function _claimRewards(address account, uint256 amount) internal {
-        _transfer(address(this), account, amount);
-        emit RewardClaimed(account, amount);
-    }
-    
+
     /**
      * @notice Claim all pending staking rewards without unstaking
      * @dev Claim pending rewards
      */
     function claimRewards() external nonReentrant {
         StakeInfo storage userStake = stakes[msg.sender];
-        uint256 amount = userStake.amount;
-        if (amount == 0) revert NoRewardsToClaim();
-        _updatePool();
-        uint256 pending = _pendingRewards(msg.sender);
-        if (pending == 0) revert NoRewardsToClaim();
-        userStake.rewardDebt = (amount * accRewardPerShare) / 1e12;
-        _claimRewards(msg.sender, pending);
+        if (userStake.amount == 0) revert NoRewardsToClaim();
+
+        uint256 rewards = _calculateRewards(msg.sender);
+        if (rewards == 0) revert NoRewardsToClaim();
+
+        userStake.lastRewardTime = uint32(block.timestamp);
+
+        _mint(msg.sender, rewards);
+        emit RewardClaimed(msg.sender, rewards);
     }
-    
+
     /**
      * @notice Get pending rewards for a user
      * @dev Calculate pending rewards based on current pool state
      * @param user User address to check
-     * @return pending Pending reward amount
+     * @return Pending reward amount
      */
-    function pendingRewards(address user) external view returns (uint256 pending) {
-        StakeInfo memory userStake = stakes[user];
-        uint256 _accRewardPerShare = accRewardPerShare;
-        
-        if (block.timestamp > lastRewardTime && totalStaked != 0) {
-            uint256 timeElapsed = block.timestamp - lastRewardTime;
-            uint256 reward = (totalStaked * rewardRate * timeElapsed) / (365 days * 10000);
-            _accRewardPerShare += (reward * 1e12) / totalStaked;
-        }
-        
-        if (userStake.amount > 0) {
-            // Apply tier multiplier to rewards
-            uint256 tierId = _getTierFromPeriod(userStake.stakingPeriod);
-            StakingTier memory tier = stakingTiers[tierId];
-            uint256 baseReward = ((userStake.amount * _accRewardPerShare) / 1e12) - userStake.rewardDebt;
-            pending = (baseReward * tier.rewardMultiplier) / 10000;
-        }
+    function pendingRewards(address user) external view returns (uint256) {
+        return _calculateRewards(user);
     }
-    
+
     /**
      * @notice Get staking information for a user
      * @dev Returns complete staking details
@@ -336,7 +281,7 @@ contract ValkyrieToken is ERC20, ERC20Votes, ERC20Permit, Ownable, ReentrancyGua
             userStake.governancePower
         );
     }
-    
+
     /**
      * @notice Get governance voting power for a user
      * @dev Returns enhanced voting power based on staking
@@ -347,14 +292,14 @@ contract ValkyrieToken is ERC20, ERC20Votes, ERC20Permit, Ownable, ReentrancyGua
         // Combine regular balance with staking governance power
         return balanceOf(account) + _governanceBalances[account];
     }
-    
+
     /**
      * @notice Add or update a staking tier (only owner)
      * @dev Configure staking tier parameters
      * @param tierId Tier ID (1-4)
      * @param periodMonths Staking period in months
      * @param rewardMultiplier Reward multiplier in basis points
-     * @param governanceMultiplier Governance power multiplier in basis points  
+     * @param governanceMultiplier Governance power multiplier in basis points
      * @param penaltyRate Early withdrawal penalty in basis points
      */
     function setStakingTier(
@@ -366,19 +311,17 @@ contract ValkyrieToken is ERC20, ERC20Votes, ERC20Permit, Ownable, ReentrancyGua
     ) external onlyOwner {
         if (tierId == 0 || tierId > 4) revert("Invalid tier ID");
         if (penaltyRate > 5000) revert("Penalty too high"); // Max 50%
-        
+
         stakingTiers[tierId] = StakingTier({
-            periodMonths: periodMonths,
-            rewardMultiplier: rewardMultiplier,
-            governanceMultiplier: governanceMultiplier,
-            penaltyRate: penaltyRate
+            periodMonths: uint32(periodMonths),
+            rewardMultiplier: uint32(rewardMultiplier),
+            governanceMultiplier: uint32(governanceMultiplier),
+            penaltyRate: uint32(penaltyRate)
         });
-        
+
         emit StakingTierAdded(tierId, periodMonths, rewardMultiplier);
     }
-    
-    // Internal functions
-    
+
     /**
      * @dev Get tier ID from staking period
      */
@@ -388,7 +331,7 @@ contract ValkyrieToken is ERC20, ERC20Votes, ERC20Permit, Ownable, ReentrancyGua
         if (periodMonths <= 12) return 3;
         return 4;
     }
-    
+
     // Required overrides for multiple inheritance
     function _update(address from, address to, uint256 value)
         internal
@@ -396,7 +339,7 @@ contract ValkyrieToken is ERC20, ERC20Votes, ERC20Permit, Ownable, ReentrancyGua
     {
         super._update(from, to, value);
     }
-    
+
     function nonces(address owner)
         public
         view
@@ -405,4 +348,4 @@ contract ValkyrieToken is ERC20, ERC20Votes, ERC20Permit, Ownable, ReentrancyGua
     {
         return super.nonces(owner);
     }
-} 
+}
