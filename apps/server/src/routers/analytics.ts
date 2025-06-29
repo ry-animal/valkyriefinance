@@ -1,21 +1,23 @@
 import { and, desc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { aiRecommendations, db, marketData } from '@/db';
-import { publicProcedure, router } from '@/lib/trpc';
+import { protectedProcedure, router } from '@/lib/trpc';
 
 export const analyticsRouter = router({
-  // Get AI recommendations for user
-  getAIRecommendations: publicProcedure
+  // Get AI recommendations for user (now properly protected)
+  getAIRecommendations: protectedProcedure
     .input(
       z.object({
-        userId: z.string(),
         type: z.string().optional(),
         unexecutedOnly: z.boolean().default(false),
-        limit: z.number().default(10),
+        limit: z.number().default(10).max(50), // Prevent large data dumps
       })
     )
-    .query(async ({ input }) => {
-      const conditions = [eq(aiRecommendations.userId, input.userId)];
+    .query(async ({ input, ctx }) => {
+      // Use authenticated user's ID - prevents IDOR
+      const userId = ctx.user.id;
+
+      const conditions = [eq(aiRecommendations.userId, userId)];
 
       if (input.type) {
         conditions.push(eq(aiRecommendations.type, input.type));
@@ -33,11 +35,10 @@ export const analyticsRouter = router({
         .limit(input.limit);
     }),
 
-  // Create AI recommendation
-  createAIRecommendation: publicProcedure
+  // Create AI recommendation (now properly protected)
+  createAIRecommendation: protectedProcedure
     .input(
       z.object({
-        userId: z.string().optional(),
         type: z.string(),
         title: z.string(),
         description: z.string(),
@@ -47,11 +48,15 @@ export const analyticsRouter = router({
         recommendation: z.any().optional(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      // Use authenticated user's ID - prevents unauthorized creation
+      const userId = ctx.user.id;
+
       const [recommendation] = await db
         .insert(aiRecommendations)
         .values({
           ...input,
+          userId, // Enforce user ownership
           recommendation: input.recommendation || {},
         })
         .returning();

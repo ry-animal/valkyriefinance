@@ -5,138 +5,150 @@
 
 import { type NextRequest, NextResponse } from 'next/server';
 import { rateLimiter } from '@/lib/redis';
+import { createTRPCError } from '@/lib/trpc-error';
 
-export interface RateLimitConfig {
+interface RateLimitStore {
+  count: number;
+  resetTime: number;
+}
+
+// In-memory store - in production use Redis
+const rateLimitStore = new Map<string, RateLimitStore>();
+
+interface RateLimitConfig {
   maxAttempts: number;
   windowMs: number;
-  identifier: 'transaction' | 'api' | 'auth' | 'wallet';
-  skipSuccessfulRequests?: boolean;
-  skipFailedRequests?: boolean;
+  identifier: string;
 }
 
 /**
- * Rate limiting middleware factory
+ * Rate limiting middleware with different limits for different operations
  */
-export function createRateLimitMiddleware(config: RateLimitConfig) {
-  return async (_request: NextRequest, identifier: string): Promise<NextResponse | null> => {
-    try {
-      const limiter = rateLimiter[config.identifier];
-      const result = await limiter.isAllowed(identifier);
+export const createRateLimitMiddleware = (config: RateLimitConfig) => {
+  return async (req: NextRequest) => {
+    const identifier = `${config.identifier}:${getClientIdentifier(req)}`;
+    const now = Date.now();
 
-      if (!result.allowed) {
-        // Rate limit exceeded
-        const response = NextResponse.json(
-          {
-            error: 'Rate limit exceeded',
-            message: 'Too many requests. Please try again later.',
-            retryAfter: Math.ceil((result.resetTime - Date.now()) / 1000),
-          },
-          { status: 429 }
+    // Clean up expired entries
+    cleanupExpiredEntries(now);
+
+    const existing = rateLimitStore.get(identifier);
+
+    if (existing && existing.resetTime > now) {
+      if (existing.count >= config.maxAttempts) {
+        const resetIn = Math.ceil((existing.resetTime - now) / 1000);
+        throw createTRPCError(
+          'TOO_MANY_REQUESTS',
+          `Rate limit exceeded. Try again in ${resetIn} seconds.`
         );
-
-        // Add rate limit headers
-        response.headers.set('X-RateLimit-Limit', config.maxAttempts.toString());
-        response.headers.set('X-RateLimit-Remaining', result.remaining.toString());
-        response.headers.set('X-RateLimit-Reset', new Date(result.resetTime).toISOString());
-        response.headers.set(
-          'Retry-After',
-          Math.ceil((result.resetTime - Date.now()) / 1000).toString()
-        );
-
-        return response;
       }
-
-      // Add rate limit info to successful responses
-      const response = NextResponse.next();
-      response.headers.set('X-RateLimit-Limit', config.maxAttempts.toString());
-      response.headers.set('X-RateLimit-Remaining', result.remaining.toString());
-      response.headers.set('X-RateLimit-Reset', new Date(result.resetTime).toISOString());
-
-      return null; // Continue processing
-    } catch (error) {
-      console.error('Rate limiting error:', error);
-      // Fail open - allow request but log error
-      return null;
+      existing.count++;
+    } else {
+      rateLimitStore.set(identifier, {
+        count: 1,
+        resetTime: now + config.windowMs,
+      });
     }
   };
-}
+};
 
 /**
  * Get client identifier for rate limiting
  */
-export function getClientIdentifier(request: NextRequest): string {
-  // Try to get user ID from session/auth header first
-  const userId = request.headers.get('x-user-id');
-  if (userId) {
-    return `user:${userId}`;
-  }
-
-  // Try to get wallet address from header
-  const walletAddress = request.headers.get('x-wallet-address');
+function getClientIdentifier(req: NextRequest): string {
+  // Use wallet address if available (for authenticated requests)
+  const walletAddress = req.headers.get('x-wallet-address');
   if (walletAddress) {
-    return `wallet:${walletAddress}`;
+    return walletAddress;
   }
 
-  // Fall back to IP address
-  const forwarded = request.headers.get('x-forwarded-for');
-  const realIp = request.headers.get('x-real-ip');
-  const ip = forwarded ? forwarded.split(',')[0] : realIp || 'unknown';
-
-  return `ip:${ip}`;
+  // Fallback to IP address
+  const forwarded = req.headers.get('x-forwarded-for');
+  const ip = forwarded ? forwarded.split(',')[0] : req.headers.get('x-real-ip') || 'unknown';
+  return ip;
 }
 
 /**
- * Wallet-specific rate limiting
+ * Clean up expired rate limit entries
  */
-export const walletRateLimit = createRateLimitMiddleware({
-  maxAttempts: 20,
-  windowMs: 60000, // 1 minute
-  identifier: 'wallet',
-});
+function cleanupExpiredEntries(now: number): void {
+  for (const [key, value] of rateLimitStore.entries()) {
+    if (value.resetTime <= now) {
+      rateLimitStore.delete(key);
+    }
+  }
+}
 
 /**
- * Transaction rate limiting
+ * Different rate limits for different operations
  */
-export const transactionRateLimit = createRateLimitMiddleware({
-  maxAttempts: 5,
-  windowMs: 60000, // 1 minute
-  identifier: 'transaction',
-});
 
-/**
- * API rate limiting
- */
-export const apiRateLimit = createRateLimitMiddleware({
-  maxAttempts: 30,
-  windowMs: 60000, // 1 minute
-  identifier: 'api',
-});
-
-/**
- * Authentication rate limiting
- */
+// Authentication attempts - strict limiting
 export const authRateLimit = createRateLimitMiddleware({
-  maxAttempts: 10,
+  maxAttempts: 5,
   windowMs: 300000, // 5 minutes
   identifier: 'auth',
 });
 
+// General API calls - moderate limiting
+export const apiRateLimit = createRateLimitMiddleware({
+  maxAttempts: 100,
+  windowMs: 60000, // 1 minute
+  identifier: 'api',
+});
+
+// Portfolio operations - moderate limiting
+export const portfolioRateLimit = createRateLimitMiddleware({
+  maxAttempts: 50,
+  windowMs: 60000, // 1 minute
+  identifier: 'portfolio',
+});
+
+// AI recommendations - stricter limiting (expensive operations)
+export const aiRateLimit = createRateLimitMiddleware({
+  maxAttempts: 20,
+  windowMs: 300000, // 5 minutes
+  identifier: 'ai',
+});
+
+// Vault operations - very strict (financial operations)
+export const vaultRateLimit = createRateLimitMiddleware({
+  maxAttempts: 10,
+  windowMs: 60000, // 1 minute
+  identifier: 'vault',
+});
+
+// Analytics queries - moderate limiting
+export const analyticsRateLimit = createRateLimitMiddleware({
+  maxAttempts: 30,
+  windowMs: 60000, // 1 minute
+  identifier: 'analytics',
+});
+
 /**
- * Express/Next.js middleware wrapper
+ * Middleware helper to apply rate limiting to Next.js API routes
  */
-export function withRateLimit(
-  config: RateLimitConfig,
-  handler: (req: NextRequest) => Promise<NextResponse>
-) {
-  return async (request: NextRequest): Promise<NextResponse> => {
-    const identifier = getClientIdentifier(request);
+export async function withRateLimit(
+  request: NextRequest,
+  config: RateLimitConfig
+): Promise<NextResponse | null> {
+  try {
     const middleware = createRateLimitMiddleware(config);
 
-    const rateLimitResponse = await middleware(request, identifier);
-    if (rateLimitResponse) {
-      return rateLimitResponse;
+    await middleware(request);
+    return null; // Continue processing
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('Rate limit exceeded')) {
+      return NextResponse.json(
+        {
+          error: 'Rate limit exceeded',
+          message: error.message,
+        },
+        { status: 429 }
+      );
     }
-
-    return handler(request);
-  };
+    console.error('Rate limiting error:', error);
+    // Fail open - allow request but log error
+    return null;
+  }
 }
