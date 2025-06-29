@@ -216,13 +216,12 @@ contract veVLK is ERC721, ERC721Enumerable, Votes, AccessControl, ReentrancyGuar
         }
     }
 
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId,
-        uint256 batchSize
-    ) internal override(ERC721, ERC721Enumerable) {
-        super._beforeTokenTransfer(from, to, tokenId, batchSize);
+    function _update(address to, uint256 tokenId, address auth)
+        internal
+        override(ERC721, ERC721Enumerable)
+        returns (address)
+    {
+        address from = _ownerOf(tokenId);
 
         // Update owned tokens tracking
         if (from != address(0) && from != to) {
@@ -231,6 +230,15 @@ contract veVLK is ERC721, ERC721Enumerable, Votes, AccessControl, ReentrancyGuar
         if (to != address(0) && from != to) {
             _ownedTokens[to].push(tokenId);
         }
+
+        return super._update(to, tokenId, auth);
+    }
+
+    function _increaseBalance(address account, uint128 value)
+        internal
+        override(ERC721, ERC721Enumerable)
+    {
+        super._increaseBalance(account, value);
     }
 
     // Override required by Solidity
