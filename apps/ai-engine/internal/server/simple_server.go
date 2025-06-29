@@ -72,15 +72,43 @@ func (s *SimpleHTTPServer) withMiddleware(next http.HandlerFunc) http.HandlerFun
 		defer cancel()
 		r = r.WithContext(ctx)
 
-		// Add CORS headers
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		// Restricted CORS headers - only allow known origins
+		allowedOrigins := []string{
+			"https://valkyriefinance-web.vercel.app",
+			"https://valkyrie.finance",
+			"http://localhost:3001", // Dev only
+		}
+
+		origin := r.Header.Get("Origin")
+		if origin != "" {
+			for _, allowed := range allowedOrigins {
+				if origin == allowed {
+					w.Header().Set("Access-Control-Allow-Origin", origin)
+					break
+				}
+			}
+		}
+
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Session-ID, X-Wallet-Address")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 		// Handle preflight requests
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusOK)
 			return
+		}
+
+		// Basic authentication check - require session headers
+		sessionID := r.Header.Get("X-Session-ID")
+		walletAddress := r.Header.Get("X-Wallet-Address")
+
+		// Skip auth for health endpoint
+		if r.URL.Path != "/health" && r.URL.Path != "/api/health" {
+			if sessionID == "" || walletAddress == "" {
+				http.Error(w, "Authentication required", http.StatusUnauthorized)
+				return
+			}
 		}
 
 		// Add security headers
