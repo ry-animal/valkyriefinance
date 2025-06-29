@@ -23,10 +23,6 @@ interface UIState {
   activeModal: ModalType;
   modalData: any;
 
-  // Loading states
-  globalLoading: boolean;
-  pageLoading: boolean;
-
   // Sidebar state
   sidebarOpen: boolean;
   sidebarCollapsed: boolean;
@@ -47,10 +43,6 @@ interface UIActions {
   // Modal actions
   openModal: (type: ModalType, data?: any) => void;
   closeModal: () => void;
-
-  // Loading actions
-  setGlobalLoading: (loading: boolean) => void;
-  setPageLoading: (loading: boolean) => void;
 
   // Sidebar actions
   toggleSidebar: () => void;
@@ -85,8 +77,6 @@ export const useUIStore = create<UIStore>()(
       // State
       activeModal: null,
       modalData: null,
-      globalLoading: false,
-      pageLoading: false,
       sidebarOpen: true,
       sidebarCollapsed: false,
       notifications: [],
@@ -100,11 +90,6 @@ export const useUIStore = create<UIStore>()(
         set({ activeModal: type, modalData: data }, false, 'ui/openModal'),
 
       closeModal: () => set({ activeModal: null, modalData: null }, false, 'ui/closeModal'),
-
-      // Loading actions
-      setGlobalLoading: (loading) => set({ globalLoading: loading }, false, 'ui/setGlobalLoading'),
-
-      setPageLoading: (loading) => set({ pageLoading: loading }, false, 'ui/setPageLoading'),
 
       // Sidebar actions
       toggleSidebar: () =>
