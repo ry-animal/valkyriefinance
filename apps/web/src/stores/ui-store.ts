@@ -1,27 +1,38 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
+// Modal types
 export type ModalType =
-  | 'create-portfolio'
-  | 'edit-portfolio'
-  | 'delete-portfolio'
   | 'connect-wallet'
-  | 'transaction-details'
-  | 'ai-settings'
+  | 'portfolio-create'
+  | 'portfolio-edit'
+  | 'portfolio-delete'
+  | 'settings'
+  | 'notifications'
   | null;
+
+// Type-safe modal data mapping
+type ModalDataMap = {
+  'connect-wallet': undefined;
+  'portfolio-create': undefined;
+  'portfolio-edit': { portfolioId: string };
+  'portfolio-delete': { portfolioId: string };
+  settings: { section?: 'general' | 'security' | 'notifications' };
+  notifications: { filter?: 'all' | 'unread' };
+};
 
 export interface NotificationState {
   id: string;
-  type: 'success' | 'error' | 'warning' | 'info';
+  type: 'info' | 'success' | 'warning' | 'error';
   title: string;
-  message?: string;
+  message: string;
   duration?: number;
 }
 
 interface UIState {
   // Modal state
   activeModal: ModalType;
-  modalData: any;
+  modalData: ModalDataMap[keyof ModalDataMap] | undefined;
 
   // Sidebar state
   sidebarOpen: boolean;
@@ -41,7 +52,7 @@ interface UIState {
 
 interface UIActions {
   // Modal actions
-  openModal: (type: ModalType, data?: any) => void;
+  openModal: <T extends keyof ModalDataMap>(type: T, data?: ModalDataMap[T]) => void;
   closeModal: () => void;
 
   // Sidebar actions
@@ -51,126 +62,102 @@ interface UIActions {
   setSidebarCollapsed: (collapsed: boolean) => void;
 
   // Notification actions
-  addNotification: (notification: Omit<NotificationState, 'id'>) => void;
-  removeNotification: (id: string) => void;
+  addNotification: (notification: NotificationState) => void;
+  dismissNotification: (id: string) => void;
   clearNotifications: () => void;
 
   // Theme actions
-  toggleDarkMode: () => void;
-  setDarkMode: (dark: boolean) => void;
+  toggleTheme: () => void;
+  setDarkMode: (isDark: boolean) => void;
 
-  // Connection status
-  setOnlineStatus: (online: boolean) => void;
+  // Online status actions
+  setOnlineStatus: (isOnline: boolean) => void;
 
-  // Feature toggles
+  // Feature flag actions
   toggleAdvancedFeatures: () => void;
-  setAdvancedFeatures: (enabled: boolean) => void;
-  toggleAnimations: () => void;
-  setAnimations: (enabled: boolean) => void;
+  setEnableAnimations: (enabled: boolean) => void;
 }
 
-type UIStore = UIState & UIActions;
+export interface UIStore extends UIState, UIActions {}
 
-export const useUIStore = create<UIStore>()(
-  devtools(
-    (set, _get) => ({
-      // State
-      activeModal: null,
-      modalData: null,
-      sidebarOpen: true,
-      sidebarCollapsed: false,
-      notifications: [],
-      isDarkMode: false,
-      isOnline: true,
-      showAdvancedFeatures: false,
-      enableAnimations: true,
+export const createUIStore = () =>
+  create<UIStore>()(
+    devtools(
+      (set) => ({
+        // State
+        activeModal: null,
+        modalData: undefined,
+        sidebarOpen: true,
+        sidebarCollapsed: false,
+        notifications: [],
+        isDarkMode: false,
+        isOnline: true,
+        showAdvancedFeatures: false,
+        enableAnimations: true,
 
-      // Modal actions
-      openModal: (type, data = null) =>
-        set({ activeModal: type, modalData: data }, false, 'ui/openModal'),
+        // Modal actions
+        openModal: <T extends keyof ModalDataMap>(type: T, data?: ModalDataMap[T]) =>
+          set({ activeModal: type, modalData: data }, false, 'ui/openModal'),
 
-      closeModal: () => set({ activeModal: null, modalData: null }, false, 'ui/closeModal'),
+        closeModal: () => set({ activeModal: null, modalData: undefined }, false, 'ui/closeModal'),
 
-      // Sidebar actions
-      toggleSidebar: () =>
-        set((state) => ({ sidebarOpen: !state.sidebarOpen }), false, 'ui/toggleSidebar'),
+        // Sidebar actions
+        toggleSidebar: () =>
+          set((state: UIState) => ({ sidebarOpen: !state.sidebarOpen }), false, 'ui/toggleSidebar'),
 
-      setSidebarOpen: (open) => set({ sidebarOpen: open }, false, 'ui/setSidebarOpen'),
+        setSidebarOpen: (open: boolean) => set({ sidebarOpen: open }, false, 'ui/setSidebarOpen'),
 
-      toggleSidebarCollapse: () =>
-        set(
-          (state) => ({ sidebarCollapsed: !state.sidebarCollapsed }),
-          false,
-          'ui/toggleSidebarCollapse'
-        ),
-
-      setSidebarCollapsed: (collapsed) =>
-        set({ sidebarCollapsed: collapsed }, false, 'ui/setSidebarCollapsed'),
-
-      // Notification actions
-      addNotification: (notification) => {
-        const id = Math.random().toString(36).substring(2, 9);
-        set(
-          (state) => ({
-            notifications: [...state.notifications, { ...notification, id }],
-          }),
-          false,
-          'ui/addNotification'
-        );
-
-        // Auto-remove notification after duration
-        const duration = notification.duration || 5000;
-        setTimeout(() => {
+        toggleSidebarCollapse: () =>
           set(
-            (state) => ({
+            (state: UIState) => ({ sidebarCollapsed: !state.sidebarCollapsed }),
+            false,
+            'ui/toggleSidebarCollapse'
+          ),
+
+        setSidebarCollapsed: (collapsed: boolean) =>
+          set({ sidebarCollapsed: collapsed }, false, 'ui/setSidebarCollapsed'),
+
+        // Notification actions
+        addNotification: (notification: NotificationState) =>
+          set(
+            (state: UIState) => ({
+              notifications: [...state.notifications, notification],
+            }),
+            false,
+            'ui/addNotification'
+          ),
+
+        dismissNotification: (id: string) =>
+          set(
+            (state: UIState) => ({
               notifications: state.notifications.filter((n) => n.id !== id),
             }),
             false,
-            'ui/autoRemoveNotification'
-          );
-        }, duration);
-      },
+            'ui/dismissNotification'
+          ),
 
-      removeNotification: (id) =>
-        set(
-          (state) => ({
-            notifications: state.notifications.filter((n) => n.id !== id),
-          }),
-          false,
-          'ui/removeNotification'
-        ),
+        clearNotifications: () => set({ notifications: [] }, false, 'ui/clearNotifications'),
 
-      clearNotifications: () => set({ notifications: [] }, false, 'ui/clearNotifications'),
+        // Theme actions
+        toggleTheme: () =>
+          set((state: UIState) => ({ isDarkMode: !state.isDarkMode }), false, 'ui/toggleTheme'),
 
-      // Theme actions
-      toggleDarkMode: () =>
-        set((state) => ({ isDarkMode: !state.isDarkMode }), false, 'ui/toggleDarkMode'),
+        setDarkMode: (isDark: boolean) => set({ isDarkMode: isDark }, false, 'ui/setDarkMode'),
 
-      setDarkMode: (dark) => set({ isDarkMode: dark }, false, 'ui/setDarkMode'),
+        // Online status actions
+        setOnlineStatus: (isOnline: boolean) => set({ isOnline }, false, 'ui/setOnlineStatus'),
 
-      // Connection status
-      setOnlineStatus: (online) => set({ isOnline: online }, false, 'ui/setOnlineStatus'),
+        // Feature flag actions
+        toggleAdvancedFeatures: () =>
+          set(
+            (state: UIState) => ({ showAdvancedFeatures: !state.showAdvancedFeatures }),
+            false,
+            'ui/toggleAdvancedFeatures'
+          ),
 
-      // Feature toggles
-      toggleAdvancedFeatures: () =>
-        set(
-          (state) => ({ showAdvancedFeatures: !state.showAdvancedFeatures }),
-          false,
-          'ui/toggleAdvancedFeatures'
-        ),
-
-      setAdvancedFeatures: (enabled) =>
-        set({ showAdvancedFeatures: enabled }, false, 'ui/setAdvancedFeatures'),
-
-      toggleAnimations: () =>
-        set(
-          (state) => ({ enableAnimations: !state.enableAnimations }),
-          false,
-          'ui/toggleAnimations'
-        ),
-
-      setAnimations: (enabled) => set({ enableAnimations: enabled }, false, 'ui/setAnimations'),
-    }),
-    { name: 'ui-store' }
-  )
-);
+        setEnableAnimations: (enabled: boolean) =>
+          set({ enableAnimations: enabled }, false, 'ui/setEnableAnimations'),
+      }),
+      { name: 'UI Store' }
+    )
+  );
