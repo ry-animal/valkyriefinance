@@ -1,11 +1,12 @@
 {
-  "buildCommand": "cd ../.. && turbo build --filter=server",
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "cd ../.. && pnpm build --filter=server",
   "outputDirectory": ".next",
   "framework": "nextjs",
   "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
   "functions": {
     "src/app/api/**/*.ts": {
-      "runtime": "nodejs20.x"
+      "runtime": "nodejs18.x"
     }
   },
   "rewrites": [
