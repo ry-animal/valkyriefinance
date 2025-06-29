@@ -1,6 +1,8 @@
 'use client';
 
+import { Toaster, TooltipProvider } from '@valkyrie/ui';
 import ClientProviders from '@/components/client-providers';
+import { GlobalProgressBar } from '@/components/global-progress-bar';
 import { ThemeProvider } from '@/components/theme-provider';
 
 export default function ProvidersWrapper({ children }: { children: React.ReactNode }) {
@@ -11,7 +13,11 @@ export default function ProvidersWrapper({ children }: { children: React.ReactNo
       enableSystem={false}
       themes={['light', 'dark']}
     >
-      <ClientProviders>{children}</ClientProviders>
+      <ClientProviders>
+        <GlobalProgressBar />
+        {children}
+        <Toaster />
+      </ClientProviders>
     </ThemeProvider>
   );
 }
