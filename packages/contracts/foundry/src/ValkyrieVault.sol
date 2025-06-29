@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
@@ -32,6 +33,7 @@ import "./mocks/MockVRFCoordinator.sol";
  */
 contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
     using Math for uint256;
+    using SafeERC20 for IERC20;
 
     // Strategy configuration
     struct Strategy {
@@ -606,11 +608,24 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
         uint256 newTotalAssets = totalAssets() + assets;
         if (newTotalAssets > maxTotalAssets) revert InsufficientAssets();
 
-        // Calculate shares using the parent implementation
-        shares = super.deposit(assets, receiver);
+        // Calculate shares using our custom conversion logic that accounts for dead shares
+        shares = _convertToSharesInternal(assets);
+
+        // Perform the deposit using ERC-4626 internal functions
+        if (msg.sender != receiver) {
+            revert("Only direct deposits allowed");
+        }
+
+        // Transfer assets from user to vault
+        SafeERC20.safeTransferFrom(IERC20(asset()), msg.sender, address(this), assets);
+
+        // Mint shares to receiver (this increases totalSupply)
+        _mint(receiver, shares);
+
+        emit Deposit(msg.sender, receiver, assets, shares);
 
         // Check if this could be an inflation attack attempt
-        if (totalSupply() <= DEAD_SHARES + MIN_SHARES && shares < MIN_SHARES) {
+        if (effectiveTotalSupply() <= MIN_SHARES && shares < MIN_SHARES) {
             emit InflationAttackPrevented(receiver, assets, shares);
             revert("Deposit amount too small for vault security");
         }
@@ -695,21 +710,54 @@ contract ValkyrieVault is ERC4626, Ownable, ReentrancyGuard {
         return total > DEAD_SHARES ? total - DEAD_SHARES : 0;
     }
 
+        /**
+     * @dev Internal conversion functions that account for dead shares
+     * This ensures dead shares don't interfere with user-facing conversion rates
+     */
+    function _convertToSharesInternal(uint256 assets) internal view returns (uint256) {
+        uint256 supply = effectiveTotalSupply(); // Use effective supply excluding dead shares
+        uint256 _totalAssets = totalAssets();
+
+        if (supply == 0 || _totalAssets == 0) {
+            // For first deposit, use 1:1 ratio
+            return assets;
+        }
+
+        // Standard ERC-4626 formula but with effective supply
+        return assets * supply / _totalAssets;
+    }
+
+    function _convertToAssetsInternal(uint256 shares) internal view returns (uint256) {
+        uint256 supply = effectiveTotalSupply(); // Use effective supply excluding dead shares
+        uint256 _totalAssets = totalAssets();
+
+        if (supply == 0) {
+            // For first withdrawal, use 1:1 ratio
+            return shares;
+        }
+
+        // Standard ERC-4626 formula but with effective supply
+        return shares * _totalAssets / supply;
+    }
+
     /**
      * @notice Enhanced preview functions that account for fees
      * @dev Override to include management and performance fees in calculations
      */
     function previewDeposit(uint256 assets) public view override returns (uint256) {
-        uint256 baseShares = super.previewDeposit(assets);
+        return _convertToSharesInternal(assets);
+    }
 
-        // Account for management fees in share calculation
-        uint256 managementFeeAssets = _calculateManagementFees();
-        if (managementFeeAssets > 0) {
-            uint256 vaultTotalAssets = totalAssets() + managementFeeAssets;
-            baseShares = assets * totalSupply() / vaultTotalAssets;
-        }
+    function previewMint(uint256 shares) public view override returns (uint256) {
+        return _convertToAssetsInternal(shares);
+    }
 
-        return baseShares;
+    function previewWithdraw(uint256 assets) public view override returns (uint256) {
+        return _convertToSharesInternal(assets);
+    }
+
+    function previewRedeem(uint256 shares) public view override returns (uint256) {
+        return _convertToAssetsInternal(shares);
     }
 
     /**

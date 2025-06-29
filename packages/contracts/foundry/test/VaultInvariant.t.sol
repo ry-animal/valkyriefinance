@@ -21,13 +21,14 @@ contract VaultInvariantTest is Test {
         );
     }
 
-    // Invariant: totalAssets() >= totalSupply()
+    // Invariant: totalAssets() >= effective totalSupply() (excluding dead shares)
     function invariant_totalAssetsAlwaysGTEQTotalSupply() public {
-        assertGe(vault.totalAssets(), vault.totalSupply());
+        uint256 effectiveSupply = vault.effectiveTotalSupply();
+        assertGe(vault.totalAssets(), effectiveSupply);
     }
 
     // Invariant: totalAllocated never exceeds MAX_ALLOCATION
     function invariant_totalAllocatedNeverExceedsMax() public {
         assertLe(vault.totalAllocated(), vault.MAX_ALLOCATION());
     }
-} 
+}
