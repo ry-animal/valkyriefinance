@@ -25,10 +25,10 @@ const envVars = {
   PORT: Number(getEnv('PORT', '3000')),
   CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:3001',
 
-  // AI Services
+  // AI Services - require actual keys
   GOOGLE_AI_API_KEY: process.env.GOOGLE_AI_API_KEY,
 
-  // External APIs
+  // External APIs - require actual keys
   COINGECKO_API_KEY: process.env.COINGECKO_API_KEY,
   DEFILLAMA_API_KEY: process.env.DEFILLAMA_API_KEY,
 
@@ -44,22 +44,14 @@ const envVars = {
 
 export const env = validateServerEnv(envVars);
 
-// Fallback for development
+// Safe fallback for development - no sensitive defaults
 export const devEnv = {
   NODE_ENV: 'development',
   POSTGRES_URL: 'postgres://postgres:postgres@localhost:5432/postgres',
-  BETTER_AUTH_SECRET: 'development-secret-key-change-in-production',
-  BETTER_AUTH_URL: 'http://localhost:3000',
   PORT: 3000,
   CORS_ORIGIN: 'http://localhost:3001',
-  GOOGLE_AI_API_KEY: 'development-key',
-  COINGECKO_API_KEY: 'development-key',
-  DEFILLAMA_API_KEY: 'development-key',
   NEXT_PUBLIC_SERVER_URL: 'http://localhost:3000',
-  NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: 'development-project-id',
-  NEXT_PUBLIC_REOWN_PROJECT_ID: 'development-reown-id',
-  NEXT_PUBLIC_ALCHEMY_API_KEY: 'development-alchemy-key',
   NEXT_PUBLIC_DEFAULT_CHAIN: 1,
   NEXT_PUBLIC_ENABLE_TESTNETS: false,
-  NEXT_PUBLIC_GA_MEASUREMENT_ID: 'development-ga-id',
+  // Remove all hardcoded API keys and secrets
 };
