@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/valkyriefinance/ai-engine/internal/health"
 	"github.com/valkyriefinance/ai-engine/internal/models"
 	"github.com/valkyriefinance/ai-engine/internal/services"
 )
@@ -39,10 +40,27 @@ func NewSimpleHTTPServer(aiEngine services.AIEngine, dataCollector services.Mark
 
 // Start starts the HTTP server
 func (s *SimpleHTTPServer) Start(port int) error {
+	return s.startServer(port, nil)
+}
+
+// StartWithHealthChecker starts the HTTP server with a comprehensive health checker
+func (s *SimpleHTTPServer) StartWithHealthChecker(port int, healthChecker *health.HealthChecker) error {
+	return s.startServer(port, healthChecker)
+}
+
+// startServer is the internal method that starts the HTTP server
+func (s *SimpleHTTPServer) startServer(port int, healthChecker *health.HealthChecker) error {
 	mux := http.NewServeMux()
 
 	// Add middleware for all routes
-	mux.HandleFunc("/health", s.withMiddleware(s.healthHandler))
+	if healthChecker != nil {
+		// Use the comprehensive health checker
+		mux.HandleFunc("/health", s.withMiddleware(healthChecker.HTTPHandler()))
+	} else {
+		// Fallback to simple health check
+		mux.HandleFunc("/health", s.withMiddleware(s.healthHandler))
+	}
+
 	mux.HandleFunc("/api/market-indicators", s.withMiddleware(s.marketIndicatorsHandler))
 	mux.HandleFunc("/api/optimize-portfolio", s.withMiddleware(s.optimizePortfolioHandler))
 	mux.HandleFunc("/api/risk-metrics", s.withMiddleware(s.riskMetricsHandler))

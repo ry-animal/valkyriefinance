@@ -13,10 +13,11 @@
 //   - Thread-safe concurrent request handling
 //   - Comprehensive error handling and security measures
 //   - Graceful shutdown with proper resource cleanup
+//   - Production-grade monitoring with Sentry integration
 //
 // The service exposes the following HTTP endpoints:
 //
-//	GET  /health           - Health check endpoint
+//	GET  /health           - Comprehensive health check endpoint
 //	POST /optimize         - Portfolio optimization endpoint
 //	GET  /market-data      - Market data and indicators endpoint
 //
@@ -24,6 +25,9 @@
 //
 //	PORT                   - HTTP server port (default: 8080)
 //	LOG_LEVEL             - Logging level (default: info)
+//	SENTRY_DSN            - Sentry DSN for error tracking
+//	ENVIRONMENT           - Environment name (development/staging/production)
+//	RELEASE_VERSION       - Application version for tracking
 //
 // Example Usage:
 //
@@ -49,15 +53,33 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/valkyriefinance/ai-engine/internal/health"
+	"github.com/valkyriefinance/ai-engine/internal/monitoring"
 	"github.com/valkyriefinance/ai-engine/internal/server"
 	"github.com/valkyriefinance/ai-engine/internal/services"
 )
 
 // main is the entry point for the AI Engine service.
-// It initializes the data collector, AI engine, and HTTP server,
+// It initializes monitoring, data collector, AI engine, and HTTP server,
 // then starts the service with graceful shutdown handling.
 func main() {
 	log.Println("Starting Valkyrie Finance AI Engine...")
+
+	// Initialize Sentry monitoring first
+	if err := monitoring.InitializeSentry(); err != nil {
+		log.Printf("Warning: Failed to initialize Sentry: %v", err)
+	} else {
+		// Ensure Sentry is properly flushed on exit
+		defer monitoring.Close()
+	}
+
+	// Capture startup in Sentry
+	monitoring.CaptureMessage("AI Engine starting up",
+		monitoring.LevelInfo,
+		map[string]string{
+			"component": "startup",
+			"version": getVersion(),
+		})
 
 	// Create main context for the application
 	ctx, cancel := context.WithCancel(context.Background())
@@ -70,14 +92,26 @@ func main() {
 			port = p
 		} else {
 			log.Printf("Invalid PORT value %q, using default %d", portStr, port)
+			monitoring.CaptureError(err, map[string]string{
+				"component": "config",
+				"error_type": "invalid_port",
+			}, map[string]interface{}{
+				"port_value": portStr,
+			})
 		}
 	}
 
 	// WaitGroup to coordinate graceful shutdown
 	var wg sync.WaitGroup
 
+	// Initialize performance monitor
+	perfMonitor := services.NewPerformanceMonitor()
+
 		// Initialize data collector with real market data
 	var dataCollector services.MarketDataCollector = services.NewRealDataCollector()
+
+	// Initialize health checker
+	healthChecker := health.NewHealthChecker(perfMonitor, dataCollector)
 
 	// Start data collector in a goroutine
 	wg.Add(1)
@@ -88,22 +122,34 @@ func main() {
 		log.Println("Starting data collector...")
 		if err := dataCollector.Start(); err != nil {
 			log.Printf("Failed to start data collector: %v", err)
+			monitoring.CaptureError(err, map[string]string{
+				"component": "data_collector",
+				"error_type": "startup_failure",
+			}, nil)
 			cancel()
 			return
 		}
+
+		monitoring.CaptureMessage("Data collector started successfully",
+			monitoring.LevelInfo,
+			map[string]string{"component": "data_collector"})
 
 		// Wait for context cancellation
 		<-ctx.Done()
 		log.Println("Stopping data collector...")
 		if err := dataCollector.Stop(); err != nil {
 			log.Printf("Error stopping data collector: %v", err)
+			monitoring.CaptureError(err, map[string]string{
+				"component": "data_collector",
+				"error_type": "shutdown_error",
+			}, nil)
 		}
 	}()
 
 	// Initialize AI engine
 	var aiEngine services.AIEngine = services.NewEnhancedAIEngine()
 
-	// Create HTTP server
+	// Create HTTP server with enhanced monitoring
 	httpServer := server.NewSimpleHTTPServer(aiEngine, dataCollector)
 
 	// Start HTTP server in a goroutine
@@ -113,8 +159,21 @@ func main() {
 		defer log.Println("HTTP server stopped")
 
 		log.Printf("Starting HTTP server on port %d...", port)
-		if err := httpServer.Start(port); err != nil {
+		monitoring.CaptureMessage("HTTP server starting",
+			monitoring.LevelInfo,
+			map[string]string{
+				"component": "http_server",
+				"port": strconv.Itoa(port),
+			})
+
+		if err := httpServer.StartWithHealthChecker(port, healthChecker); err != nil {
 			log.Printf("HTTP server error: %v", err)
+			monitoring.CaptureError(err, map[string]string{
+				"component": "http_server",
+				"error_type": "server_error",
+			}, map[string]interface{}{
+				"port": port,
+			})
 			cancel() // Cancel context to signal other goroutines to stop
 		}
 	}()
@@ -124,36 +183,37 @@ func main() {
 	log.Printf("  GET  http://localhost:%d/health", port)
 	log.Printf("  POST http://localhost:%d/api/optimize-portfolio", port)
 	log.Printf("  GET  http://localhost:%d/api/market-indicators", port)
-	log.Printf("  POST http://localhost:%d/api/risk-metrics", port)
-	log.Printf("  POST http://localhost:%d/api/market-analysis", port)
 
-	// Handle graceful shutdown
-	shutdown := make(chan os.Signal, 1)
-	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
+	monitoring.CaptureMessage("AI Engine startup completed",
+		monitoring.LevelInfo,
+		map[string]string{
+			"component": "startup",
+			"port": strconv.Itoa(port),
+		})
 
-	// Wait for shutdown signal or context cancellation
-	select {
-	case sig := <-shutdown:
-		log.Printf("Received shutdown signal: %v", sig)
-	case <-ctx.Done():
-		log.Println("Context cancelled")
-	}
+	// Wait for shutdown signal
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 
-	log.Println("Initiating graceful shutdown...")
+	// Block until we receive a signal
+	sig := <-sigChan
+	log.Printf("Received signal %v, initiating graceful shutdown...", sig)
 
-	// Create shutdown context with timeout
+	monitoring.CaptureMessage("Graceful shutdown initiated",
+		monitoring.LevelInfo,
+		map[string]string{
+			"component": "shutdown",
+			"signal": sig.String(),
+		})
+
+	// Cancel context to signal all goroutines to stop
+	cancel()
+
+	// Create shutdown timeout context
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer shutdownCancel()
 
-	// Stop HTTP server gracefully
-	if err := httpServer.Stop(); err != nil {
-		log.Printf("Error during HTTP server shutdown: %v", err)
-	}
-
-	// Cancel main context to signal all goroutines to stop
-	cancel()
-
-	// Wait for all goroutines to finish with timeout
+	// Wait for all goroutines to finish or timeout
 	done := make(chan struct{})
 	go func() {
 		wg.Wait()
@@ -163,9 +223,23 @@ func main() {
 	select {
 	case <-done:
 		log.Println("All services stopped gracefully")
+		monitoring.CaptureMessage("Graceful shutdown completed",
+			monitoring.LevelInfo,
+			map[string]string{"component": "shutdown"})
 	case <-shutdownCtx.Done():
 		log.Println("Shutdown timeout exceeded, forcing exit")
+		monitoring.CaptureMessage("Shutdown timeout exceeded",
+			monitoring.LevelWarning,
+			map[string]string{"component": "shutdown"})
 	}
 
 	log.Println("AI Engine shutdown complete")
+}
+
+// getVersion gets the application version from environment or default
+func getVersion() string {
+	if version := os.Getenv("RELEASE_VERSION"); version != "" {
+		return version
+	}
+	return "1.0.0"
 }

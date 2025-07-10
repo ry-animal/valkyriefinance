@@ -2,6 +2,8 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { useEffect, useState } from 'react';
 import { WagmiProvider } from 'wagmi';
 import { initializeAppKit, wagmiConfig } from '@/lib/wagmi-config';
@@ -40,6 +42,8 @@ export default function ClientProviders({ children }: { children: React.ReactNod
         <QueryClientProvider client={queryClient}>
           {children}
           <ReactQueryDevtools initialIsOpen={false} />
+          <Analytics />
+          <SpeedInsights />
         </QueryClientProvider>
       </trpc.Provider>
     </WagmiProvider>
