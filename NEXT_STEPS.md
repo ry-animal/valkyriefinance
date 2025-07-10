@@ -15,20 +15,24 @@ This document outlines the next steps for the Valkyrie Finance platform after su
 ## 1. Production Deployment & Monitoring 🚀
 
 ### 1.1 Vercel Deployment Finalization
-- [ ] **Test production deployment** on Vercel with latest security hardening
-- [ ] **Configure environment variables** for production:
+- [x] **Test production deployment** on Vercel with latest security hardening
+- [x] **Configure environment variables** for production:
   - `NEXT_PUBLIC_ENABLE_TESTNETS=false` (mainnet only)
   - `DATABASE_URL` for production database
   - `NEXTAUTH_SECRET` for authentication
   - `REOWN_PROJECT_ID` for Web3 connections
-- [ ] **Set up custom domain** and SSL certificates
-- [ ] **Configure Vercel Edge Functions** for optimal performance
+- [x] **Set up custom domain** and SSL certificates
+- [x] **Configure Vercel Edge Functions** for optimal performance
+- [x] **Go AI Engine is deployed separately using a hybrid approach (see documentation/VERCEL_GO_DEPLOYMENT.md)**
 
 ### 1.2 Production Monitoring
-- [ ] **Set up error tracking** (Sentry integration)
-- [ ] **Configure performance monitoring** (Vercel Analytics)
-- [ ] **Set up uptime monitoring** for critical endpoints
-- [ ] **Create alerting** for build failures and runtime errors
+- [x] **Set up error tracking** (Sentry integration for both Vercel and Go services)
+- [x] **Configure performance monitoring** (Vercel Analytics + Go service metrics)
+- [x] **Set up uptime monitoring** for critical endpoints (Next.js and Go AI Engine)
+- [x] **Create alerting** for build failures and runtime errors (all services)
+- [x] **Hybrid monitoring architecture: unified alerting and dashboards for both Vercel and Go services**
+
+> **Note:** The Go AI Engine is now fully productionized and monitored, but is deployed outside of Vercel's main project for optimal performance. See `documentation/VERCEL_GO_DEPLOYMENT.md` for deployment options and best practices.
 
 ### 1.3 Database & Infrastructure
 - [ ] **Set up production database** (PostgreSQL on Vercel/Railway/Supabase)
